@@ -1,6 +1,6 @@
 from django.apps import AppConfig
 
 
-class BookingapiConfig(AppConfig):
+class BookingApiConfig(AppConfig):
     default_auto_field = 'django.db.models.BigAutoField'
-    name = 'BookingAPI'
+    name = 'DairyFlatAirport.BookingAPI'
