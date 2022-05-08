@@ -2,8 +2,13 @@
 <HTML lang="en">
     <HEAD>
         <META charset="utf-8"/>
+        <META name="viewport"
+              content="width=device-width, initial-scale=1"/>
         <TITLE>Online Booking System</TITLE>
-        <LINK href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous"/>
+        <LINK href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css"
+              rel="stylesheet"
+              integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3"
+              crossorigin="anonymous"/>
         <STYLE>
             .bd-placeholder-img {
                 font-size: 1.125rem;
@@ -19,202 +24,245 @@
                 }
             }
         </STYLE>
-        <LINK href="style/carousel.css" rel="stylesheet"/>
+        <LINK href="/style/carousel.css"
+              rel="stylesheet"/>
     </HEAD>
     <BODY>
-        <header>
-            <nav class="navbar navbar-expand-md navbar-dark fixed-top bg-dark">
-                <div class="container-fluid">
-                    <a class="navbar-brand" href="#">Carousel</a>
-                    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation">
-                        <span class="navbar-toggler-icon"/>
-                    </button>
-                    <div class="collapse navbar-collapse" id="navbarCollapse">
-                        <ul class="navbar-nav me-auto mb-2 mb-md-0">
-                            <li class="nav-item">
-                                <a class="nav-link active" aria-current="page" href="#">Home</a>
-                            </li>
-                            <li class="nav-item">
-                                <a class="nav-link" href="#">Link</a>
-                            </li>
-                            <li class="nav-item">
-                                <a class="nav-link disabled">Disabled</a>
-                            </li>
-                        </ul>
-                        <form class="d-flex">
-                            <input class="form-control me-2" type="search" placeholder="Search" aria-label="Search">
-                                <button class="btn btn-outline-success" type="submit">Search</button>
-                            </form>
-                        </div>
-                    </div>
-                </nav>
-            </header>
-            <main>
-                <div id="myCarousel" class="carousel slide" data-bs-ride="carousel">
-                    <div class="carousel-indicators">
-                        <button type="button" data-bs-target="#myCarousel" data-bs-slide-to="0" class="active" aria-current="true" aria-label="Slide 1"/>
-                        <button type="button" data-bs-target="#myCarousel" data-bs-slide-to="1" aria-label="Slide 2"/>
-                        <button type="button" data-bs-target="#myCarousel" data-bs-slide-to="2" aria-label="Slide 3"/>
-                    </div>
-                    <div class="carousel-inner">
-                        <div class="carousel-item active">
-                            <svg class="bd-placeholder-img" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" preserveAspectRatio="xMidYMid slice" focusable="false">
-                                <rect width="100%" height="100%" fill="#777"/>
-                            </svg>
-                            <div class="container">
-                                <div class="carousel-caption text-start">
-                                    <h1>Example headline.</h1>
-                                    <p>Some representative placeholder content for the first slide of the carousel.</p>
-                                    <p>
-                                        <a class="btn btn-lg btn-primary" href="#">Sign up today</a>
-                                    </p>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="carousel-item">
-                            <svg class="bd-placeholder-img" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" preserveAspectRatio="xMidYMid slice" focusable="false">
-                                <rect width="100%" height="100%" fill="#777"/>
-                            </svg>
-                            <div class="container">
-                                <div class="carousel-caption">
-                                    <h1>Another example headline.</h1>
-                                    <p>Some representative placeholder content for the second slide of the carousel.</p>
-                                    <p>
-                                        <a class="btn btn-lg btn-primary" href="#">Learn more</a>
-                                    </p>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="carousel-item">
-                            <svg class="bd-placeholder-img" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" preserveAspectRatio="xMidYMid slice" focusable="false">
-                                <rect width="100%" height="100%" fill="#777"/>
-                            </svg>
-                            <div class="container">
-                                <div class="carousel-caption text-end">
-                                    <h1>One more for good measure.</h1>
-                                    <p>Some representative placeholder content for the third slide of this carousel.</p>
-                                    <p>
-                                        <a class="btn btn-lg btn-primary" href="#">Browse gallery</a>
-                                    </p>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <button class="carousel-control-prev" type="button" data-bs-target="#myCarousel" data-bs-slide="prev">
-                        <span class="carousel-control-prev-icon" aria-hidden="true"/>
-                        <span class="visually-hidden">Previous</span>
-                    </button>
-                    <button class="carousel-control-next" type="button" data-bs-target="#myCarousel" data-bs-slide="next">
-                        <span class="carousel-control-next-icon" aria-hidden="true"/>
-                        <span class="visually-hidden">Next</span>
-                    </button>
-                </div>
-                <!-- Marketing messaging and featurettes
+        <HEADER>
+            <NAV class="navbar navbar-expand-md navbar-dark fixed-top bg-dark">
+                <DIV class="container-fluid">
+                    <A class="navbar-brand"
+                       href="/">Home</A>
+                    <BUTTON class="navbar-toggler"
+                            type="button"
+                            data-bs-toggle="collapse"
+                            data-bs-target="#navbarCollapse"
+                            aria-controls="navbarCollapse"
+                            aria-expanded="false"
+                            aria-label="Toggle navigation">
+                        <SPAN class="navbar-toggler-icon"/>
+                    </BUTTON>
+                    <DIV class="collapse navbar-collapse"
+                         id="navbarCollapse">
+                        <UL class="navbar-nav me-auto mb-2 mb-md-0">
+                            <LI class="nav-item">
+                                <A class="nav-link"
+                                   href="/info/listFlights.html">Flights</A>
+                            </LI>
+                            <LI class="nav-item">
+                                <A class="nav-link"
+                                   href="/user/editUser.html">User</A>
+                            </LI>
+                            <LI class="nav-item">
+                                <A class="nav-link"
+                                   href="/booking/listBookings.html">Bookings</A>
+                            </LI>
+                            <LI class="nav-item">
+                                <BUTTON class="btn btn-primary"
+                                        type="button"
+                                        onclick="window.location.href = '/booking/listFlights.html'">Book a flight</BUTTON>
+                            </LI>
+                        </UL>
+                        <FORM class="d-flex">
+                            <INPUT class="form-control me-2"
+                                   type="search"
+                                   placeholder="Search"
+                                   aria-label="Search"/>
+                            <BUTTON class="btn btn-success"
+                                    type="submit"
+                                    onclick="alert('TODO');">Search</BUTTON>
+                        </FORM>
+                    </DIV>
+                </DIV>
+            </NAV>
+        </HEADER>
+        <MAIN>
+            <DIV id="myCarousel"
+                 class="carousel slide"
+                 data-bs-ride="carousel">
+                <DIV class="carousel-indicators">
+                    <BUTTON type="button"
+                            data-bs-target="#myCarousel"
+                            data-bs-slide-to="0"
+                            class="active"
+                            aria-current="true"
+                            aria-label="Slide 1"/>
+                    <BUTTON type="button"
+                            data-bs-target="#myCarousel"
+                            data-bs-slide-to="1"
+                            aria-label="Slide 2"/>
+                    <BUTTON type="button"
+                            data-bs-target="#myCarousel"
+                            data-bs-slide-to="2"
+                            aria-label="Slide 3"/>
+                </DIV>
+                <DIV class="carousel-inner">
+                    <DIV class="carousel-item active">
+                        <IMG class="d-block w-100" src="image/Rotorua.jpg"/>
+                        <DIV class="container">
+                            <DIV class="carousel-caption text-start">
+                                <H1>Rotorua</H1>
+                                <P>Come share our stunning geothermal landscapes, sparkling lakes and beautiful forests.</P>
+                                <P>
+                                    <A class="btn btn-lg btn-primary"
+                                       href="/booking/listFlights.html?filter=rotorua">Fly to here</A>
+                                </P>
+                            </DIV>
+                        </DIV>
+                    </DIV>
+                    <DIV class="carousel-item">
+                        <IMG class="d-block w-100" src="image/GreatBarrierIsland.jpg"/>
+                        <DIV class="container">
+                            <DIV class="carousel-caption">
+                                <H1>Great Barrier Island</H1>
+                                <P>A scenic 35 minute flight is all it takes to travel to a very special part of New Zealand.</P>
+                                <P>
+                                    <A class="btn btn-lg btn-primary"
+                                    href="/booking/listFlights.html?filter=greatBarrierIsland">Fly to here</A>
+                                </P>
+                            </DIV>
+                        </DIV>
+                    </DIV>
+                    <DIV class="carousel-item">
+                        <IMG class="d-block w-100" src="image/ChathamIslands.jpg"/>
+                        <DIV class="container">
+                            <DIV class="carousel-caption text-end">
+                                <H1>Chatham Islands</H1>
+                                <P>With outstanding scenery and welcoming hosts, these islands will leave a lasting impression on you.</P>
+                                <P>
+                                    <A class="btn btn-lg btn-primary"
+                                       href="/booking/listFlights.html?filter=chathamIslands">Fly to here</A>
+                                </P>
+                            </DIV>
+                        </DIV>
+                    </DIV>
+                </DIV>
+                <BUTTON class="carousel-control-prev"
+                        type="button"
+                        data-bs-target="#myCarousel"
+                        data-bs-slide="prev">
+                    <SPAN class="carousel-control-prev-icon"
+                          aria-hidden="true"/>
+                    <SPAN class="visually-hidden">Previous</SPAN>
+                </BUTTON>
+                <BUTTON class="carousel-control-next"
+                        type="button"
+                        data-bs-target="#myCarousel"
+                        data-bs-slide="next">
+                    <SPAN class="carousel-control-next-icon"
+                          aria-hidden="true"/>
+                    <SPAN class="visually-hidden">Next</SPAN>
+                </BUTTON>
+            </DIV>
+            <!-- Marketing messaging and featurettes
             ================================================== -->
-                <!-- Wrap the rest of the page in another container to center all the content. -->
-                <div class="container marketing">
-                    <!-- Three columns of text below the carousel -->
-                    <div class="row">
-                        <div class="col-lg-4">
-                            <svg class="bd-placeholder-img rounded-circle" width="140" height="140" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Placeholder: 140x140" preserveAspectRatio="xMidYMid slice" focusable="false">
-                                <title>Placeholder</title>
-                                <rect width="100%" height="100%" fill="#777"/>
-                                <text x="50%" y="50%" fill="#777" dy=".3em">140x140</text>
-                            </svg>
-                            <h2>Heading</h2>
-                            <p>Some representative placeholder content for the three columns of text below the carousel. This is the first column.</p>
-                            <p>
-                                <a class="btn btn-secondary" href="#">View details &raquo;</a>
-                            </p>
-                        </div>
-                        <!-- /.col-lg-4 -->
-                        <div class="col-lg-4">
-                            <svg class="bd-placeholder-img rounded-circle" width="140" height="140" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Placeholder: 140x140" preserveAspectRatio="xMidYMid slice" focusable="false">
-                                <title>Placeholder</title>
-                                <rect width="100%" height="100%" fill="#777"/>
-                                <text x="50%" y="50%" fill="#777" dy=".3em">140x140</text>
-                            </svg>
-                            <h2>Heading</h2>
-                            <p>Another exciting bit of representative placeholder content. This time, we've moved on to the second column.</p>
-                            <p>
-                                <a class="btn btn-secondary" href="#">View details &raquo;</a>
-                            </p>
-                        </div>
-                        <!-- /.col-lg-4 -->
-                        <div class="col-lg-4">
-                            <svg class="bd-placeholder-img rounded-circle" width="140" height="140" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Placeholder: 140x140" preserveAspectRatio="xMidYMid slice" focusable="false">
-                                <title>Placeholder</title>
-                                <rect width="100%" height="100%" fill="#777"/>
-                                <text x="50%" y="50%" fill="#777" dy=".3em">140x140</text>
-                            </svg>
-                            <h2>Heading</h2>
-                            <p>And lastly this, the third column of representative placeholder content.</p>
-                            <p>
-                                <a class="btn btn-secondary" href="#">View details &raquo;</a>
-                            </p>
-                        </div>
-                        <!-- /.col-lg-4 -->
-                    </div>
-                    <!-- /.row -->
-                    <!-- START THE FEATURETTES -->
-                    <hr class="featurette-divider">
-                        <div class="row featurette">
-                            <div class="col-md-7">
-                                <h2 class="featurette-heading">First featurette heading. <span class="text-muted">It’ll blow your mind.</span>
-                                </h2>
-                                <p class="lead">Some great placeholder content for the first featurette here. Imagine some exciting prose here.</p>
-                            </div>
-                            <div class="col-md-5">
-                                <svg class="bd-placeholder-img bd-placeholder-img-lg featurette-image img-fluid mx-auto" width="500" height="500" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Placeholder: 500x500" preserveAspectRatio="xMidYMid slice" focusable="false">
-                                    <title>Placeholder</title>
-                                    <rect width="100%" height="100%" fill="#eee"/>
-                                    <text x="50%" y="50%" fill="#aaa" dy=".3em">500x500</text>
-                                </svg>
-                            </div>
-                        </div>
-                        <hr class="featurette-divider">
-                            <div class="row featurette">
-                                <div class="col-md-7 order-md-2">
-                                    <h2 class="featurette-heading">Oh yeah, it’s that good. <span class="text-muted">See for yourself.</span>
-                                    </h2>
-                                    <p class="lead">Another featurette? Of course. More placeholder content here to give you an idea of how this layout would work with some actual real-world content in place.</p>
-                                </div>
-                                <div class="col-md-5 order-md-1">
-                                    <svg class="bd-placeholder-img bd-placeholder-img-lg featurette-image img-fluid mx-auto" width="500" height="500" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Placeholder: 500x500" preserveAspectRatio="xMidYMid slice" focusable="false">
-                                        <title>Placeholder</title>
-                                        <rect width="100%" height="100%" fill="#eee"/>
-                                        <text x="50%" y="50%" fill="#aaa" dy=".3em">500x500</text>
-                                    </svg>
-                                </div>
-                            </div>
-                            <hr class="featurette-divider">
-                                <div class="row featurette">
-                                    <div class="col-md-7">
-                                        <h2 class="featurette-heading">And lastly, this one. <span class="text-muted">Checkmate.</span>
-                                        </h2>
-                                        <p class="lead">And yes, this is the last block of representative placeholder content. Again, not really intended to be actually read, simply here to give you a better view of what this would look like with some actual content. Your content.</p>
-                                    </div>
-                                    <div class="col-md-5">
-                                        <svg class="bd-placeholder-img bd-placeholder-img-lg featurette-image img-fluid mx-auto" width="500" height="500" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Placeholder: 500x500" preserveAspectRatio="xMidYMid slice" focusable="false">
-                                            <title>Placeholder</title>
-                                            <rect width="100%" height="100%" fill="#eee"/>
-                                            <text x="50%" y="50%" fill="#aaa" dy=".3em">500x500</text>
-                                        </svg>
-                                    </div>
-                                </div>
-                                <hr class="featurette-divider">
-                                    <!-- /END THE FEATURETTES -->
-                                </div>
-                                <!-- /.container -->
-                                <!-- FOOTER -->
-                                <footer class="container">
-                                    <p class="float-end">
-                                        <a href="#">Back to top</a>
-                                    </p>
-                                    <p>&copy; 2017-2021 Company, Inc. &middot; <a href="#">Privacy</a> &middot; <a href="#">Terms</a>
-                                    </p>
-                                </footer>
-                            </main>
-                            <SCRIPT src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-ka7Sk0Gln4gmtz2MlQnikT1wXgYsOg+OMhuP+IlRH9sENBO0LRn5q+8nbTov4+1p" crossorigin="anonymous"/>
-                        </BODY>
-                    </HTML>
+            <!-- WRAP the rest of the page in another container to center all the content. -->
+            <DIV class="container marketing">
+                <!-- THREE columns of text below the carousel -->
+                <DIV class="row">
+                    <DIV class="col-lg-4">
+                        <IMG class="bd-placeholder-img rounded-circle" src="image/SyberJet.jpg"/>
+                        <H2>Twice Daily</H2>
+                        <P>Book a seat on one of our twice daily flights between North Shore and Rotorua, Monday to Friday.</P>
+                        <P>
+                            <A class="btn btn-secondary"
+                               href="/booking/listFlights.html?filter=rotorua">View details &raquo;</A>
+                        </P>
+                    </DIV>
+                    <!-- /.col-lg-4 -->
+                    <DIV class="col-lg-4">
+                        <IMG class="bd-placeholder-img rounded-circle" src="image/LakeTekapo.jpg"/>
+                        <H2>Lake Tekapo</H2>
+                        <P>Picturesque by day and dazzling by night, Lake Tekapo is part of a UNESCO Dark Sky Reserve, making it the perfect spot for stargazing.</P>
+                        <P>
+                            <A class="btn btn-secondary"
+                               href="/booking/listFlights.html?filter=lakeTekapo">View details &raquo;</A>
+                        </P>
+                    </DIV>
+                    <!-- /.col-lg-4 -->
+                    <DIV class="col-lg-4">
+                        <IMG class="bd-placeholder-img rounded-circle" src="image/SydneyOperaHouse.jpg"/>
+                        <H2>Sydney</H2>
+                        <P>Fly to Sydney, the vibrant capital of New South Wales and a popular holiday destination for Kiwis.</P>
+                        <P>
+                            <A class="btn btn-secondary"
+                               href="/booking/listFlights.html?filter=sydney">View details &raquo;</A>
+                        </P>
+                    </DIV>
+                    <!-- /.col-lg-4 -->
+                </DIV>
+                <!-- /.row -->
+                <!-- START THE FEATURETTES -->
+                <HR class="featurette-divider"/>
+                <DIV class="row featurette">
+                    <DIV class="col-md-7">
+                        <H2 class="featurette-heading">Lake Tekapo</SPAN>
+                        </H2>
+                        <P class="lead">Visitors are offered the opportunity to experience The Mackenzie Country's most breathtaking
+                            landscapes, by scenic 4WD Tours & Hiking Tours. Enjoy exclusive, private access to High Country Stations surrounding
+                            Mt Cook & Lake Tekapo.</P>
+                        <BUTTON class="btn btn-primary"
+                                type="button"
+                                onclick="window.location.href = '/booking/listFlights.html?filter=lakeTekapo'">Fly to Lake Tekapo</BUTTON>
+                    </DIV>
+                    <DIV class="col-md-5">
+                        <IMG class="bd-placeholder-img bd-placeholder-img-lg featurette-image img-fluid mx-auto"
+                            src="image/TekapoAdventures.jpg"/>
+                    </DIV>
+                </DIV>
+                <HR class="featurette-divider"/>
+                <DIV class="row featurette">
+                    <DIV class="col-md-7 order-md-2">
+                        <H2 class="featurette-heading">Great Barrier Island</SPAN>
+                        </H2>
+                        <P class="lead">Great Barrier Island is home to Aotea Conservation Park, which has the only multi-day wilderness walk in the Auckland
+                            region, boasting two DOC huts and numerous campsites. Discover beautiful beaches, a wide variety of native birds and animals as well
+                            as the famous Kaitoke Hot Springs.</P>
+                        <BUTTON class="btn btn-primary"
+                            type="button"
+                            onclick="window.location.href = '/booking/listFlights.html?filter=greatBarrierIsland'">Fly to Great Barrier Island</BUTTON>
+                    </DIV>
+                    <DIV class="col-md-5 order-md-1">
+                        <IMG class="bd-placeholder-img bd-placeholder-img-lg featurette-image img-fluid mx-auto"
+                            src="image/MtHealHut.jpg"/>
+                    </DIV>
+                </DIV>
+                <HR class="featurette-divider"/>
+                <DIV class="row featurette">
+                    <DIV class="col-md-7">
+                        <H2 class="featurette-heading">Sydney, Australia</SPAN>
+                        </H2>
+                        <P class="lead">Sydney is the capital city of the state of New South Wales, and the most populous city in Australia and Oceania. Boasting
+                            over 1,000,000 ha of nature reserves and parks, its notable natural features include Sydney Harbour and Royal
+                            National Park. Built attractions such as the Sydney Harbour Bridge and the World Heritage-listed Sydney Opera House are also well
+                            known to international visitors.</P>
+                        <BUTTON class="btn btn-primary"
+                            type="button"
+                            onclick="window.location.href = '/booking/listFlights.html?filter=sydney'">Fly to Sydney</BUTTON>
+                    </DIV>
+                    <DIV class="col-md-5">
+                        <IMG class="bd-placeholder-img bd-placeholder-img-lg featurette-image img-fluid mx-auto"
+                            src="image/SydneyHarbour.jpg"/>
+                    </DIV>
+                </DIV>
+                <HR class="featurette-divider"/>
+                <!-- /END THE FEATURETTES -->
+            </DIV>
+            <!-- /.container -->
+            <!-- FOOTER -->
+            <FOOTER class="container">
+                <P class="float-end">
+                    <A href="#">Back to top</A>
+                </P>
+                <P>Built by Damian Coventry, Copyright &copy; 2022, all rights reserved. &middot; <A href="#">Privacy</A> &middot; <A href="#">Terms</A>
+                </P>
+                <P>Aeroplane icon created by Freepik &middot; <A href="https://www.flaticon.com/free-icons/plane" title="plane icons">Flaticon</A>
+                </P>
+            </FOOTER>
+        </MAIN>
+        <SCRIPT src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"
+                integrity="sha384-ka7Sk0Gln4gmtz2MlQnikT1wXgYsOg+OMhuP+IlRH9sENBO0LRn5q+8nbTov4+1p"
+                crossorigin="anonymous">
+        </SCRIPT>
+    </BODY>
+</HTML>

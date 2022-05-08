@@ -1,6 +1,9 @@
 from django.urls import include, path
 from rest_framework import routers
 from DairyFlatAirport.BookingAPI import views
+from django.contrib import admin
+
+admin.autodiscover()
 
 router = routers.DefaultRouter()
 router.register(r'user', views.UserViewSet)
@@ -15,11 +18,12 @@ router.register(r'bookedSeat', views.BookedSeatViewSet)
 router.register(r'travelInsurance', views.TravelInsuranceViewSet)
 router.register(r'rentalCar', views.RentalCarViewSet)
 router.register(r'booking', views.BookingViewSet)
-# router.register(r'changePassword', views.ChangePasswordView)
 
 # Wire up our API using automatic URL routing.
 # Additionally, we include login URLs for the browsable API.
 urlpatterns = [
     path('', include(router.urls)),
-    path('api-auth/', include('rest_framework.urls', namespace='rest_framework'))
+    path("admin/", admin.site.urls),
+    path('api-auth/', include('rest_framework.urls', namespace='rest_framework')),
+    path('o/', include('oauth2_provider.urls', namespace='oauth2_provider')),
 ]

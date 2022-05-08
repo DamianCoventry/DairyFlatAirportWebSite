@@ -25,6 +25,12 @@ SECRET_KEY = 'django-insecure-ca7cq1+nf8i1k!g%0rfd8bgul41=n*!w^1p%5urc4kfl4znk6d
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
+CORS_ORIGIN_ALLOW_ALL = True
+
+AUTH_USER_MODEL = 'auth.User'
+
+LOGIN_URL = '/api-auth/login/'
+
 ALLOWED_HOSTS = []
 
 
@@ -38,15 +44,33 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'rest_framework',
-    'DairyFlatAirport.BookingAPI.apps.BookingApiConfig',
+    'DairyFlatAirport.BookingAPI',
+    'oauth2_provider',
+    'corsheaders',
 ]
 
+OAUTH2_PROVIDER = {
+    # this is the list of available scopes
+    'SCOPES': {
+        'read': 'Read scope',
+        'write': 'Write scope',
+        'groups': 'Access to your groups'
+    }
+}
+
 REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': [
+        'oauth2_provider.contrib.rest_framework.OAuth2Authentication',
+    ],
+    'DEFAULT_PERMISSION_CLASSES': [
+        'rest_framework.permissions.IsAuthenticated',
+    ],
     'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
     'PAGE_SIZE': 10
 }
 
 MIDDLEWARE = [
+    'corsheaders.middleware.CorsMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
