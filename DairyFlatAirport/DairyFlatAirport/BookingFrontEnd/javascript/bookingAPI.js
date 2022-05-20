@@ -1,5 +1,4 @@
 class BookingAPI {
-
     listAeroplanes(okFn, errorFn) {
         const xhr = new XMLHttpRequest();
         xhr.onreadystatechange = function() {
@@ -68,4 +67,37 @@ class BookingAPI {
         xhr.send();
     }
 
+    listBookings(okFn, errorFn) {
+        const xhr = new XMLHttpRequest();
+        xhr.onreadystatechange = function() {
+            if (xhr.readyState == XMLHttpRequest.DONE) {
+                if (xhr.status == 200) {
+                    okFn(JSON.parse(this.responseText));
+                }
+                else {
+                    errorFn(xhr.status, JSON.parse(this.responseText));
+                }
+            }
+        }
+        xhr.open("GET", "http://localhost:8000/booking/");
+        xhr.setRequestHeader("Authorization", "Bearer VxTrQVjb5IgwAaQlTnzphZpYcDjjGh");
+        xhr.send();
+    }
+
+    getBooking(id, okFn, errorFn) {
+        const xhr = new XMLHttpRequest();
+        xhr.onreadystatechange = function() {
+            if (xhr.readyState == XMLHttpRequest.DONE) {
+                if (xhr.status == 200) {
+                    okFn(JSON.parse(this.responseText));
+                }
+                else {
+                    errorFn(xhr.status, JSON.parse(this.responseText));
+                }
+            }
+        }
+        xhr.open("GET", "http://localhost:8000/booking/" + id + "/");
+        xhr.setRequestHeader("Authorization", "Bearer VxTrQVjb5IgwAaQlTnzphZpYcDjjGh");
+        xhr.send();
+    }
 };

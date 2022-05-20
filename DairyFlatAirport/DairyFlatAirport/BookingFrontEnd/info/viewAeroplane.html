@@ -3,10 +3,48 @@
     <HEAD>
         <META charset="utf-8"/>
         <TITLE>Online Booking System</TITLE>
-        <LINK href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css"
+
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0-beta1/dist/css/bootstrap.min.css"
               rel="stylesheet"
-              integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3"
+              integrity="sha384-0evHe/X+R7YkIZDRvuzKMRqM+OrBnVFBL6DOitfPri4tjfHxaWutUpFmBp4vmVor"
               crossorigin="anonymous"/>
+
+        <LINK href="/style/grid.css"
+              rel="stylesheet"/>
+
+        <SCRIPT type="text/javascript" src="/javascript/bookingAPI.js"></SCRIPT>
+
+        <SCRIPT type="text/javascript">
+            window.onload = function() {
+                const params = new Proxy(new URLSearchParams(window.location.search), {
+                        get: (searchParams, prop) => searchParams.get(prop),
+                    });
+
+                const api = new BookingAPI();
+                api.getAeroplane(params.id,
+                    function (json) {
+                        document.getElementById("tailNumber").value = json.tail_number;
+                        document.getElementById("makeModel").value = json.make_model;
+                        document.getElementById("numSeats").value = json.num_seats;
+
+                        var table = document.getElementById("flightsTable");
+                        var oldTbody = table.tBodies[0];
+                        var newTbody = document.createElement("tbody");
+
+                        json.flightLegs.forEach(x => {
+                            var newRow = newTbody.insertRow(-1);
+                            var newCell = newRow.insertCell(0);
+                            newCell.appendChild(document.createTextNode(x));
+                        });
+
+                        oldTbody.parentNode.replaceChild(newTbody, oldTbody);
+                    },
+                    function(code, json) {
+                        document.getElementById("tailNumber").value = "code: " + code + ", message: " + json.detail;
+                    });
+            }
+        </SCRIPT>
+
     </HEAD>
     <BODY>
         <HEADER>
@@ -27,8 +65,12 @@
                          id="navbarCollapse">
                         <UL class="navbar-nav me-auto mb-2 mb-md-0">
                             <LI class="nav-item">
-                                <A class="nav-link active"
+                                <A class="nav-link"
                                    href="/info/listFlights.html">Flights</A>
+                            </LI>
+                            <LI class="nav-item">
+                                <A class="nav-link active"
+                                   href="/info/listAeroplanes.html">Aeroplanes</A>
                             </LI>
                             <LI class="nav-item">
                                 <A class="nav-link"
@@ -41,7 +83,7 @@
                             <LI class="nav-item">
                                 <BUTTON class="btn btn-primary"
                                         type="button"
-                                        onclick="window.location.href = '/booking/listFlights.html'">Book a flight</BUTTON>
+                                        onclick="window.location.href = '/booking/bookAFlight.html'">Book a flight</BUTTON>
                             </LI>
                         </UL>
                         <FORM class="d-flex">
@@ -57,8 +99,64 @@
                 </DIV>
             </NAV>
         </HEADER>
-        <MAIN>
-            &nbsp;
+
+        <MAIN class="container">
+
+            <header class="pb-3 mb-5 border-bottom">
+                <h1 class="h1 d-flex align-items-center text-dark text-decoration-none">
+                    <svg class="bi" width="32" height="32" fill="currentColor">
+                        <use xlink:href="/image/bootstrap-icons.svg#pin-map"/>
+                    </svg>
+                    <span>&nbsp;Aeroplane</span>
+                </h1>
+            </header>
+
+            <FORM>
+                <div class="row">
+                    <div class="col">
+                      <label for="tailNumber">Tail Number</label>
+                      <input type="text" class="form-control" id="tailNumber" placeholder="Tail Number" readonly>
+                    </div>
+                    <div class="col">
+                        <label for="makeModel">Make/Model</label>
+                        <input type="text" class="form-control" id="makeModel" placeholder="Make/Model" readonly>
+                    </div>
+                        <div class="col">
+                        <label for="numSeats">Number of Seats</label>
+                        <input type="text" class="form-control" id="numSeats" placeholder="Number of Seats" readonly>
+                    </div>
+                  </div>
+            </FORM>
+            <BR/>
+
+            <table id="flightsTable"
+                   class="table table-striped">
+                <thead>
+                    <tr>
+                        <th scope="col">Flights</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td colspan="6">
+                            <div class="text-center">
+                                <div class="spinner-border" role="status">
+                                    <span class="visually-hidden">Loading...</span>
+                                </div>
+                            </div>
+                        </td>
+                    </tr>
+                </tbody>
+    </table>
+            <BR/>
+
+            <FOOTER class="container">
+                <P>Built by Damian Coventry, Copyright &copy; 2022, all rights reserved. &middot; <A href="#">Privacy</A> &middot; <A href="#">Terms</A>
+                </P>
+                <P>Aeroplane icon created by Freepik &middot; <A href="https://www.flaticon.com/free-icons/plane" title="plane icons">Flaticon</A>
+                </P>
+            </FOOTER>
         </MAIN>
+
     </BODY>
 </HTML>

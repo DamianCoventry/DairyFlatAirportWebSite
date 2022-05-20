@@ -1,20 +1,40 @@
-WIP     Landing
-DONE        - basic layout
-            - get search flights in there somehow
+DONE    Landing
         Email confirmation?
         User login
         Forgot password?
         Create user?
         Search for flights
+            - "The ability for a user to conveniently browse the data for flights between two centres on (or between) selected dates."
+            - "It is expected that you use actual dates and not just days of the week."
+            - format departure_time_of_day nicely
+            - calculate correct timezone
+            - calculate arrival time, in correct timezone
         View search results
         List/filter flights (1)
+            - insert pager
             - "It is expected that you use actual dates and not just days of the week."
+            - format departure_time_of_day nicely
+            - calculate correct timezone
+            - calculate arrival time, in correct timezone
         View flight
+            - "It is expected that you use actual dates and not just days of the week."
+            - format departure_time_of_day nicely
+            - calculate correct timezone
+            - calculate arrival time, in correct timezone
         List/filter aeroplanes
+            - insert pager
         View aeroplane
         List/filter flights (2)
+            - insert pager
+            - "It is expected that you use actual dates and not just days of the week."
+            - format departure_time_of_day nicely
+            - calculate correct timezone
+            - calculate arrival time, in correct timezone
         Select your flights
-            - "The ability for a user to conveniently browse the data for flights between two centres on (or between) selected dates."
+            - "It is expected that you use actual dates and not just days of the week."
+            - format departure_time_of_day nicely
+            - calculate correct timezone
+            - calculate arrival time, in correct timezone
         Passenger details
         Extras
         Select your seats
@@ -22,6 +42,7 @@ DONE        - basic layout
             - "Presentaion of a summary/invoice page when making the booking."
         Invoice and booking code
         List bookings
+            - insert pager
         Edit booking
         Cancel booking
         Edit passenger details
@@ -33,6 +54,10 @@ DONE        - basic layout
         Use refresh token?
         Get rid of search box in toolbar? Or redirect to search results page?
         Reorganise toolbar left hand links
+        Need progress spinners
+        Change text within the Flight table to links for teh viewAeroplane page
+        Change text within text boxes to links for teh viewFlight page
+        CTA buttons for empty lists?
 
 
 
