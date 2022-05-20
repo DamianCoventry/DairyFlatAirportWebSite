@@ -8,12 +8,12 @@ class BookingAPI {
                     okFn(JSON.parse(this.responseText));
                 }
                 else {
-                    errorFn(JSON.parse(this.responseText));
+                    errorFn(xhr.status, JSON.parse(this.responseText));
                 }
             }
         }
         xhr.open("GET", "http://localhost:8000/aeroplane/");
-        xhr.setRequestHeader("Authorization", "Bearer fdnWETxWBE5gC43XuFPJTDNJVvVwXt");
+        xhr.setRequestHeader("Authorization", "Bearer VxTrQVjb5IgwAaQlTnzphZpYcDjjGh");
         xhr.send();
     }
 
@@ -25,12 +25,12 @@ class BookingAPI {
                     okFn(JSON.parse(this.responseText));
                 }
                 else {
-                    errorFn(JSON.parse(this.responseText));
+                    errorFn(xhr.status, JSON.parse(this.responseText));
                 }
             }
         }
         xhr.open("GET", "http://localhost:8000/aeroplane/" + id + "/");
-        xhr.setRequestHeader("Authorization", "Bearer fdnWETxWBE5gC43XuFPJTDNJVvVwXt");
+        xhr.setRequestHeader("Authorization", "Bearer VxTrQVjb5IgwAaQlTnzphZpYcDjjGh");
         xhr.send();
     }
 
@@ -42,12 +42,12 @@ class BookingAPI {
                     okFn(JSON.parse(this.responseText));
                 }
                 else {
-                    errorFn(JSON.parse(this.responseText));
+                    errorFn(xhr.status, JSON.parse(this.responseText));
                 }
             }
         }
         xhr.open("GET", "http://localhost:8000/flightLeg/");
-        xhr.setRequestHeader("Authorization", "Bearer fdnWETxWBE5gC43XuFPJTDNJVvVwXt");
+        xhr.setRequestHeader("Authorization", "Bearer VxTrQVjb5IgwAaQlTnzphZpYcDjjGh");
         xhr.send();
     }
 
@@ -59,12 +59,12 @@ class BookingAPI {
                     okFn(JSON.parse(this.responseText));
                 }
                 else {
-                    errorFn(JSON.parse(this.responseText));
+                    errorFn(xhr.status, JSON.parse(this.responseText));
                 }
             }
         }
         xhr.open("GET", "http://localhost:8000/flightLeg/" + id + "/");
-        xhr.setRequestHeader("Authorization", "Bearer fdnWETxWBE5gC43XuFPJTDNJVvVwXt");
+        xhr.setRequestHeader("Authorization", "Bearer VxTrQVjb5IgwAaQlTnzphZpYcDjjGh");
         xhr.send();
     }
 

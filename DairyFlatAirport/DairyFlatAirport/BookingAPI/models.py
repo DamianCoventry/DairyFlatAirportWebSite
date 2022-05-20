@@ -31,7 +31,7 @@ class FlightLeg(models.Model):
         return f'Flight {self.number}, \'{self.departure_airport.name}\' -> \'{self.arrival_airport.name}\''
 
     number = models.CharField(max_length=8, unique=True, null=False)
-    aeroplane = models.ForeignKey(Aeroplane, null=False, on_delete=models.CASCADE)
+    aeroplane = models.ForeignKey(Aeroplane, null=False, related_name='flightLegs', on_delete=models.CASCADE)
     departure_airport = models.ForeignKey(Airport, null=False, on_delete=models.CASCADE, related_name='departure')
     arrival_airport = models.ForeignKey(Airport, null=False, on_delete=models.CASCADE, related_name='arrival')
     cost_dollars = models.IntegerField(default=100, null=False,

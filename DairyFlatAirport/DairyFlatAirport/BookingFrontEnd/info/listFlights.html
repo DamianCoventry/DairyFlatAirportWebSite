@@ -22,24 +22,58 @@
                     var newTbody = document.createElement("tbody");
 
                     json.results.forEach(x => {
+                        var newRow = newTbody.insertRow(-1);
+
                         var link = document.createElement('a');
                         link.setAttribute('href', "http://localhost:8080/info/viewFlight.html?id=" + x.id);
                         link.innerText = x.number;
-
-                        var newRow = newTbody.insertRow(-1);
                         var newCell = newRow.insertCell(0);
                         newCell.appendChild(link);
+
+                        link = document.createElement('a');
+                        link.setAttribute('href', "http://localhost:8080/info/viewAeroplane.html?id=" + x.aeroplane.id);
+                        link.innerText = x.aeroplane.make_model;
                         newCell = newRow.insertCell(1);
-                        newCell.appendChild(document.createTextNode(x.aeroplane));
+                        newCell.appendChild(link);
+
                         newCell = newRow.insertCell(2);
-                        newCell.appendChild(document.createTextNode(x.departure_airport));
+                        // TODO: format departure_time_of_day nicely
+                        // TODO: calculate correct timezone
+                        var departs = x.departure_airport.name + " " + x.departure_time_of_day;
+                        newCell.appendChild(document.createTextNode(departs));
+
                         newCell = newRow.insertCell(3);
-                        newCell.appendChild(document.createTextNode(x.arrival_airport));
+                        // TODO: calculate arrival time, in correct timezone
+                        newCell.appendChild(document.createTextNode(x.arrival_airport.name));
+
                         newCell = newRow.insertCell(4);
                         newCell.appendChild(document.createTextNode(x.flight_time_minutes));
+
                         newCell = newRow.insertCell(5);
-                        newCell.appendChild(document.createTextNode(x.flight_time_minutes));
+                        var daysOfWeek = "";
+                        if (x.departs_sun === true) daysOfWeek += "Sun,"
+                        if (x.departs_mon === true) daysOfWeek += "Mon,"
+                        if (x.departs_tue === true) daysOfWeek += "Tue,"
+                        if (x.departs_wed === true) daysOfWeek += "Wed,"
+                        if (x.departs_thu === true) daysOfWeek += "Thu,"
+                        if (x.departs_fri === true) daysOfWeek += "Fri,"
+                        if (x.departs_sat === true) daysOfWeek += "Sat,"
+                        if (daysOfWeek === "Mon,Tue,Wed,Thu,Fri,") {
+                            daysOfWeek = "Mon-Fri,"
+                        }
+                        newCell.appendChild(document.createTextNode(daysOfWeek.slice(0, -1))); // remove trailing ',' character
                     });
+
+                    oldTbody.parentNode.replaceChild(newTbody, oldTbody);
+                },
+                function(code, json) {
+                    var table = document.getElementById("flightsTable");
+                    var oldTbody = table.tBodies[0];
+                    var newTbody = document.createElement("tbody");
+
+                    var newRow = newTbody.insertRow(-1);
+                    var newCell = newRow.insertCell(0);
+                    newCell.appendChild(document.createTextNode("code: " + code + ", message: " + json.detail));
 
                     oldTbody.parentNode.replaceChild(newTbody, oldTbody);
                 });
@@ -97,13 +131,11 @@
         <MAIN class="container">
 
             <header class="pb-3 mb-5 border-bottom">
-                <h1 class="h1">
-                  <a href="/" class="d-flex align-items-center text-dark text-decoration-none">
+                <h1 class="h1 d-flex align-items-center text-dark text-decoration-none">
                     <svg class="bi" width="32" height="32" fill="currentColor">
                         <use xlink:href="/image/bootstrap-icons.svg#geo-alt"/>
                     </svg>
                     <span>&nbsp;Flights</span>
-                  </a>
                 </h1>
             </header>
 
@@ -122,10 +154,9 @@
                 </tbody>
               </table>
 
-              <FOOTER class="container">
-                <P class="float-end">
-                    <A href="#">Back to top</A>
-                </P>
+            <!-- TODO: insert pager here -->
+
+            <FOOTER class="container">
                 <P>Built by Damian Coventry, Copyright &copy; 2022, all rights reserved. &middot; <A href="#">Privacy</A> &middot; <A href="#">Terms</A>
                 </P>
                 <P>Flight icon created by Freepik &middot; <A href="https://www.flaticon.com/free-icons/plane" title="plane icons">Flaticon</A>

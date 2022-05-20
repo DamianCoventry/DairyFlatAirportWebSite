@@ -1,0 +1,46 @@
+WIP     Landing
+DONE        - basic layout
+            - get search flights in there somehow
+        Email confirmation?
+        User login
+        Forgot password?
+        Create user?
+        Search for flights
+        View search results
+        List/filter flights (1)
+            - "It is expected that you use actual dates and not just days of the week."
+        View flight
+        List/filter aeroplanes
+        View aeroplane
+        List/filter flights (2)
+        Select your flights
+            - "The ability for a user to conveniently browse the data for flights between two centres on (or between) selected dates."
+        Passenger details
+        Extras
+        Select your seats
+        Review (and pay?)
+            - "Presentaion of a summary/invoice page when making the booking."
+        Invoice and booking code
+        List bookings
+        Edit booking
+        Cancel booking
+        Edit passenger details
+        Edit extras
+        Change your seats
+        View/edit user?
+        Delete user?
+        Get auth code dynamically
+        Use refresh token?
+        Get rid of search box in toolbar? Or redirect to search results page?
+        Reorganise toolbar left hand links
+
+
+
+
+Anything Else
+~~~~~~~~~~~~~
+This is left open ended so that those who like to use some intiative are rewarded over those who just do the absolute minimum.
+
+
+Submit a Docker image.
+Make sure that you can run your application as a Docker container.
