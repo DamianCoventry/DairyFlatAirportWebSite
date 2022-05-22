@@ -80,3 +80,4 @@ class BookingSerializer(serializers.ModelSerializer):
     class Meta:
         model = Booking
         fields = ['id', 'number', 'created_by', 'travelInsurance', 'rentalCar', 'flightLegs', 'passengers']
+        depth = 1

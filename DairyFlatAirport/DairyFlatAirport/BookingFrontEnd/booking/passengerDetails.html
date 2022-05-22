@@ -18,13 +18,13 @@
                         var newRow = newTbody.insertRow(-1);
 
                         var link = document.createElement('a');
-                        link.setAttribute('href', "http://localhost:8080/info/viewFlight.html?id=" + x.id);
+                        link.setAttribute('href', "/info/viewFlight.html?id=" + x.id);
                         link.innerText = x.number;
                         var newCell = newRow.insertCell(0);
                         newCell.appendChild(link);
 
                         link = document.createElement('a');
-                        link.setAttribute('href', "http://localhost:8080/info/viewAeroplane.html?id=" + x.aeroplane.id);
+                        link.setAttribute('href', "/info/viewAeroplane.html?id=" + x.aeroplane.id);
                         link.innerText = x.aeroplane.make_model;
                         newCell = newRow.insertCell(1);
                         newCell.appendChild(link);

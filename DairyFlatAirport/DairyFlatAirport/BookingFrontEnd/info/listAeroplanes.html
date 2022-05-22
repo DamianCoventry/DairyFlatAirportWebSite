@@ -21,7 +21,7 @@
 
                     json.results.forEach(x => {
                         var link = document.createElement('a');
-                        link.setAttribute('href', "http://localhost:8080/info/viewAeroplane.html?id=" + x.id);
+                        link.setAttribute('href', "/info/viewAeroplane.html?id=" + x.id);
                         link.innerText = x.tail_number;
 
                         var newRow = newTbody.insertRow(-1);
@@ -134,7 +134,7 @@
                         </td>
                     </tr>
                 </tbody>
-    </table>
+            </table>
             <nav aria-label="Page navigation example">
                 <ul class="pagination justify-content-end">
                   <li class="page-item">

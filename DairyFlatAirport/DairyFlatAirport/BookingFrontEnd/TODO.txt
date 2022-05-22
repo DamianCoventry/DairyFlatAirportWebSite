@@ -58,6 +58,8 @@ DONE    Landing
         Change text within the Flight table to links for teh viewAeroplane page
         Change text within text boxes to links for teh viewFlight page
         CTA buttons for empty lists?
+        Make the buttons on the home page 'do the right thing'
+        If 401 received, then route to a 'please login' screen.
 
 
 
