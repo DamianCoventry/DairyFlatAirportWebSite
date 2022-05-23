@@ -1,0 +1,99 @@
+/*****************************************************************************/
+
+
+.wizard-progress {
+    width: 100%;
+    text-align: center;
+    color: lightgrey;
+}
+
+
+/*****************************************************************************/
+
+
+.wizard-step {
+    list-style-type: none;
+    font-size: 18px;
+    width: 14%;
+    float: left;
+    position: relative;
+}
+
+.wizard-step::before {
+    width: 50px;
+    height: 50px;
+    line-height: 45px;
+    display: block;
+    font-size: 18px;
+    color: #ffffff;
+    background: lightgray;
+    border-radius: 50%;
+    margin: 0 auto 10px auto;
+    padding: 2px;
+}
+
+.wizard-step::after {
+    content: '';
+    width: 100%;
+    height: 2px;
+    background: lightgray;
+    position: absolute;
+    left: 0;
+    top: 25px;
+    z-index: -1;
+}
+
+
+/*****************************************************************************/
+
+
+.wizard-step.active {
+    font-weight: bold;
+    color: #0D6EFD;
+}
+
+
+.wizard-step.active::before, .wizard-step.active::after {
+    background: #0D6EFD;
+}
+
+
+/*****************************************************************************/
+
+#searchStep::before {
+    font-family: FontAwesome;
+    content: "\f002";
+}
+
+#searchFlights::before {
+    font-family: FontAwesome;
+    content: "\f072";
+}
+
+#searchPassengers::before {
+    font-family: FontAwesome;
+    content: "\e533";
+}
+
+#searchExtras::before {
+    font-family: FontAwesome;
+    content: "\f0f2";
+}
+
+#searchSeats::before {
+    font-family: FontAwesome;
+    content: "\f6c0";
+}
+
+#searchConfirm::before {
+    font-family: FontAwesome;
+    content: "\f058";
+}
+
+#searchInvoice::before {
+    font-family: FontAwesome;
+    content: "\f570";
+}
+
+
+/*****************************************************************************/
