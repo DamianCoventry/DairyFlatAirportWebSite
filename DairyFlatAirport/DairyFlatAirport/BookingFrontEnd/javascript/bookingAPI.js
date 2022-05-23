@@ -1,5 +1,5 @@
 class BookingAPI {
-    listAeroplanes(okFn, errorFn) {
+    listAeroplanes(currentPage, okFn, errorFn) {
         const xhr = new XMLHttpRequest();
         xhr.onreadystatechange = function() {
             if (xhr.readyState == XMLHttpRequest.DONE) {
@@ -11,7 +11,7 @@ class BookingAPI {
                 }
             }
         }
-        xhr.open("GET", "http://localhost:8000/aeroplane/");
+        xhr.open("GET", "http://localhost:8000/aeroplane/?page=" + currentPage);
         xhr.setRequestHeader("Authorization", "Bearer SXllo41pVgLmgil6Ae98Xs1zijLIau");
         xhr.send();
     }
@@ -33,7 +33,7 @@ class BookingAPI {
         xhr.send();
     }
 
-    listFlights(okFn, errorFn) {
+    listFlights(currentPage, okFn, errorFn) {
         const xhr = new XMLHttpRequest();
         xhr.onreadystatechange = function() {
             if (xhr.readyState == XMLHttpRequest.DONE) {
@@ -45,7 +45,7 @@ class BookingAPI {
                 }
             }
         }
-        xhr.open("GET", "http://localhost:8000/flightLeg/");
+        xhr.open("GET", "http://localhost:8000/flightLeg/?page=" + currentPage);
         xhr.setRequestHeader("Authorization", "Bearer SXllo41pVgLmgil6Ae98Xs1zijLIau");
         xhr.send();
     }
@@ -67,7 +67,7 @@ class BookingAPI {
         xhr.send();
     }
 
-    listBookings(okFn, errorFn) {
+    listBookings(currentPage, okFn, errorFn) {
         const xhr = new XMLHttpRequest();
         xhr.onreadystatechange = function() {
             if (xhr.readyState == XMLHttpRequest.DONE) {
@@ -79,7 +79,7 @@ class BookingAPI {
                 }
             }
         }
-        xhr.open("GET", "http://localhost:8000/booking/");
+        xhr.open("GET", "http://localhost:8000/booking/?page=" + currentPage);
         xhr.setRequestHeader("Authorization", "Bearer SXllo41pVgLmgil6Ae98Xs1zijLIau");
         xhr.send();
     }

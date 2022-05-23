@@ -11,7 +11,7 @@ DONE    Landing
             - calculate arrival time, in correct timezone
         View search results
         List/filter flights (1)
-            - insert pager
+DONE        - insert pager
             - "It is expected that you use actual dates and not just days of the week."
             - format departure_time_of_day nicely
             - calculate correct timezone
@@ -22,10 +22,10 @@ DONE    Landing
             - calculate correct timezone
             - calculate arrival time, in correct timezone
         List/filter aeroplanes
-            - insert pager
-        View aeroplane
+DONE        - insert pager
+        View aeroplane needs an image
         List/filter flights (2)
-            - insert pager
+DONE        - insert pager
             - "It is expected that you use actual dates and not just days of the week."
             - format departure_time_of_day nicely
             - calculate correct timezone
@@ -41,9 +41,9 @@ DONE    Landing
         Review (and pay?)
             - "Presentaion of a summary/invoice page when making the booking."
         Invoice and booking code
-        List bookings
-            - insert pager
-        Edit booking
+DONE    List bookings
+DONE        - insert pager
+        View booking
         Cancel booking
         Edit passenger details
         Edit extras

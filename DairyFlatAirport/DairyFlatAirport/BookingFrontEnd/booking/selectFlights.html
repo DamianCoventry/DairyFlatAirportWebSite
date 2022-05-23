@@ -12,8 +12,14 @@
         <SCRIPT type="text/javascript" src="/javascript/bookingAPI.js"></SCRIPT>
         <SCRIPT type="text/javascript">
             window.onload = function() {
+                const params = new Proxy(new URLSearchParams(window.location.search), {
+                        get: (searchParams, prop) => searchParams.get(prop),
+                    });
+
+                var currentPage = (params.page == null ? 1 : params.page);
+
                 const api = new BookingAPI();
-                api.listFlights(function (json) {
+                api.listFlights(currentPage, function (json) {
                     var table = document.getElementById("flightsTable");
                     var oldTbody = table.tBodies[0];
                     var newTbody = document.createElement("tbody");
@@ -62,6 +68,63 @@
                     });
 
                     oldTbody.parentNode.replaceChild(newTbody, oldTbody);
+
+                    if (json.count < 10) {
+                        document.getElementById("paginationNav").style.display = "none";
+                    }
+                    else {
+                        var ul = document.getElementById("paginationList");
+                        while (ul.hasChildNodes()) {
+                            ul.removeChild(ul.firstChild);
+                        }
+
+                        var totalPages = Math.floor(json.count / 10);
+                        if (json.count % 10 != 0) {
+                            ++totalPages;
+                        }
+
+                        const maxVisiblePages = 3;
+                        var firstPage = currentPage - 1;
+                        if (firstPage < 1) {
+                            firstPage = 1;
+                        }
+
+                        // insert a left chevron icon if required
+                        if (totalPages > maxVisiblePages && (currentPage - 2) > 0) {
+                            createAndAppendItem(ul, currentPage - 2, "&laquo;", false);
+                        }
+
+                        for (var i = 0; i < maxVisiblePages && (firstPage + i) <= totalPages; ++i) {
+                            createAndAppendItem(ul, firstPage + i, firstPage + i, firstPage + i == currentPage);
+                        }
+
+                        // insert a right chevron icon if required
+                        if (totalPages > maxVisiblePages && (currentPage + 2) < totalPages) {
+                            createAndAppendItem(ul, currentPage + 2, "&raquo;", false);
+                        }
+
+                        document.getElementById("paginationNav").style.display = "";
+                    }
+
+                    function createAndAppendItem(list, pageIndex, text, active) {
+                        var li = document.createElement("li");
+                        li.setAttribute("class", active ? "page-item active" : "page-item");
+
+                        var e;
+                        if (active) {
+                            e = document.createElement("span");
+                        }
+                        else {
+                            e = document.createElement("a");
+                            e.setAttribute("href", "/booking/selectFlights.html?page=" + pageIndex);
+                        }
+
+                        e.setAttribute("class", "page-link");
+                        e.innerHTML = text;
+                        li.appendChild(e);
+
+                        list.appendChild(li);
+                    }
                 },
                 function(code, json) {
                     var table = document.getElementById("flightsTable");
@@ -162,29 +225,9 @@
                     <a class="btn btn-secondary" href="/booking/bookAFlight.html">Previous</a>
                     <a class="btn btn-primary" href="/booking/passengerDetails.html">Next</a>
 
-                    <nav aria-label="Page navigation example">
-                        <ul class="pagination justify-content-end">
-                            <li class="page-item">
-                                <a class="page-link" href="#" aria-label="Previous">
-                                    <span aria-hidden="true">&laquo;</span>
-                                </a>
-                            </li>
-                            <li class="page-item">
-                                <a class="page-link" href="#">1</a>
-                            </li>
-                            <li class="page-item">
-                                <a class="page-link" href="#">2</a>
-                            </li>
-                            <li class="page-item">
-                                <a class="page-link" href="#">3</a>
-                            </li>
-                            <li class="page-item">
-                                <a class="page-link" href="#" aria-label="Next">
-                                    <span aria-hidden="true">&raquo;</span>
-                                </a>
-                            </li>
-                        </ul>
-                    </nav>
+                    <NAV id="paginationNav" aria-label="Aeroplanes Pagination" style="display: none;">
+                        <UL id="paginationList" class="pagination justify-content-end"></UL>
+                    </NAV>
                 </div>
                 <div class="col-md-5 col-lg-4 order-md-last">
                     <h4 class="d-flex justify-content-between align-items-center mb-3">

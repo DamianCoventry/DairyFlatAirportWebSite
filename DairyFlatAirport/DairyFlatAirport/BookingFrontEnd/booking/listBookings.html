@@ -15,8 +15,14 @@
 
         <SCRIPT type="text/javascript">
             window.onload = function() {
+                const params = new Proxy(new URLSearchParams(window.location.search), {
+                        get: (searchParams, prop) => searchParams.get(prop),
+                    });
+
+                var currentPage = (params.page == null ? 1 : params.page);
+
                 const api = new BookingAPI();
-                api.listBookings(function (json) {
+                api.listBookings(currentPage, function (json) {
                     var table = document.getElementById("bookingsTable");
                     var oldTbody = table.tBodies[0];
                     var newTbody = document.createElement("tbody");
@@ -25,7 +31,7 @@
                         var newRow = newTbody.insertRow(-1);
 
                         var link = document.createElement('a');
-                        link.setAttribute('href', "/booking/editBooking.html?id=" + x.id);
+                        link.setAttribute('href', "/booking/viewBooking.html?id=" + x.id);
                         link.innerText = x.number;
                         var newCell = newRow.insertCell(0);
                         newCell.appendChild(link);
@@ -57,6 +63,43 @@
                     });
 
                     oldTbody.parentNode.replaceChild(newTbody, oldTbody);
+
+                    if (json.count < 10) {
+                        document.getElementById("paginationNav").style.display = "none";
+                    }
+                    else {
+                        var ul = document.getElementById("paginationList");
+                        while (ul.hasChildNodes()) {
+                            ul.removeChild(ul.firstChild);
+                        }
+
+                        var totalPages = Math.floor(json.count / 10);
+                        if (json.count % 10 != 0) {
+                            ++totalPages;
+                        }
+
+                        const maxVisiblePages = 3;
+                        var firstPage = currentPage - 1;
+                        if (firstPage < 1) {
+                            firstPage = 1;
+                        }
+
+                        // insert a left chevron icon if required
+                        if (totalPages > maxVisiblePages && (currentPage - 2) > 0) {
+                            createAndAppendItem(ul, currentPage - 2, "&laquo;", false);
+                        }
+
+                        for (var i = 0; i < maxVisiblePages && (firstPage + i) <= totalPages; ++i) {
+                            createAndAppendItem(ul, firstPage + i, firstPage + i, firstPage + i == currentPage);
+                        }
+
+                        // insert a right chevron icon if required
+                        if (totalPages > maxVisiblePages && (currentPage + 2) < totalPages) {
+                            createAndAppendItem(ul, currentPage + 2, "&raquo;", false);
+                        }
+
+                        document.getElementById("paginationNav").style.display = "";
+                    }
                 },
                 function(code, json) {
                     var table = document.getElementById("bookingsTable");
@@ -69,6 +112,26 @@
 
                     oldTbody.parentNode.replaceChild(newTbody, oldTbody);
                 });
+            }
+
+            function createAndAppendItem(list, pageIndex, text, active) {
+                var li = document.createElement("li");
+                li.setAttribute("class", active ? "page-item active" : "page-item");
+
+                var e;
+                if (active) {
+                    e = document.createElement("span");
+                }
+                else {
+                    e = document.createElement("a");
+                    e.setAttribute("href", "/info/listBookings.html?page=" + pageIndex);
+                }
+
+                e.setAttribute("class", "page-link");
+                e.innerHTML = text;
+                li.appendChild(e);
+
+                list.appendChild(li);
             }
         </SCRIPT>
 
@@ -125,7 +188,6 @@
             </DIV>
         </NAV>
         <MAIN class="container">
-
             <header class="pb-3 mb-5 border-bottom">
                 <h1 class="h1 d-flex align-items-center text-dark text-decoration-none">
                     <svg class="bi" width="32" height="32" fill="currentColor">
@@ -158,25 +220,9 @@
                     </tr>
                 </tbody>
             </table>
-
-              <nav aria-label="Page navigation example">
-                <ul class="pagination justify-content-end">
-                  <li class="page-item">
-                    <a class="page-link" href="#" aria-label="Previous">
-                      <span aria-hidden="true">&laquo;</span>
-                    </a>
-                  </li>
-                  <li class="page-item"><a class="page-link" href="#">1</a></li>
-                  <li class="page-item"><a class="page-link" href="#">2</a></li>
-                  <li class="page-item"><a class="page-link" href="#">3</a></li>
-                  <li class="page-item">
-                    <a class="page-link" href="#" aria-label="Next">
-                      <span aria-hidden="true">&raquo;</span>
-                    </a>
-                  </li>
-                </ul>
-              </nav>
-
+            <NAV id="paginationNav" aria-label="Bookings Pagination" style="display: none;">
+                <UL id="paginationList" class="pagination justify-content-end"></UL>
+            </NAV>
             <FOOTER class="container">
                 <P>Built by Damian Coventry, Copyright &copy; 2022, all rights reserved. &middot; <A href="#">Privacy</A> &middot; <A href="#">Terms</A>
                 </P>
