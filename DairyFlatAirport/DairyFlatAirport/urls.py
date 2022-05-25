@@ -17,6 +17,7 @@ router.register(r'seat', views.SeatViewSet)
 router.register(r'bookedSeat', views.BookedSeatViewSet)
 router.register(r'travelInsurance', views.TravelInsuranceViewSet)
 router.register(r'rentalCar', views.RentalCarViewSet)
+router.register(r'bookingCompact', views.BookingCompactViewSet)
 router.register(r'booking', views.BookingViewSet)
 
 # Wire up our API using automatic URL routing.

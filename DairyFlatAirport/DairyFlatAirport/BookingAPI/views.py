@@ -76,6 +76,12 @@ class RentalCarViewSet(viewsets.ModelViewSet):
     permission_classes = [permissions.IsAuthenticated, TokenHasReadWriteScope]
 
 
+class BookingCompactViewSet(viewsets.ModelViewSet):
+    queryset = Booking.objects.all().order_by('number')
+    serializer_class = BookingCompactSerializer
+    permission_classes = [permissions.IsAuthenticated, TokenHasReadWriteScope]
+
+
 class BookingViewSet(viewsets.ModelViewSet):
     queryset = Booking.objects.all().order_by('number')
     serializer_class = BookingSerializer

@@ -76,6 +76,12 @@ class RentalCarSerializer(serializers.ModelSerializer):
         fields = ['id', 'type', 'make', 'model', 'image_link', 'web_link', 'cost_per_day']
 
 
+class BookingCompactSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Booking
+        fields = ['id', 'number', 'created_by', 'travelInsurance', 'rentalCar', 'flightLegs', 'passengers']
+
+
 class BookingSerializer(serializers.ModelSerializer):
     class Meta:
         model = Booking
