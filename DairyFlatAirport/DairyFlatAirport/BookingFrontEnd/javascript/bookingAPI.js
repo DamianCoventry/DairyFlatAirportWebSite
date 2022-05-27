@@ -14,7 +14,7 @@ class BookingAPI {
             }
         }
         xhr.open("GET", "http://localhost:8000/aeroplane/?page=" + currentPage);
-        xhr.setRequestHeader("Authorization", "Bearer hs8AEyYr79b5vYiKDO4r0QNJrK6aoE");
+        xhr.setRequestHeader("Authorization", "Bearer i8nbemfkbXfOZyB3IYXoVm9sMeERlw");
         xhr.send();
     }
 
@@ -31,7 +31,7 @@ class BookingAPI {
             }
         }
         xhr.open("GET", "http://localhost:8000/aeroplane/" + id + "/");
-        xhr.setRequestHeader("Authorization", "Bearer hs8AEyYr79b5vYiKDO4r0QNJrK6aoE");
+        xhr.setRequestHeader("Authorization", "Bearer i8nbemfkbXfOZyB3IYXoVm9sMeERlw");
         xhr.send();
     }
 
@@ -48,7 +48,7 @@ class BookingAPI {
             }
         }
         xhr.open("GET", "http://localhost:8000/flightLeg/?page=" + currentPage);
-        xhr.setRequestHeader("Authorization", "Bearer hs8AEyYr79b5vYiKDO4r0QNJrK6aoE");
+        xhr.setRequestHeader("Authorization", "Bearer i8nbemfkbXfOZyB3IYXoVm9sMeERlw");
         xhr.send();
     }
 
@@ -65,7 +65,7 @@ class BookingAPI {
             }
         }
         xhr.open("GET", "http://localhost:8000/flightLeg/" + id + "/");
-        xhr.setRequestHeader("Authorization", "Bearer hs8AEyYr79b5vYiKDO4r0QNJrK6aoE");
+        xhr.setRequestHeader("Authorization", "Bearer i8nbemfkbXfOZyB3IYXoVm9sMeERlw");
         xhr.send();
     }
 
@@ -82,7 +82,7 @@ class BookingAPI {
             }
         }
         xhr.open("GET", "http://localhost:8000/booking/?page=" + currentPage);
-        xhr.setRequestHeader("Authorization", "Bearer hs8AEyYr79b5vYiKDO4r0QNJrK6aoE");
+        xhr.setRequestHeader("Authorization", "Bearer i8nbemfkbXfOZyB3IYXoVm9sMeERlw");
         xhr.send();
     }
 
@@ -99,7 +99,7 @@ class BookingAPI {
             }
         }
         xhr.open("GET", "http://localhost:8000/bookingCompact/?page=" + currentPage);
-        xhr.setRequestHeader("Authorization", "Bearer hs8AEyYr79b5vYiKDO4r0QNJrK6aoE");
+        xhr.setRequestHeader("Authorization", "Bearer i8nbemfkbXfOZyB3IYXoVm9sMeERlw");
         xhr.send();
     }
 
@@ -116,7 +116,7 @@ class BookingAPI {
             }
         }
         xhr.open("GET", "http://localhost:8000/booking/" + id + "/");
-        xhr.setRequestHeader("Authorization", "Bearer hs8AEyYr79b5vYiKDO4r0QNJrK6aoE");
+        xhr.setRequestHeader("Authorization", "Bearer i8nbemfkbXfOZyB3IYXoVm9sMeERlw");
         xhr.send();
     }
 
@@ -133,7 +133,7 @@ class BookingAPI {
             }
         }
         xhr.open("GET", "http://localhost:8000/bookingCompact/" + id + "/");
-        xhr.setRequestHeader("Authorization", "Bearer hs8AEyYr79b5vYiKDO4r0QNJrK6aoE");
+        xhr.setRequestHeader("Authorization", "Bearer i8nbemfkbXfOZyB3IYXoVm9sMeERlw");
         xhr.send();
     }
 
@@ -150,7 +150,7 @@ class BookingAPI {
             }
         }
         xhr.open("POST", "http://localhost:8000/bookingCompact/");
-        xhr.setRequestHeader("Authorization", "Bearer hs8AEyYr79b5vYiKDO4r0QNJrK6aoE");
+        xhr.setRequestHeader("Authorization", "Bearer i8nbemfkbXfOZyB3IYXoVm9sMeERlw");
         xhr.setRequestHeader('Content-type', 'application/json;charset=UTF-8');
         xhr.send(JSON.stringify({
             "number": number,
@@ -175,7 +175,7 @@ class BookingAPI {
             }
         }
         xhr.open("PUT", "http://localhost:8000/bookingCompact/" + id + "/");
-        xhr.setRequestHeader("Authorization", "Bearer hs8AEyYr79b5vYiKDO4r0QNJrK6aoE");
+        xhr.setRequestHeader("Authorization", "Bearer i8nbemfkbXfOZyB3IYXoVm9sMeERlw");
         xhr.setRequestHeader('Content-type', 'application/json;charset=UTF-8');
         xhr.send(JSON.stringify({
             "number": number,
@@ -192,7 +192,7 @@ class BookingAPI {
         xhr.onreadystatechange = function() {
             if (xhr.readyState == XMLHttpRequest.DONE) {
                 if (xhr.status >= 200 && xhr.status < 300) {
-                    okFn(JSON.parse(this.responseText));
+                    okFn();
                 }
                 else {
                     errorFn(xhr.status, JSON.parse(this.responseText));
@@ -200,7 +200,24 @@ class BookingAPI {
             }
         }
         xhr.open("DELETE", "http://localhost:8000/booking/" + id + "/");
-        xhr.setRequestHeader("Authorization", "Bearer hs8AEyYr79b5vYiKDO4r0QNJrK6aoE");
+        xhr.setRequestHeader("Authorization", "Bearer i8nbemfkbXfOZyB3IYXoVm9sMeERlw");
+        xhr.send();
+    }
+
+    listPassengers(currentPage, okFn, errorFn) {
+        const xhr = new XMLHttpRequest();
+        xhr.onreadystatechange = function() {
+            if (xhr.readyState == XMLHttpRequest.DONE) {
+                if (xhr.status >= 200 && xhr.status < 300) {
+                    okFn(JSON.parse(this.responseText));
+                }
+                else {
+                    errorFn(xhr.status, JSON.parse(this.responseText));
+                }
+            }
+        }
+        xhr.open("GET", "http://localhost:8000/passenger/?page=" + currentPage);
+        xhr.setRequestHeader("Authorization", "Bearer i8nbemfkbXfOZyB3IYXoVm9sMeERlw");
         xhr.send();
     }
 
@@ -217,7 +234,7 @@ class BookingAPI {
             }
         }
         xhr.open("GET", "http://localhost:8000/passenger/" + id + "/");
-        xhr.setRequestHeader("Authorization", "Bearer hs8AEyYr79b5vYiKDO4r0QNJrK6aoE");
+        xhr.setRequestHeader("Authorization", "Bearer i8nbemfkbXfOZyB3IYXoVm9sMeERlw");
         xhr.send();
     }
 
@@ -234,7 +251,7 @@ class BookingAPI {
             }
         }
         xhr.open("POST", "http://localhost:8000/passenger/");
-        xhr.setRequestHeader("Authorization", "Bearer hs8AEyYr79b5vYiKDO4r0QNJrK6aoE");
+        xhr.setRequestHeader("Authorization", "Bearer i8nbemfkbXfOZyB3IYXoVm9sMeERlw");
         xhr.setRequestHeader('Content-type', 'application/json;charset=UTF-8');
         xhr.send(JSON.stringify({
             "title": title != null && title.length > 0 ? title : null,
@@ -260,7 +277,7 @@ class BookingAPI {
             }
         }
         xhr.open("PUT", "http://localhost:8000/passenger/" + id + "/");
-        xhr.setRequestHeader("Authorization", "Bearer hs8AEyYr79b5vYiKDO4r0QNJrK6aoE");
+        xhr.setRequestHeader("Authorization", "Bearer i8nbemfkbXfOZyB3IYXoVm9sMeERlw");
         xhr.setRequestHeader('Content-type', 'application/json;charset=UTF-8');
         xhr.send(JSON.stringify({
             "title": title != null && title.length > 0 ? title : null,
@@ -286,7 +303,41 @@ class BookingAPI {
             }
         }
         xhr.open("DELETE", "http://localhost:8000/passenger/" + id + "/");
-        xhr.setRequestHeader("Authorization", "Bearer hs8AEyYr79b5vYiKDO4r0QNJrK6aoE");
+        xhr.setRequestHeader("Authorization", "Bearer i8nbemfkbXfOZyB3IYXoVm9sMeERlw");
+        xhr.send();
+    }
+
+    listTravelInsurances(currentPage, okFn, errorFn) {
+        const xhr = new XMLHttpRequest();
+        xhr.onreadystatechange = function() {
+            if (xhr.readyState == XMLHttpRequest.DONE) {
+                if (xhr.status >= 200 && xhr.status < 300) {
+                    okFn(JSON.parse(this.responseText));
+                }
+                else {
+                    errorFn(xhr.status, JSON.parse(this.responseText));
+                }
+            }
+        }
+        xhr.open("GET", "http://localhost:8000/travelInsurance/?page=" + currentPage);
+        xhr.setRequestHeader("Authorization", "Bearer i8nbemfkbXfOZyB3IYXoVm9sMeERlw");
+        xhr.send();
+    }
+
+    listRentalCars(currentPage, okFn, errorFn) {
+        const xhr = new XMLHttpRequest();
+        xhr.onreadystatechange = function() {
+            if (xhr.readyState == XMLHttpRequest.DONE) {
+                if (xhr.status >= 200 && xhr.status < 300) {
+                    okFn(JSON.parse(this.responseText));
+                }
+                else {
+                    errorFn(xhr.status, JSON.parse(this.responseText));
+                }
+            }
+        }
+        xhr.open("GET", "http://localhost:8000/rentalCar/?page=" + currentPage);
+        xhr.setRequestHeader("Authorization", "Bearer i8nbemfkbXfOZyB3IYXoVm9sMeERlw");
         xhr.send();
     }
 };

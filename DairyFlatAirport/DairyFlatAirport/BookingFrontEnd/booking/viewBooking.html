@@ -3,27 +3,26 @@
     <HEAD>
         <META charset="utf-8"/>
         <TITLE>Online Booking System</TITLE>
+        
         <LINK rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css" integrity="sha512-KfkfwYDsLkIlwQp6LFnl8zNdLGxu9YAA1QvwINks4PhcElQSvqcyVLLD9aMhXd13uQjoXtEKNosOWaZqXgel0g==" crossorigin="anonymous" referrerpolicy="no-referrer"/>
         <LINK href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0-beta1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-0evHe/X+R7YkIZDRvuzKMRqM+OrBnVFBL6DOitfPri4tjfHxaWutUpFmBp4vmVor" crossorigin="anonymous"/>
         <LINK href="/styles/grid.css" rel="stylesheet"/>
+
         <SCRIPT type="text/javascript" src="/javascript/bookingAPI.js"></SCRIPT>
         <SCRIPT type="text/javascript">
             window.onload = function() {
+                const popoverTriggerList = document.querySelectorAll('[data-bs-toggle="popover"]');
+                const popoverList = [...popoverTriggerList].map(popoverTriggerEl => new bootstrap.Popover(popoverTriggerEl));
+
                 const params = new Proxy(new URLSearchParams(window.location.search), {
                         get: (searchParams, prop) => searchParams.get(prop),
                     });
 
-                var link = document.getElementById("deleteBooking");
-                link.setAttribute('href', "/booking/deleteConfirmation.html?id=" + params.id);
-
-                link = document.getElementById("addPassenger");
+                var link = document.getElementById("addNewPassenger");
                 link.setAttribute('href', "/booking/editPassengerDetails.html?bookingId=" + params.id + "&mode=add");
 
-                link = document.getElementById("modifyPassenger");
-                link.setAttribute('href', "/booking/editPassengerDetails.html?bookingId=" + params.id + "&id=" + params.id); // TODO
-
-                link = document.getElementById("deletePassenger");
-                link.setAttribute('href', "/booking/editPassengerDetails.html?bookingId=" + params.id + "&id=" + params.id); // TODO
+                link = document.getElementById("deleteBooking");
+                link.setAttribute('href', "/booking/deleteConfirmation.html?id=" + params.id);
 
                 const api = new BookingAPI();
                 api.getBooking(params.id,
@@ -35,12 +34,14 @@
                         }
                         else {
                             document.getElementById("travelInsurance").value = json.travelInsurance.title;
+                            currentTravelInsuranceId.innerText = json.travelInsurance.id;
                         }
                         if (json.rentalCar == null) {
                             document.getElementById("rentalCar").value = "-";
                         }
                         else {
-                            document.getElementById("rentalCar").value = json.rentalCar.make + " " + json.rentalCar.model;
+                            document.getElementById("rentalCar").value = json.rentalCar.type + ", " + json.rentalCar.make + " " + json.rentalCar.model;
+                            currentRentalCarId.innerText = json.rentalCar.id;
                         }
 
                         var table = document.getElementById("passengersTable");
@@ -51,19 +52,27 @@
                             var newRow = newTbody.insertRow(-1);
 
                             newCell = newRow.insertCell(0);
+                            var checkBox = document.createElement("input");
+                            checkBox.setAttribute("id", "passengerCheckbox" + x.id);
+                            checkBox.setAttribute("type", "checkbox");
+                            checkBox.setAttribute("class", "form-check-input passengerCheckbox");
+                            checkBox.addEventListener("change", setColumnHeaderCheckboxIndeterminate);
+                            newCell.appendChild(checkBox);
+
+                            newCell = newRow.insertCell(1);
                             var s = "";
                             if (x.title != null) {
                                 s += x.title + " ";
                             }
                             newCell.appendChild(document.createTextNode(s + x.first_name + " " + x.second_name));
 
-                            newCell = newRow.insertCell(1);
+                            newCell = newRow.insertCell(2);
                             newCell.appendChild(document.createTextNode(x.email_address == null ? "-" : x.email_address));
 
-                            newCell = newRow.insertCell(2);
+                            newCell = newRow.insertCell(3);
                             newCell.appendChild(document.createTextNode(x.phone_number == null ? "-" : x.phone_number));
 
-                            newCell = newRow.insertCell(3);
+                            newCell = newRow.insertCell(4);
                             newCell.appendChild(document.createTextNode(x.special_assistance == null ? "-" : x.special_assistance));
                         });
 
@@ -83,20 +92,20 @@
                             newCell.appendChild(link);
 
                             link = document.createElement('a');
-                            link.setAttribute('href', "/info/viewAeroplane.html?id=" + x.aeroplane);
-                            link.innerText = x.aeroplane;
+                            link.setAttribute('href', "/info/viewAeroplane.html?id=" + x.aeroplane.id);
+                            link.innerText = x.aeroplane.tail_number;
                             newCell = newRow.insertCell(1);
                             newCell.appendChild(link);
 
                             newCell = newRow.insertCell(2);
                             // TODO: format departure_time_of_day nicely
                             // TODO: calculate correct timezone
-                            var departs = x.departure_airport + " " + x.departure_time_of_day;
+                            var departs = x.departure_airport.name + " " + x.departure_time_of_day;
                             newCell.appendChild(document.createTextNode(departs));
 
                             newCell = newRow.insertCell(3);
                             // TODO: calculate arrival time, in correct timezone
-                            newCell.appendChild(document.createTextNode(x.arrival_airport));
+                            newCell.appendChild(document.createTextNode(x.arrival_airport.name));
 
                             newCell = newRow.insertCell(4);
                             newCell.appendChild(document.createTextNode(x.flight_time_minutes));
@@ -121,6 +130,345 @@
                     function(code, json) {
                         document.getElementById("number").value = "code: " + code + ", message: " + json.detail;
                     });
+            }
+
+            function addEmptyOption(selectElement) {
+                var option = document.createElement("option");
+                option.innerText = "-";
+                selectElement.appendChild(option);
+            }
+
+            function chooseExtras() {
+                const element = document.getElementById("chooseExtrasModal");
+                element.addEventListener('shown.bs.modal', event => {
+                        while (travelInsuranceSelect.hasChildNodes()) {
+                            travelInsuranceSelect.removeChild(travelInsuranceSelect.firstChild);
+                        }
+                        addEmptyOption(travelInsuranceSelect);
+
+                        while (rentalCarSelect.hasChildNodes()) {
+                            rentalCarSelect.removeChild(rentalCarSelect.firstChild);
+                        }
+                        addEmptyOption(rentalCarSelect);
+
+                        acceptExtrasButton.disabled = true;
+                        chooseExtrasSpinner.style.display = "";
+                        extrasErrorDiv.style.display = "none";
+
+                        const api = new BookingAPI();
+                        api.listTravelInsurances(1, processReceivedTravelInsurances, displayExtrasErrorResponse);
+                    });
+
+                const selectPassenger = new bootstrap.Modal('#chooseExtrasModal');
+                selectPassenger.show();
+            }
+
+            function processReceivedTravelInsurances(json) {
+                json.results.forEach(x => {
+                        var option = document.createElement("option");
+                        option.setAttribute("value", x.id);
+                        option.innerText = x.title; // TODO: use the rest of the information
+                        travelInsuranceSelect.appendChild(option);
+                    });
+
+                const api = new BookingAPI();
+                if (json.next != null) {
+                    const re = /\?page=(.+)$/;
+                    const nextPage = re.exec(json.next);
+                    if (nextPage != null && nextPage.length > 1) {
+                        api.listTravelInsurances(nextPage[1], processReceivedTravelInsurances, displayExtrasErrorResponse);
+                        return;
+                    }
+                }
+
+                api.listRentalCars(1, processReceivedRentalCars, displayExtrasErrorResponse);
+            }
+
+            function processReceivedRentalCars(json) {
+                json.results.forEach(x => {
+                        var option = document.createElement("option");
+                        option.setAttribute("value", x.id);
+                        option.innerText = x.type + ", " + x.make + " " + x.model; // TODO: use the rest of the information
+                        rentalCarSelect.appendChild(option);
+                    });
+
+                if (json.next != null) {
+                    const re = /\?page=(.+)$/;
+                    const nextPage = re.exec(json.next);
+                    if (nextPage != null && nextPage.length > 1) {
+                        const api = new BookingAPI();
+                        api.listRentalCars(nextPage[1], processReceivedRentalCars, displayExtrasErrorResponse);
+                        return;
+                    }
+                }
+
+                chooseExtrasSpinner.style.display = "none";
+                travelInsuranceSelect.style.display = "";
+                travelInsuranceLabel.style.display = "";
+                rentalCarSelect.style.display = "";
+                rentalCarLabel.style.display = "";
+                extrasErrorDiv.style.display = "none";
+                acceptExtrasButton.disabled = false;
+                if (currentTravelInsuranceId.innerText != null && currentTravelInsuranceId.innerText.length > 0) {
+                    travelInsuranceSelect.value = parseInt(currentTravelInsuranceId.innerText);
+                }
+                if (currentRentalCarId.innerText != null && currentRentalCarId.innerText.length > 0) {
+                    rentalCarSelect.value = parseInt(currentRentalCarId.innerText);
+                }
+            }
+
+            function displayExtrasErrorResponse(code, json) {
+                chooseExtrasSpinner.style.display = "none";
+                travelInsuranceSelect.style.display = "none";
+                travelInsuranceLabel.style.display = "none";
+                rentalCarSelect.style.display = "none";
+                rentalCarLabel.style.display = "none";
+                extrasErrorDiv.innerText = "code: " + code + ", message: " + json.detail;
+                extrasErrorDiv.style.display = "";
+            }
+
+            function modifyExtrasWithinBooking() {
+                const params = new Proxy(new URLSearchParams(window.location.search), {
+                        get: (searchParams, prop) => searchParams.get(prop),
+                    });
+
+                acceptExtrasButton.disabled = true;
+                chooseExtrasSpinner.style.display = "";
+                travelInsuranceSelect.style.display = "none";
+                travelInsuranceLabel.style.display = "none";
+                rentalCarSelect.style.display = "none";
+                rentalCarLabel.style.display = "none";
+                extrasErrorDiv.style.display = "none";
+
+                const api = new BookingAPI();
+                api.getCompactBooking(params.id,
+                    function(json) {
+                        api.modifyBooking(params.id,
+                            json.number,
+                            travelInsuranceSelect.value == "-" ? null : parseInt(travelInsuranceSelect.value),
+                            rentalCarSelect.value == "-" ? null : parseInt(rentalCarSelect.value),
+                            json.flightLegs,
+                            json.passengers,
+                            function(json) {
+                                setTimeout(function() {
+                                    document.location.href = "/booking/viewBooking.html?id=" + params.id;
+                                }, 500);
+                            },
+                            displayExtrasErrorResponse);
+                    },
+                    displayExtrasErrorResponse);
+            }
+
+            function modifyPassenger() {
+                var selectedIds = getSelectedPassengers();
+                if (selectedIds == null || selectedIds.length === 0) {
+                    return;
+                }
+
+                const params = new Proxy(new URLSearchParams(window.location.search), {
+                        get: (searchParams, prop) => searchParams.get(prop),
+                    });
+
+                window.location.href = "/booking/editPassengerDetails.html?bookingId=" + params.id + "&id=" + selectedIds[0];
+            }
+
+            function confirmRemovePassenger() {
+                var selectedIds = getSelectedPassengers();
+                if (selectedIds == null || selectedIds.length === 0) {
+                    return;
+                }
+
+                removePassengerButton.disabled = false;
+                deleteText.innerHTML = "This action cannot be undone. The passenge" + 
+                                       (selectedIds.length == 1 ? "r" : "rs") +
+                                       " will be removed from this booking.";
+
+                const confirmation = new bootstrap.Modal('#removeConfirmationModel');
+                confirmation.show();
+            }
+
+            function removePassenger() {
+                var selectedIds = getSelectedPassengers();
+                if (selectedIds == null || selectedIds.length === 0) {
+                    return;
+                }
+
+                removePassengerButton.disabled = true;
+
+                const params = new Proxy(new URLSearchParams(window.location.search), {
+                        get: (searchParams, prop) => searchParams.get(prop),
+                    });
+
+                const api = new BookingAPI();
+                removePassengersFromBooking(api, params.id, selectedIds);
+            }
+
+            function getSelectedPassengers() {
+                var ids = [];
+                const checkBoxes = document.getElementsByClassName("passengerCheckbox");
+                for (var i = 0; i < checkBoxes.length; ++i) {
+                    var id = checkBoxes[i].id.substring("passengerCheckbox".length);
+                    if (checkBoxes[i].checked === true) {
+                        ids = ids.concat(parseInt(id));
+                    }
+                }
+                return ids;
+            }
+
+            function removePassengersFromBooking(api, bookingId, selectedIds) {
+                removePassengerButton.disabled = true;
+                api.getCompactBooking(bookingId,
+                    function(json) {
+                        api.modifyBooking(bookingId,
+                            json.number,
+                            json.travelInsurance,
+                            json.rentalCar,
+                            json.flightLegs,
+                            json.passengers.filter(x => selectedIds.indexOf(x) < 0),
+                            function(json) {
+                                setTimeout(function() {
+                                    document.location.href = "/booking/viewBooking.html?id=" + bookingId;
+                                }, 500);
+                            },
+                            function(code, json) {
+                                document.getElementById("title").value = "code: " + code + ", message: " + json.detail;
+                                removePassengerButton.disabled = false;
+                            });
+                    },
+                    function(code, json) {
+                        document.getElementById("title").value = "code: " + code + ", message: " + json.detail;
+                        removePassengerButton.disabled = false;
+                    });
+            }
+
+            function columnHeaderCheckboxChanged() {
+                const checkBoxes = document.getElementsByClassName("passengerCheckbox");
+                for (var i = 0; i < checkBoxes.length; ++i) {
+                    checkBoxes[i].checked = columnHeaderCheckbox.checked;
+                }
+            }
+
+            function setColumnHeaderCheckboxIndeterminate(event) {
+                numChecked = event.currentTarget.checked ? 1 : 0;
+                numUnchecked = event.currentTarget.checked ? 0 : 1;
+                const checkBoxes = document.getElementsByClassName("passengerCheckbox");
+                for (var i = 0; i < checkBoxes.length; ++i) {
+                    if (checkBoxes[i].checked) { ++numChecked;}
+                    else { ++numUnchecked; }
+                }
+                if (numChecked > 0 && numUnchecked > 0) {
+                    columnHeaderCheckbox.indeterminate = true;
+                }
+                else {
+                    columnHeaderCheckbox.checked = numChecked > 0;
+                    columnHeaderCheckbox.indeterminate = false;
+                }
+            }
+
+            function chooseExistingPassenger() {
+                const element = document.getElementById("selectPassengerModal");
+                element.addEventListener('shown.bs.modal', event => {
+                        while (existingPassengers.hasChildNodes()) {
+                            existingPassengers.removeChild(existingPassengers.firstChild);
+                        }
+
+                        selectPassengerButton.disabled = true;
+                        selectPassengersSpinner.style.display = "";
+                        passengersErrorDiv.style.display = "none";
+
+                        const api = new BookingAPI();
+                        api.listPassengers(1, processReceivedPassengerPage, displayPassengerErrorResponse);
+                    });
+
+                    
+                const selectPassenger = new bootstrap.Modal('#selectPassengerModal');
+                selectPassenger.show();
+            }
+
+            function doesFlightContainPassenger(passengerId) {
+                const checkBoxes = document.getElementsByClassName("passengerCheckbox");
+                for (var i = 0; i < checkBoxes.length; ++i) {
+                    var id = checkBoxes[i].id.substring("passengerCheckbox".length);
+                    if (parseInt(id) === passengerId) {
+                        return true;
+                    }
+                }
+                return false;
+            }
+
+            function processReceivedPassengerPage(json) {
+                if (json.count == 0) {
+                    displayNoPassengers();
+                    return;
+                }
+
+                json.results.filter(x => !doesFlightContainPassenger(x.id)).forEach(x => {
+                        var option = document.createElement("option");
+                        option.setAttribute("value", x.id);
+                        option.innerText = (x.title == null ? "" : x.title) + " " +
+                                            x.first_name + " " +
+                                            x.second_name +
+                                            " (" + x.phone_number + ")";
+                        existingPassengers.appendChild(option);
+                    });
+
+                if (json.next != null) {
+                    const re = /\?page=(.+)$/;
+                    const nextPage = re.exec(json.next);
+                    if (nextPage != null && nextPage.length > 1) {
+                        const api = new BookingAPI();
+                        api.listPassengers(nextPage[1], processReceivedPassengerPage, displayPassengerErrorResponse);
+                        return;
+                    }
+                }
+
+                selectPassengersSpinner.style.display = "none";
+                existingPassengers.style.display = "";
+                passengersErrorDiv.style.display = "none";
+                selectPassengerButton.disabled = false;
+            }
+
+            function displayNoPassengers() {
+                selectPassengersSpinner.style.display = "none";
+                existingPassengers.style.display = "none";
+                passengersErrorDiv.innerText = "No passengers have been added to the system yet. Please close this dialog box, then use the Add New passenger option.";
+                passengersErrorDiv.style.display = "";
+            }
+
+            function displayPassengerErrorResponse(code, json) {
+                selectPassengersSpinner.style.display = "none";
+                existingPassengers.style.display = "none";
+                passengersErrorDiv.innerText = "code: " + code + ", message: " + json.detail;
+                passengersErrorDiv.style.display = "";
+            }
+
+            function addPassengerToBooking() {
+                const params = new Proxy(new URLSearchParams(window.location.search), {
+                        get: (searchParams, prop) => searchParams.get(prop),
+                    });
+
+                selectPassengerButton.disabled = true;
+                selectPassengersSpinner.style.display = "";
+                existingPassengers.style.display = "none";
+                passengersErrorDiv.style.display = "none";
+
+                const api = new BookingAPI();
+                api.getCompactBooking(params.id,
+                    function(json) {
+                        api.modifyBooking(params.id,
+                            json.number,
+                            json.travelInsurance,
+                            json.rentalCar,
+                            json.flightLegs,
+                            json.passengers.concat(existingPassengers.value),
+                            function(json) {
+                                setTimeout(function() {
+                                    document.location.href = "/booking/viewBooking.html?id=" + params.id;
+                                }, 500);
+                            },
+                            displayPassengerErrorResponse);
+                    },
+                    displayPassengerErrorResponse);
             }
         </SCRIPT>
     </HEAD>
@@ -175,7 +523,7 @@
                         </a>
                     </div>
                 </div>
-                <div class="row">
+                <div class="row mb-5">
                     <div class="col">
                         <label for="number">Number</label>
                         <input type="text" class="form-control" id="number" placeholder="Number" readonly>
@@ -183,6 +531,14 @@
                     <div class="col">
                         <label for="createdBy">Created By</label>
                         <input type="text" class="form-control" id="createdBy" placeholder="Created By" readonly>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-2">
+                        <h4>Extras</h4>
+                    </div>
+                    <div class="col-4 ms-auto text-end">
+                        <BUTTON class="btn btn-secondary" type="button" onclick="chooseExtras();"><i class="fa-solid fa-edit"></i></BUTTON>
                     </div>
                 </div>
                 <div class="row mb-5">
@@ -199,16 +555,25 @@
                     <div class="col-2">
                         <h4>Passengers</h4>
                     </div>
-                    <div class="col-2 ms-auto text-end">
-                        <a class="btn btn-primary" id="addPassenger" href="#"><i class="fa-solid fa-add"></i></a>
-                        <a class="btn btn-secondary" id="modifyPassenger" href="#"><i class="fa-solid fa-edit"></i></a>
-                        <a class="btn btn-secondary" id="deletePassenger" href="#"><i class="fa-solid fa-trash"></i></a>
+                    <div class="col-4 ms-auto text-end">
+                        <DIV class="btn-group">
+                            <BUTTON class="btn btn-primary dropdown-toggle" type="button" id="addDropdown" data-bs-toggle="dropdown" data-bs-auto-close="true" aria-expanded="false">
+                                <i class="fa-solid fa-add"></i>
+                            </BUTTON>
+                            <UL class="dropdown-menu shadow" aria-labelledby="addDropdown">
+                              <LI><A class="dropdown-item" id="addNewPassenger" href="#">Add New</A></LI>
+                              <LI><BUTTON class="dropdown-item" type="button" id="addExistingPassenger" onclick="chooseExistingPassenger();">Add Existing</BUTTON></LI>
+                            </UL>
+                        </DIV>
+                        <BUTTON class="btn btn-secondary" type="button" onclick="modifyPassenger();"><i class="fa-solid fa-edit"></i></BUTTON>
+                        <BUTTON class="btn btn-secondary" type="button" onclick="confirmRemovePassenger();"><i class="fa-solid fa-trash"></i></BUTTON>
                     </div>
                 </div>
             </FORM>
             <table id="passengersTable" class="table table-striped table-hover">
                 <thead>
                     <tr>
+                        <th scope="col"><input class="form-check-input" type="checkbox" id="columnHeaderCheckbox" onchange="columnHeaderCheckboxChanged();"/></th>
                         <th scope="col">Name</th>
                         <th scope="col">Email</th>
                         <th scope="col">Phone</th>
@@ -217,7 +582,7 @@
                 </thead>
                 <tbody>
                     <tr>
-                        <td colspan="6">
+                        <td colspan="5">
                             <div class="text-center">
                                 <div class="spinner-border" role="status">
                                     <span class="visually-hidden">Loading...</span>
@@ -227,7 +592,18 @@
                     </tr>
                 </tbody>
             </table>
-            <h4 class="mb-3 mt-5">Flight Legs</h4>
+            <div class="row mb-3 mt-5 align-items-center">
+                <div class="col col-md-auto">
+                    <h4>Flight Legs</h4>
+                </div>
+                <div class="col p-0">
+                    <a tabindex="0" class="fs-4" role="button" data-bs-toggle="popover" data-bs-trigger="focus"
+                        title="Editing flight legs"
+                        data-bs-content="if you need to edit the flight legs, then delete this booking and create a new one.">
+                        <i class="fa-solid fa-circle-info"></i>
+                    </a>
+                </div>
+            </div>
             <table id="flightsTable" class="table table-striped mb-5 table-hover">
                 <thead>
                     <tr>
@@ -257,6 +633,96 @@
                 <P>Flight icon created by Freepik &middot; <A href="https://www.flaticon.com/free-icons/plane" title="plane icons">Flaticon</A>
                 </P>
             </FOOTER>
+
+            <div class="modal fade" id="removeConfirmationModel" tabindex="-1" aria-labelledby="deleteConfirmationTitle" aria-hidden="true" style="display: none;">
+                <div class="modal-dialog modal-dialog-centered">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h4 class="modal-title" id="deleteConfirmationTitle">Are you sure?</h4>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"/>
+                        </div>
+                        <div class="modal-body">
+                            <p id="deleteText"></p>
+                            <div class="text-center" id="deleteSpinner" style="display: none;">
+                                <div class="spinner-border" role="status">
+                                    <span class="visually-hidden">Deleting...</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-danger" id="removePassengerButton" onclick="removePassenger();" disabled>
+                                <i class="fa-solid fa-trash"></i>&nbsp;Delete
+                            </button>
+                            <button type="button" class="btn btn-secondary" id="cancelPassengerButton" data-bs-dismiss="modal">Cancel</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="modal fade" id="selectPassengerModal" tabindex="-1" aria-labelledby="selectPassengerTitle" aria-hidden="true" style="display: none;">
+                <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h4 class="modal-title" id="selectPassengerTitle">Select Passenger</h4>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"/>
+                        </div>
+                        <div class="modal-body">
+                            <div class="text-center" id="selectPassengersSpinner">
+                                <div class="spinner-border" role="status">
+                                    <span class="visually-hidden">Retrieving...</span>
+                                </div>
+                            </div>
+                            <div id="passengersErrorDiv" style="display: none;"></div>
+                            <select class="form-select" id="existingPassengers" aria-label="Existing passengers" style="display: none;"></select>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-primary" id="selectPassengerButton" onclick="addPassengerToBooking();" disabled>
+                                <i class="fa-solid fa-check"></i>&nbsp;Select
+                            </button>
+                            <button type="button" class="btn btn-secondary" id="cancelPassengerButton" data-bs-dismiss="modal">Cancel</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="modal fade" id="chooseExtrasModal" tabindex="-1" aria-labelledby="chooseExtrasTitle" aria-hidden="true" style="display: none;">
+                <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h4 class="modal-title" id="chooseExtrasTitle">Choose Extras</h4>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"/>
+                        </div>
+                        <div class="modal-body">
+                            <div class="text-center" id="chooseExtrasSpinner">
+                                <div class="spinner-border" role="status">
+                                    <span class="visually-hidden">Retrieving...</span>
+                                </div>
+                            </div>
+                            <form>
+                                <div id="extrasErrorDiv" style="display: none;"></div>
+                                <div class="mb-3">
+                                    <SPAN class="visually-hidden" id="currentTravelInsuranceId"></SPAN>
+                                    <LABEL class="form-label" for="travelInsuranceSelect" id="travelInsuranceLabel" style="display: none;">Travel Insurance</LABEL>
+                                    <select class="form-control form-select" id="travelInsuranceSelect" aria-label="Travel Insurance" style="display: none;"></select>
+                                </div>
+                                <div class="mb-3">
+                                    <SPAN class="visually-hidden" id="currentRentalCarId"></SPAN>
+                                    <LABEL class="form-label" for="rentalCarSelect" id="rentalCarLabel" style="display: none;">Rental Car</LABEL>
+                                    <select class="form-control form-select" id="rentalCarSelect" aria-label="Rental Car" style="display: none;"></select>
+                                </div>
+                            </form>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-primary" id="acceptExtrasButton" onclick="modifyExtrasWithinBooking();" disabled>
+                                <i class="fa-solid fa-check"></i>&nbsp;OK
+                            </button>
+                            <button type="button" class="btn btn-secondary" id="cancelExtrasButton" data-bs-dismiss="modal">Cancel</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0-beta1/dist/js/bootstrap.bundle.min.js"></script>
         </MAIN>
     </BODY>
 </HTML>

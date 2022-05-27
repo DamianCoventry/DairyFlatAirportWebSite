@@ -40,20 +40,22 @@ DONE        - insert pager
         Need to actually create the booking
 DONE    List bookings
 DONE        - insert pager
-        View booking needs "edit passengers" and "edit extras" and "change seats" buttons
-        Delete booking needs to actually delete the booking
-        Edit passenger details
-        Edit extras
+DONE    Delete booking needs to actually delete the booking
+DONE    Edit passenger details
+DONE    Edit extras
         Change your seats
         Get the localhost URI out of the bookingAPI.js file
         Get authentication code dynamically
         Reorganize toolbar left hand links
-        Put a minimum time on spinners.
-        Change text within the Flight table to links for the viewAeroplane page
-        Change text within text boxes to links for the viewFlight page
-        Change text within text boxes to links for the deleteConfirmation page
+DONE    Put a minimum time on spinners
+DONE    Change text within the Flight table to links for the viewAeroplane page
+DONE    Change text within text boxes to links for the viewFlight page
+DONE    Change text within text boxes to links for the deleteConfirmation page
         Make the buttons on the home page 'do the right thing'
         If 401 received, then route to a 'please login' screen.
+        Should not be showing other people's data. Need to compare against 'created_by' column/variable.
+        Use that horrible looking mapping program for the web dev assignment
+
 
 
 

@@ -80,6 +80,8 @@
                         get: (searchParams, prop) => searchParams.get(prop),
                     });
 
+                saveButton.disabled = true;
+
                 const api = new BookingAPI();
                 if (params.mode != null && params.mode === "add") {
                     api.addPassenger(
@@ -94,6 +96,9 @@
                         },
                         function(code, json) {
                             document.getElementById("title").value = "code: " + code + ", message: " + json.detail;
+                            formFieldset.disabled = false;
+                            saveButton.disabled = false;
+                            saveSpinner.style.display = "none";
                         });
                 }
                 else {
@@ -109,11 +114,14 @@
                         },
                         function(code, json) {
                             document.getElementById("title").value = "code: " + code + ", message: " + json.detail;
+                            formFieldset.disabled = false;
+                            saveButton.disabled = false;
+                            saveSpinner.style.display = "none";
                         });
                 }
             }
 
-            function addPassengerToBooking(api, bookingId, newPassengerId) {
+            function addPassengerToBooking(api, bookingId, id) {
                 api.getCompactBooking(bookingId,
                     function(json) {
                         api.modifyBooking(bookingId,
@@ -121,7 +129,7 @@
                             json.travelInsurance,
                             json.rentalCar,
                             json.flightLegs,
-                            json.passengers.concat(newPassengerId),
+                            json.passengers.concat(id),
                             function(json) {
                                 setTimeout(function() {
                                     document.location.href = "/booking/viewBooking.html?id=" + bookingId;
@@ -129,10 +137,16 @@
                             },
                             function(code, json) {
                                 document.getElementById("title").value = "code: " + code + ", message: " + json.detail;
+                                formFieldset.disabled = false;
+                                saveButton.disabled = false;
+                                saveSpinner.style.display = "none";
                             });
                     },
                     function(code, json) {
                         document.getElementById("title").value = "code: " + code + ", message: " + json.detail;
+                        formFieldset.disabled = false;
+                        saveButton.disabled = false;
+                        saveSpinner.style.display = "none";
                     });
             }
 
@@ -208,7 +222,7 @@
                     <DIV class="row">
                         <DIV class="col">
                             <LABEL for="title">Title</LABEL>
-                            <INPUT type="text" class="form-control" id="title" placeholder="Title"/>
+                            <INPUT type="text" class="form-control" id="title" placeholder="Title" maxlength="4"/>
                         </DIV>
                         <DIV class="col">
                             <LABEL for="firstName">First Name</LABEL>
@@ -227,7 +241,8 @@
                     <DIV class="row">
                         <DIV class="col">
                             <LABEL for="emailAddress">Email Address</LABEL>
-                            <INPUT type="text" class="form-control" id="emailAddress" placeholder="Email Address"/>
+                            <INPUT type="email" class="form-control" id="emailAddress" placeholder="Email Address"/>
+                            <div class="invalid-feedback">Please leave empty, or enter a valid email address</div>
                         </DIV>
                         <DIV class="col">
                             <LABEL for="phoneNumber">Phone Number</LABEL>
@@ -282,8 +297,8 @@
                             </div>
                         </div>
                         <div class="modal-footer">
-                            <button type="button" class="btn btn-secondary" id="cancelButton" data-bs-dismiss="modal">Cancel</button>
                             <button type="button" class="btn btn-danger" id="deleteButton" onclick="deletePassenger()"><i class="fa-solid fa-trash"></i>&nbsp;Delete</button>
+                            <button type="button" class="btn btn-secondary" id="cancelButton" data-bs-dismiss="modal">Cancel</button>
                         </div>
                     </div>
                 </div>
