@@ -36,16 +36,8 @@ class FlightLeg(models.Model):
     arrival_airport = models.ForeignKey(Airport, null=False, on_delete=models.CASCADE, related_name='arrival')
     cost_dollars = models.IntegerField(default=100, null=False,
                                        validators=[MinValueValidator(1), MaxValueValidator(100000)])
-    departure_time_of_day = models.TimeField(null=False)
-    flight_time_minutes = models.BigIntegerField(default=60, null=False,
-                                                 validators=[MinValueValidator(1), MaxValueValidator(720)])
-    departs_sun = models.BooleanField(default=False, null=False)
-    departs_mon = models.BooleanField(default=False, null=False)
-    departs_tue = models.BooleanField(default=False, null=False)
-    departs_wed = models.BooleanField(default=False, null=False)
-    departs_thu = models.BooleanField(default=False, null=False)
-    departs_fri = models.BooleanField(default=False, null=False)
-    departs_sat = models.BooleanField(default=False, null=False)
+    departure_date_time_utc = models.DateTimeField(auto_now_add=True, null=False)
+    arrival_date_time_utc = models.DateTimeField(auto_now_add=True, null=False)
 
 
 class Passenger(models.Model):

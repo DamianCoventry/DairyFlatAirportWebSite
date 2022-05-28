@@ -1,7 +1,6 @@
 from oauth2_provider.contrib.rest_framework import TokenHasReadWriteScope
-from rest_framework import viewsets
 from DairyFlatAirport.BookingAPI.serializers import *
-from rest_framework import permissions
+from rest_framework import permissions, mixins, viewsets
 
 
 class UserViewSet(viewsets.ModelViewSet):
@@ -86,3 +85,49 @@ class BookingViewSet(viewsets.ModelViewSet):
     queryset = Booking.objects.all().order_by('number')
     serializer_class = BookingSerializer
     permission_classes = [permissions.IsAuthenticated, TokenHasReadWriteScope]
+
+
+class SearchFlightsViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
+    serializer_class = FlightLegSerializer
+    permission_classes = [permissions.IsAuthenticated, TokenHasReadWriteScope]
+
+    def get_queryset(self):
+        # TODO: departure datetime: action, value
+        # TODO: departure dow bitflags
+        # TODO: arrival datetime: action, value
+        # TODO: arrival dow bitflags
+
+        qs = FlightLeg.objects.all()
+
+        departureCityAction = self.request.query_params.get('dCityAct', '')
+        departureCity = self.request.query_params.get('dCityVal', '')
+        if departureCityAction == 'contains':
+            qs = qs.filter(departure_airport__city__icontains=departureCity)
+        elif departureCityAction == 'startswith':
+            qs = qs.filter(departure_airport__city__istartswith=departureCity)
+        elif departureCityAction == 'endswith':
+            qs = qs.filter(departure_airport__city__iendswith=departureCity)
+        elif departureCityAction == 'exact':
+            qs = qs.filter(departure_airport__city__iexact=departureCity)
+
+        arrivalCityAction = self.request.query_params.get('aCityAct', '')
+        arrivalCity = self.request.query_params.get('aCityVal', '')
+        if arrivalCityAction == 'contains':
+            qs = qs.filter(arrival_airport__city__icontains=arrivalCity)
+        elif arrivalCityAction == 'startswith':
+            qs = qs.filter(arrival_airport__city__istartswith=arrivalCity)
+        elif arrivalCityAction == 'endswith':
+            qs = qs.filter(arrival_airport__city__iendswith=arrivalCity)
+        elif arrivalCityAction == 'exact':
+            qs = qs.filter(arrival_airport__city__iexact=arrivalCity)
+
+        flightTimeAction = self.request.query_params.get('flightTimeAct', '')
+        flightTimeMins = self.request.query_params.get('flightTimeMins', '')
+        if flightTimeAction == 'fewer':
+            qs = qs.filter(flight_time_minutes__lt=flightTimeMins)
+        elif flightTimeAction == 'exact':
+            qs = qs.filter(flight_time_minutes=flightTimeMins)
+        elif flightTimeAction == 'greater':
+            qs = qs.filter(flight_time_minutes__gt=flightTimeMins)
+
+        return qs.order_by('id')

@@ -48,9 +48,8 @@ DONE    Edit extras
         Get authentication code dynamically
         Reorganize toolbar left hand links
 DONE    Put a minimum time on spinners
-DONE    Change text within the Flight table to links for the viewAeroplane page
-DONE    Change text within text boxes to links for the viewFlight page
-DONE    Change text within text boxes to links for the deleteConfirmation page
+        on the viewFlight page: Change text within the Flight table to links for the viewAeroplane page
+        on the viewAeroplane page: Change text within text boxes to links for the viewFlight page
         Make the buttons on the home page 'do the right thing'
         If 401 received, then route to a 'please login' screen.
         Should not be showing other people's data. Need to compare against 'created_by' column/variable.

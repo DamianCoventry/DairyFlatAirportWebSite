@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<HTML lang="en">
+    <HEAD>
+        <META charset="utf-8"/>
+        <TITLE>Online Booking System</TITLE>
+        <LINK rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css" integrity="sha512-KfkfwYDsLkIlwQp6LFnl8zNdLGxu9YAA1QvwINks4PhcElQSvqcyVLLD9aMhXd13uQjoXtEKNosOWaZqXgel0g==" crossorigin="anonymous" referrerpolicy="no-referrer"/>
+        <LINK href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0-beta1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-0evHe/X+R7YkIZDRvuzKMRqM+OrBnVFBL6DOitfPri4tjfHxaWutUpFmBp4vmVor" crossorigin="anonymous"/>
+        <LINK href="/styles/grid.css" rel="stylesheet"/>
+    </HEAD>
+    <BODY>
+        <HEADER>
+            <NAV class="navbar navbar-expand-md navbar-dark fixed-top bg-dark">
+                <DIV class="container-fluid">
+                    <A class="navbar-brand" href="/">Home</A>
+                    <BUTTON class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation">
+                        <SPAN class="navbar-toggler-icon"/>
+                    </BUTTON>
+                    <DIV class="collapse navbar-collapse" id="navbarCollapse">
+                        <UL class="navbar-nav me-auto mb-2 mb-md-0">
+                            <LI class="nav-item">
+                                <A class="nav-link" href="/info/listFlights.html">Flights</A>
+                            </LI>
+                            <LI class="nav-item">
+                                <A class="nav-link active" href="/info/listAeroplanes.html">Aeroplanes</A>
+                            </LI>
+                            <LI class="nav-item">
+                                <A class="nav-link" href="/user/editUser.html">User</A>
+                            </LI>
+                            <LI class="nav-item">
+                                <A class="nav-link" href="/booking/listBookings.html">Bookings</A>
+                            </LI>
+                            <LI class="nav-item">
+                                <BUTTON class="btn btn-success mx-2" type="button" onclick="window.location.href = '/search/searchFlights.html'">
+                                    <I class="fa-solid fa-search"></I>&nbsp;Search Flights</BUTTON>
+                            </LI>
+                            <LI class="nav-item">
+                                <BUTTON class="btn btn-primary" type="button" onclick="window.location.href = '/booking/bookAFlight.html'">
+                                    <I class="fa-solid fa-plane"></I>&nbsp;Book a Flight</BUTTON>
+                            </LI>
+                        </UL>
+                    </DIV>
+                </DIV>
+            </NAV>
+        </HEADER>
+        <MAIN class="container">
+            <HEADER class="pb-3 mb-5 border-bottom">
+                <H1 class="h1 d-flex align-items-center text-dark text-decoration-none">
+                    <I class="fa-solid fa-plane"></I>
+                    <SPAN>&nbsp;Search Results</SPAN>
+                </H1>
+            </HEADER>
+            <FOOTER class="container">
+                <P>Built by Damian Coventry, Copyright &copy; 2022, all rights reserved. &middot; <A href="#">Privacy</A> &middot; <A href="#">Terms</A>
+                </P>
+                <P>Aeroplane icon created by Freepik &middot; <A href="https://www.flaticon.com/free-icons/plane" title="plane icons">Flaticon</A>
+                </P>
+            </FOOTER>
+            <SCRIPT src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0-beta1/dist/js/bootstrap.bundle.min.js"></SCRIPT>
+        </MAIN>
+    </BODY>
+</HTML>
