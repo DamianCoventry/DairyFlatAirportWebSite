@@ -28,16 +28,9 @@
                         document.getElementById("tailNumber").value = json.aeroplane.tail_number;
                         document.getElementById("makeModel").value = json.aeroplane.make_model;
                         document.getElementById("departsAirport").value = json.departure_airport.name;
+                        document.getElementById("departsDateTime").value = json.departure_date_time_utc;
                         document.getElementById("arrivesAirport").value = json.arrival_airport.name;
-                        document.getElementById("departsDateTime").value = json.departure_time_of_day;
-                        document.getElementById("arrivesDateTime").value = json.flight_time_minutes; // TODO
-                        document.getElementById("departsSun").checked = json.departs_sun;
-                        document.getElementById("departsMon").checked = json.departs_mon;
-                        document.getElementById("departsTue").checked = json.departs_tue;
-                        document.getElementById("departsWed").checked = json.departs_wed;
-                        document.getElementById("departsThu").checked = json.departs_thu;
-                        document.getElementById("departsFri").checked = json.departs_fri;
-                        document.getElementById("departsSat").checked = json.departs_sat;
+                        document.getElementById("arrivesDateTime").value = json.arrival_date_time_utc;
                     },
                     function(code, json) {
                         document.getElementById("flight").value = "code: " + code + ", message: " + json.detail;
@@ -82,7 +75,7 @@
                             </LI>
                             <LI class="nav-item">
                                 <BUTTON class="btn btn-success mx-2" type="button" onclick="window.location.href = '/search/searchFlights.html'">
-                                    <i class="fa-solid fa-search"></i>&nbsp;Search Flights</BUTTON>
+                                    <i class="fa-solid fa-search"></i>&nbsp;Search for Flights</BUTTON>
                             </LI>
                             <LI class="nav-item">
                                 <BUTTON class="btn btn-primary" type="button" onclick="window.location.href = '/booking/bookAFlight.html'">
@@ -120,53 +113,22 @@
                 </div>
                 <div class="row">
                     <div class="col">
-                      <label for="departsAirport">Departs Airport</label>
-                      <input type="text" class="form-control" id="departsAirport" placeholder="Departs Airport" readonly>
+                      <label for="departsAirport">Departure Airport</label>
+                      <input type="text" class="form-control" id="departsAirport" placeholder="Departure Airport" readonly>
                     </div>
                     <div class="col">
-                        <label for="arrivesAirport">Arrives Airport</label>
-                        <input type="text" class="form-control" id="arrivesAirport" placeholder="Arrives Airport" readonly>
+                        <label for="departsDateTime">Departure Date/Time</label>
+                        <input type="text" class="form-control" id="departsDateTime" placeholder="Departure Date/Time" readonly>
                     </div>
                 </div>
                 <div class="row">
                     <div class="col">
-                      <label for="departsDateTime">Departure Date/Time</label>
-                      <input type="text" class="form-control" id="departsDateTime" placeholder="Departs Date/Time" readonly>
+                        <label for="arrivesAirport">Arrival Airport</label>
+                        <input type="text" class="form-control" id="arrivesAirport" placeholder="Arrival Airport" readonly>
                     </div>
                     <div class="col">
                         <label for="arrivesDateTime">Arrival Date/Time</label>
-                        <input type="text" class="form-control" id="arrivesDateTime" placeholder="Arrives Date/Time" readonly>
-                    </div>
-                </div>
-                <BR/>
-                <div>
-                    <div class="form-check form-check-inline">
-                        <input class="form-check-input" type="checkbox" value="" id="departsSun" disabled>
-                        <label class="form-check-label" for="departsSun">Sun</label>
-                    </div>
-                    <div class="form-check form-check-inline">
-                        <input class="form-check-input" type="checkbox" value="" id="departsMon" disabled>
-                        <label class="form-check-label" for="departsMon">Mon</label>
-                    </div>
-                    <div class="form-check form-check-inline">
-                        <input class="form-check-input" type="checkbox" value="" id="departsTue" disabled>
-                        <label class="form-check-label" for="departsTue">Tue</label>
-                    </div>
-                    <div class="form-check form-check-inline">
-                        <input class="form-check-input" type="checkbox" value="" id="departsWed" disabled>
-                        <label class="form-check-label" for="departsWed">Wed</label>
-                    </div>
-                    <div class="form-check form-check-inline">
-                        <input class="form-check-input" type="checkbox" value="" id="departsThu" disabled>
-                        <label class="form-check-label" for="departsThu">Thu</label>
-                    </div>
-                    <div class="form-check form-check-inline">
-                        <input class="form-check-input" type="checkbox" value="" id="departsFri" disabled>
-                        <label class="form-check-label" for="departsFri">Fri</label>
-                    </div>
-                    <div class="form-check form-check-inline">
-                        <input class="form-check-input" type="checkbox" value="" id="departsSat" disabled>
-                        <label class="form-check-label" for="departsSat">Sat</label>
+                        <input type="text" class="form-control" id="arrivesDateTime" placeholder="Arrival Date/Time" readonly>
                     </div>
                 </div>
             </FORM>

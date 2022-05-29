@@ -27,105 +27,107 @@
                 const api = new BookingAPI();
                 api.getBooking(params.id,
                     function (json) {
-                        document.getElementById("number").value = json.number;
-                        document.getElementById("createdBy").value = json.created_by.username;
-                        if (json.travelInsurance == null) {
-                            document.getElementById("travelInsurance").value = "-";
-                        }
-                        else {
-                            document.getElementById("travelInsurance").value = json.travelInsurance.title;
-                            currentTravelInsuranceId.innerText = json.travelInsurance.id;
-                        }
-                        if (json.rentalCar == null) {
-                            document.getElementById("rentalCar").value = "-";
-                        }
-                        else {
-                            document.getElementById("rentalCar").value = json.rentalCar.type + ", " + json.rentalCar.make + " " + json.rentalCar.model;
-                            currentRentalCarId.innerText = json.rentalCar.id;
-                        }
-
-                        var table = document.getElementById("passengersTable");
-                        var oldTbody = table.tBodies[0];
-                        var newTbody = document.createElement("tbody");
-
-                        json.passengers.forEach(x => {
-                            var newRow = newTbody.insertRow(-1);
-
-                            newCell = newRow.insertCell(0);
-                            var checkBox = document.createElement("input");
-                            checkBox.setAttribute("id", "passengerCheckbox" + x.id);
-                            checkBox.setAttribute("type", "checkbox");
-                            checkBox.setAttribute("class", "form-check-input passengerCheckbox");
-                            checkBox.addEventListener("change", setColumnHeaderCheckboxIndeterminate);
-                            newCell.appendChild(checkBox);
-
-                            newCell = newRow.insertCell(1);
-                            var s = "";
-                            if (x.title != null) {
-                                s += x.title + " ";
+                        setTimeout(function () {
+                            document.getElementById("number").value = json.number;
+                            document.getElementById("createdBy").value = json.created_by.username;
+                            if (json.travelInsurance == null) {
+                                document.getElementById("travelInsurance").value = "-";
                             }
-                            newCell.appendChild(document.createTextNode(s + x.first_name + " " + x.second_name));
-
-                            newCell = newRow.insertCell(2);
-                            newCell.appendChild(document.createTextNode(x.email_address == null ? "-" : x.email_address));
-
-                            newCell = newRow.insertCell(3);
-                            newCell.appendChild(document.createTextNode(x.phone_number == null ? "-" : x.phone_number));
-
-                            newCell = newRow.insertCell(4);
-                            newCell.appendChild(document.createTextNode(x.special_assistance == null ? "-" : x.special_assistance));
-                        });
-
-                        oldTbody.parentNode.replaceChild(newTbody, oldTbody);
-
-                        var table = document.getElementById("flightsTable");
-                        var oldTbody = table.tBodies[0];
-                        var newTbody = document.createElement("tbody");
-
-                        json.flightLegs.forEach(x => {
-                            var newRow = newTbody.insertRow(-1);
-
-                            var link = document.createElement('a');
-                            link.setAttribute('href', "/info/viewFlight.html?id=" + x.id);
-                            link.innerText = x.number;
-                            var newCell = newRow.insertCell(0);
-                            newCell.appendChild(link);
-
-                            link = document.createElement('a');
-                            link.setAttribute('href', "/info/viewAeroplane.html?id=" + x.aeroplane.id);
-                            link.innerText = x.aeroplane.tail_number;
-                            newCell = newRow.insertCell(1);
-                            newCell.appendChild(link);
-
-                            newCell = newRow.insertCell(2);
-                            // TODO: format departure_time_of_day nicely
-                            // TODO: calculate correct timezone
-                            var departs = x.departure_airport.name + " " + x.departure_time_of_day;
-                            newCell.appendChild(document.createTextNode(departs));
-
-                            newCell = newRow.insertCell(3);
-                            // TODO: calculate arrival time, in correct timezone
-                            newCell.appendChild(document.createTextNode(x.arrival_airport.name));
-
-                            newCell = newRow.insertCell(4);
-                            newCell.appendChild(document.createTextNode(x.flight_time_minutes));
-
-                            newCell = newRow.insertCell(5);
-                            var daysOfWeek = "";
-                            if (x.departs_sun === true) daysOfWeek += "Sun,"
-                            if (x.departs_mon === true) daysOfWeek += "Mon,"
-                            if (x.departs_tue === true) daysOfWeek += "Tue,"
-                            if (x.departs_wed === true) daysOfWeek += "Wed,"
-                            if (x.departs_thu === true) daysOfWeek += "Thu,"
-                            if (x.departs_fri === true) daysOfWeek += "Fri,"
-                            if (x.departs_sat === true) daysOfWeek += "Sat,"
-                            if (daysOfWeek === "Mon,Tue,Wed,Thu,Fri,") {
-                                daysOfWeek = "Mon-Fri,"
+                            else {
+                                document.getElementById("travelInsurance").value = json.travelInsurance.title;
+                                currentTravelInsuranceId.innerText = json.travelInsurance.id;
                             }
-                            newCell.appendChild(document.createTextNode(daysOfWeek.slice(0, -1))); // remove trailing ',' character
-                        });
+                            if (json.rentalCar == null) {
+                                document.getElementById("rentalCar").value = "-";
+                            }
+                            else {
+                                document.getElementById("rentalCar").value = json.rentalCar.type + ", " + json.rentalCar.make + " " + json.rentalCar.model;
+                                currentRentalCarId.innerText = json.rentalCar.id;
+                            }
 
-                        oldTbody.parentNode.replaceChild(newTbody, oldTbody);
+                            var table = document.getElementById("passengersTable");
+                            var oldTbody = table.tBodies[0];
+                            var newTbody = document.createElement("tbody");
+
+                            json.passengers.forEach(x => {
+                                var newRow = newTbody.insertRow(-1);
+
+                                newCell = newRow.insertCell(0);
+                                var checkBox = document.createElement("input");
+                                checkBox.setAttribute("id", "passengerCheckbox" + x.id);
+                                checkBox.setAttribute("type", "checkbox");
+                                checkBox.setAttribute("class", "form-check-input passengerCheckbox");
+                                checkBox.addEventListener("change", setColumnHeaderCheckboxIndeterminate);
+                                newCell.appendChild(checkBox);
+
+                                newCell = newRow.insertCell(1);
+                                var s = "";
+                                if (x.title != null) {
+                                    s += x.title + " ";
+                                }
+                                newCell.appendChild(document.createTextNode(s + x.first_name + " " + x.second_name));
+
+                                newCell = newRow.insertCell(2);
+                                newCell.appendChild(document.createTextNode(x.email_address == null ? "-" : x.email_address));
+
+                                newCell = newRow.insertCell(3);
+                                newCell.appendChild(document.createTextNode(x.phone_number == null ? "-" : x.phone_number));
+
+                                newCell = newRow.insertCell(4);
+                                newCell.appendChild(document.createTextNode(x.special_assistance == null ? "-" : x.special_assistance));
+                            });
+
+                            oldTbody.parentNode.replaceChild(newTbody, oldTbody);
+
+                            var table = document.getElementById("flightsTable");
+                            var oldTbody = table.tBodies[0];
+                            var newTbody = document.createElement("tbody");
+
+                            json.flightLegs.forEach(x => {
+                                var newRow = newTbody.insertRow(-1);
+
+                                var link = document.createElement('a');
+                                link.setAttribute('href', "/info/viewFlight.html?id=" + x.id);
+                                link.innerText = x.number;
+                                var newCell = newRow.insertCell(0);
+                                newCell.appendChild(link);
+
+                                link = document.createElement('a');
+                                link.setAttribute('href', "/info/viewAeroplane.html?id=" + x.aeroplane.id);
+                                link.innerText = x.aeroplane.tail_number;
+                                newCell = newRow.insertCell(1);
+                                newCell.appendChild(link);
+
+                                newCell = newRow.insertCell(2);
+                                // TODO: format departure_time_of_day nicely
+                                // TODO: calculate correct timezone
+                                var departs = x.departure_airport.name + " " + x.departure_time_of_day;
+                                newCell.appendChild(document.createTextNode(departs));
+
+                                newCell = newRow.insertCell(3);
+                                // TODO: calculate arrival time, in correct timezone
+                                newCell.appendChild(document.createTextNode(x.arrival_airport.name));
+
+                                newCell = newRow.insertCell(4);
+                                newCell.appendChild(document.createTextNode(x.flight_time_minutes));
+
+                                newCell = newRow.insertCell(5);
+                                var daysOfWeek = "";
+                                if (x.departs_sun === true) daysOfWeek += "Sun,"
+                                if (x.departs_mon === true) daysOfWeek += "Mon,"
+                                if (x.departs_tue === true) daysOfWeek += "Tue,"
+                                if (x.departs_wed === true) daysOfWeek += "Wed,"
+                                if (x.departs_thu === true) daysOfWeek += "Thu,"
+                                if (x.departs_fri === true) daysOfWeek += "Fri,"
+                                if (x.departs_sat === true) daysOfWeek += "Sat,"
+                                if (daysOfWeek === "Mon,Tue,Wed,Thu,Fri,") {
+                                    daysOfWeek = "Mon-Fri,"
+                                }
+                                newCell.appendChild(document.createTextNode(daysOfWeek.slice(0, -1))); // remove trailing ',' character
+                            });
+
+                            oldTbody.parentNode.replaceChild(newTbody, oldTbody);
+                        }, 500);
                     },
                     function(code, json) {
                         document.getElementById("number").value = "code: " + code + ", message: " + json.detail;
@@ -496,7 +498,7 @@
                             </LI>
                             <LI class="nav-item">
                                 <BUTTON class="btn btn-success mx-2" type="button" onclick="window.location.href = '/search/searchFlights.html'">
-                                    <i class="fa-solid fa-search"></i>&nbsp;Search Flights</BUTTON>
+                                    <i class="fa-solid fa-search"></i>&nbsp;Search for Flights</BUTTON>
                             </LI>
                             <LI class="nav-item">
                                 <BUTTON class="btn btn-primary" type="button" onclick="window.location.href = '/booking/bookAFlight.html'">
@@ -608,8 +610,8 @@
                     <tr>
                         <th scope="col">Flight</th>
                         <th scope="col">Aeroplane</th>
-                        <th scope="col">Departs</th>
-                        <th scope="col">Arrives</th>
+                        <th scope="col">Departure</th>
+                        <th scope="col">Arrival</th>
                         <th scope="col">Flight Time (mins)</th>
                         <th scope="col">Days of Week</th>
                     </tr>

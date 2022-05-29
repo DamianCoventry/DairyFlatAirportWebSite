@@ -24,21 +24,23 @@
                 const api = new BookingAPI();
                 api.getAeroplane(params.id,
                     function (json) {
-                        document.getElementById("tailNumber").value = json.tail_number;
-                        document.getElementById("makeModel").value = json.make_model;
-                        document.getElementById("numSeats").value = json.num_seats;
+                        setTimeout(function () {
+                            document.getElementById("tailNumber").value = json.tail_number;
+                            document.getElementById("makeModel").value = json.make_model;
+                            document.getElementById("numSeats").value = json.num_seats;
 
-                        var table = document.getElementById("flightsTable");
-                        var oldTbody = table.tBodies[0];
-                        var newTbody = document.createElement("tbody");
+                            var table = document.getElementById("flightsTable");
+                            var oldTbody = table.tBodies[0];
+                            var newTbody = document.createElement("tbody");
 
-                        json.flightLegs.forEach(x => {
-                            var newRow = newTbody.insertRow(-1);
-                            var newCell = newRow.insertCell(0);
-                            newCell.appendChild(document.createTextNode(x));
-                        });
+                            json.flightLegs.forEach(x => {
+                                var newRow = newTbody.insertRow(-1);
+                                var newCell = newRow.insertCell(0);
+                                newCell.appendChild(document.createTextNode(x));
+                            });
 
-                        oldTbody.parentNode.replaceChild(newTbody, oldTbody);
+                            oldTbody.parentNode.replaceChild(newTbody, oldTbody);
+                        }, 500);
                     },
                     function(code, json) {
                         document.getElementById("tailNumber").value = "code: " + code + ", message: " + json.detail;
@@ -83,7 +85,7 @@
                             </LI>
                             <LI class="nav-item">
                                 <BUTTON class="btn btn-success mx-2" type="button" onclick="window.location.href = '/search/searchFlights.html'">
-                                    <i class="fa-solid fa-search"></i>&nbsp;Search Flights</BUTTON>
+                                    <i class="fa-solid fa-search"></i>&nbsp;Search for Flights</BUTTON>
                             </LI>
                             <LI class="nav-item">
                                 <BUTTON class="btn btn-primary" type="button" onclick="window.location.href = '/booking/bookAFlight.html'">
@@ -139,7 +141,7 @@
                         </td>
                     </tr>
                 </tbody>
-    </table>
+            </table>
             <BR/>
 
             <FOOTER class="container">

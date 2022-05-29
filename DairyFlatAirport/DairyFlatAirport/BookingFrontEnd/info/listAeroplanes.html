@@ -22,62 +22,64 @@
 
                 const api = new BookingAPI();
                 api.listAeroplanes(currentPage, function (json) {
-                    var table = document.getElementById("aeroplanesTable");
-                    var oldTbody = table.tBodies[0];
-                    var newTbody = document.createElement("tbody");
+                    setTimeout(function(){
+                        var table = document.getElementById("aeroplanesTable");
+                        var oldTbody = table.tBodies[0];
+                        var newTbody = document.createElement("tbody");
 
-                    json.results.forEach(x => {
-                        var link = document.createElement('a');
-                        link.setAttribute('href', "/info/viewAeroplane.html?id=" + x.id);
-                        link.innerText = x.tail_number;
+                        json.results.forEach(x => {
+                            var link = document.createElement('a');
+                            link.setAttribute('href', "/info/viewAeroplane.html?id=" + x.id);
+                            link.innerText = x.tail_number;
 
-                        var newRow = newTbody.insertRow(-1);
-                        var newCell = newRow.insertCell(0);
-                        newCell.appendChild(link);
-                        newCell = newRow.insertCell(1);
-                        newCell.appendChild(document.createTextNode(x.make_model));
-                        newCell = newRow.insertCell(2);
-                        newCell.appendChild(document.createTextNode(x.num_seats));
-                    });
+                            var newRow = newTbody.insertRow(-1);
+                            var newCell = newRow.insertCell(0);
+                            newCell.appendChild(link);
+                            newCell = newRow.insertCell(1);
+                            newCell.appendChild(document.createTextNode(x.make_model));
+                            newCell = newRow.insertCell(2);
+                            newCell.appendChild(document.createTextNode(x.num_seats));
+                        });
 
-                    oldTbody.parentNode.replaceChild(newTbody, oldTbody);
+                        oldTbody.parentNode.replaceChild(newTbody, oldTbody);
 
-                    if (json.count < 10) {
-                        document.getElementById("paginationNav").style.display = "none";
-                    }
-                    else {
-                        var ul = document.getElementById("paginationList");
-                        while (ul.hasChildNodes()) {
-                            ul.removeChild(ul.firstChild);
+                        if (json.count < 10) {
+                            document.getElementById("paginationNav").style.display = "none";
                         }
+                        else {
+                            var ul = document.getElementById("paginationList");
+                            while (ul.hasChildNodes()) {
+                                ul.removeChild(ul.firstChild);
+                            }
 
-                        var totalPages = Math.floor(json.count / 10);
-                        if (json.count % 10 != 0) {
-                            ++totalPages;
+                            var totalPages = Math.floor(json.count / 10);
+                            if (json.count % 10 != 0) {
+                                ++totalPages;
+                            }
+
+                            const maxVisiblePages = 3;
+                            var firstPage = currentPage - 1;
+                            if (firstPage < 1) {
+                                firstPage = 1;
+                            }
+
+                            // insert a left chevron icon if required
+                            if (totalPages > maxVisiblePages && (currentPage - 2) > 0) {
+                                createAndAppendItem(ul, currentPage - 2, "&laquo;", false);
+                            }
+
+                            for (var i = 0; i < maxVisiblePages && (firstPage + i) <= totalPages; ++i) {
+                                createAndAppendItem(ul, firstPage + i, firstPage + i, firstPage + i == currentPage);
+                            }
+
+                            // insert a right chevron icon if required
+                            if (totalPages > maxVisiblePages && (currentPage + 2) < totalPages) {
+                                createAndAppendItem(ul, currentPage + 2, "&raquo;", false);
+                            }
+
+                            document.getElementById("paginationNav").style.display = "";
                         }
-
-                        const maxVisiblePages = 3;
-                        var firstPage = currentPage - 1;
-                        if (firstPage < 1) {
-                            firstPage = 1;
-                        }
-
-                        // insert a left chevron icon if required
-                        if (totalPages > maxVisiblePages && (currentPage - 2) > 0) {
-                            createAndAppendItem(ul, currentPage - 2, "&laquo;", false);
-                        }
-
-                        for (var i = 0; i < maxVisiblePages && (firstPage + i) <= totalPages; ++i) {
-                            createAndAppendItem(ul, firstPage + i, firstPage + i, firstPage + i == currentPage);
-                        }
-
-                        // insert a right chevron icon if required
-                        if (totalPages > maxVisiblePages && (currentPage + 2) < totalPages) {
-                            createAndAppendItem(ul, currentPage + 2, "&raquo;", false);
-                        }
-
-                        document.getElementById("paginationNav").style.display = "";
-                    }
+                    }, 500);
                 },
                 function(code, json) {
                     var table = document.getElementById("aeroplanesTable");
@@ -149,7 +151,7 @@
                             </LI>
                             <LI class="nav-item">
                                 <BUTTON class="btn btn-success mx-2" type="button" onclick="window.location.href = '/search/searchFlights.html'">
-                                    <i class="fa-solid fa-search"></i>&nbsp;Search Flights</BUTTON>
+                                    <i class="fa-solid fa-search"></i>&nbsp;Search for Flights</BUTTON>
                             </LI>
                             <LI class="nav-item">
                                 <BUTTON class="btn btn-primary" type="button" onclick="window.location.href = '/booking/bookAFlight.html'">

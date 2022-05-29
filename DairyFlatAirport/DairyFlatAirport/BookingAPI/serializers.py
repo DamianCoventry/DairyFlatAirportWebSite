@@ -34,8 +34,7 @@ class FlightLegSerializer(serializers.ModelSerializer):
     class Meta:
         model = FlightLeg
         fields = ['id', 'number', 'aeroplane', 'departure_airport', 'arrival_airport', 'cost_dollars',
-                  'departure_time_of_day', 'flight_time_minutes', 'departs_sun', 'departs_mon', 'departs_tue',
-                  'departs_wed', 'departs_thu', 'departs_fri', 'departs_sat']
+                  'arrival_date_time_utc', 'departure_date_time_utc']
         depth = 1
 
 
