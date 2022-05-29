@@ -62,7 +62,7 @@
                     function(json) {
                         setTimeout(function() {
                             document.location.href = "/booking/viewBooking.html?id=" + params.bookingId;
-                        }, 500);
+                        }, 1000);
                     },
                     function(code, json) {
                         document.getElementById("deleteConfirmationTitle").innerText = "Error";
@@ -133,7 +133,7 @@
                             function(json) {
                                 setTimeout(function() {
                                     document.location.href = "/booking/viewBooking.html?id=" + bookingId;
-                                }, 500);
+                                }, 1000);
                             },
                             function(code, json) {
                                 document.getElementById("title").value = "code: " + code + ", message: " + json.detail;

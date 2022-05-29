@@ -98,36 +98,23 @@
                                 newCell = newRow.insertCell(1);
                                 newCell.appendChild(link);
 
+                                // TODO: format date/time correctly with time zone
+
                                 newCell = newRow.insertCell(2);
-                                // TODO: format departure_time_of_day nicely
-                                // TODO: calculate correct timezone
-                                var departs = x.departure_airport.name + " " + x.departure_time_of_day;
-                                newCell.appendChild(document.createTextNode(departs));
+                                newCell.appendChild(document.createTextNode(x.departure_airport.name));
 
                                 newCell = newRow.insertCell(3);
-                                // TODO: calculate arrival time, in correct timezone
-                                newCell.appendChild(document.createTextNode(x.arrival_airport.name));
+                                newCell.appendChild(document.createTextNode(x.departure_date_time_utc));
 
                                 newCell = newRow.insertCell(4);
-                                newCell.appendChild(document.createTextNode(x.flight_time_minutes));
+                                newCell.appendChild(document.createTextNode(x.arrival_airport.name));
 
                                 newCell = newRow.insertCell(5);
-                                var daysOfWeek = "";
-                                if (x.departs_sun === true) daysOfWeek += "Sun,"
-                                if (x.departs_mon === true) daysOfWeek += "Mon,"
-                                if (x.departs_tue === true) daysOfWeek += "Tue,"
-                                if (x.departs_wed === true) daysOfWeek += "Wed,"
-                                if (x.departs_thu === true) daysOfWeek += "Thu,"
-                                if (x.departs_fri === true) daysOfWeek += "Fri,"
-                                if (x.departs_sat === true) daysOfWeek += "Sat,"
-                                if (daysOfWeek === "Mon,Tue,Wed,Thu,Fri,") {
-                                    daysOfWeek = "Mon-Fri,"
-                                }
-                                newCell.appendChild(document.createTextNode(daysOfWeek.slice(0, -1))); // remove trailing ',' character
+                                newCell.appendChild(document.createTextNode(x.arrival_date_time_utc));
                             });
 
                             oldTbody.parentNode.replaceChild(newTbody, oldTbody);
-                        }, 500);
+                        }, 1000);
                     },
                     function(code, json) {
                         document.getElementById("number").value = "code: " + code + ", message: " + json.detail;
@@ -254,7 +241,7 @@
                             function(json) {
                                 setTimeout(function() {
                                     document.location.href = "/booking/viewBooking.html?id=" + params.id;
-                                }, 500);
+                                }, 1000);
                             },
                             displayExtrasErrorResponse);
                     },
@@ -330,7 +317,7 @@
                             function(json) {
                                 setTimeout(function() {
                                     document.location.href = "/booking/viewBooking.html?id=" + bookingId;
-                                }, 500);
+                                }, 1000);
                             },
                             function(code, json) {
                                 document.getElementById("title").value = "code: " + code + ", message: " + json.detail;
@@ -466,7 +453,7 @@
                             function(json) {
                                 setTimeout(function() {
                                     document.location.href = "/booking/viewBooking.html?id=" + params.id;
-                                }, 500);
+                                }, 1000);
                             },
                             displayPassengerErrorResponse);
                     },
@@ -510,12 +497,14 @@
             </NAV>
         </HEADER>
         <MAIN class="container">
+            
             <header class="pb-3 mb-5 border-bottom">
                 <h1 class="h1 d-flex align-items-center text-dark text-decoration-none">
                     <i class="fa-solid fa-calendar-days"></i>
                     <span>&nbsp;Booking</span>
                 </h1>
             </header>
+
             <FORM>
                 <div class="row justify-content-end">
                     <div class="col text-end">
@@ -571,6 +560,7 @@
                     </div>
                 </div>
             </FORM>
+
             <table id="passengersTable" class="table table-striped table-hover">
                 <thead>
                     <tr>
@@ -593,6 +583,7 @@
                     </tr>
                 </tbody>
             </table>
+
             <div class="row mb-3 mt-5 align-items-center">
                 <div class="col col-md-auto">
                     <h4>Flight Legs</h4>
@@ -605,15 +596,16 @@
                     </a>
                 </div>
             </div>
+
             <table id="flightsTable" class="table table-striped mb-5 table-hover">
                 <thead>
                     <tr>
                         <th scope="col">Flight</th>
                         <th scope="col">Aeroplane</th>
-                        <th scope="col">Departure</th>
-                        <th scope="col">Arrival</th>
-                        <th scope="col">Flight Time (mins)</th>
-                        <th scope="col">Days of Week</th>
+                        <th scope="col">Departure Airport</th>
+                        <th scope="col">Departure Date/Time</th>
+                        <th scope="col">Arrival Airport</th>
+                        <th scope="col">Arrival DateTime</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -628,6 +620,7 @@
                     </tr>
                 </tbody>
             </table>
+
             <FOOTER class="container">
                 <P>Built by Damian Coventry, Copyright &copy; 2022, all rights reserved. &middot; <A href="#">Privacy</A> &middot; <A href="#">Terms</A>
                 </P>

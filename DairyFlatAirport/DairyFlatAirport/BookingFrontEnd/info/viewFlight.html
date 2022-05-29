@@ -24,13 +24,17 @@
                 const api = new BookingAPI();
                 api.getFlight(params.id,
                     function (json) {
-                        document.getElementById("flight").value = json.number;
-                        document.getElementById("tailNumber").value = json.aeroplane.tail_number;
-                        document.getElementById("makeModel").value = json.aeroplane.make_model;
-                        document.getElementById("departsAirport").value = json.departure_airport.name;
-                        document.getElementById("departsDateTime").value = json.departure_date_time_utc;
-                        document.getElementById("arrivesAirport").value = json.arrival_airport.name;
-                        document.getElementById("arrivesDateTime").value = json.arrival_date_time_utc;
+                        setTimeout(function () {
+                            spinnerButton.style.display = "none";
+                            flight.style.display = "";
+                            document.getElementById("flight").value = json.number;
+                            document.getElementById("tailNumber").value = json.aeroplane.tail_number;
+                            document.getElementById("makeModel").value = json.aeroplane.make_model;
+                            document.getElementById("departsAirport").value = json.departure_airport.name;
+                            document.getElementById("departsDateTime").value = json.departure_date_time_utc;
+                            document.getElementById("arrivesAirport").value = json.arrival_airport.name;
+                            document.getElementById("arrivesDateTime").value = json.arrival_date_time_utc;
+                        }, 1000);
                     },
                     function(code, json) {
                         document.getElementById("flight").value = "code: " + code + ", message: " + json.detail;
@@ -99,7 +103,11 @@
             <FORM>
                 <div class="col">
                     <label for="flight">Flight</label>
-                    <input type="text" class="form-control" id="flight" placeholder="Flight" readonly>
+                    <input type="text" class="form-control" id="flight" placeholder="Flight" readonly style="display: none;">
+                    <button class="form-control btn btn-outline-secondary text-start" type="button" id="spinnerButton" disabled>
+                        <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+                        Loading...
+                    </button>
                 </div>
                 <div class="row">
                     <div class="col">

@@ -17,41 +17,46 @@
                 const api = new BookingAPI();
                 api.getBooking(params.id,
                     function (json) {
-                        document.getElementById("bookingNumber").innerText = json.number;
-                        document.getElementById("createdBy").innerText = json.created_by.username;
+                        setTimeout(function () {
+                            spinnerLoading.style.display = "none";
+                            passengers.style.display = "";
 
-                        json.passengers.forEach(x => {
-                            var passengersList = document.getElementById("passengers");
-                            var listItem = document.createElement("li");
-                            listItem.setAttribute("class", "list-group-item");
-                            var s = "";
-                            if (x.title != null) {
-                                s += x.title + " ";
+                            document.getElementById("bookingNumber").innerText = json.number;
+                            document.getElementById("createdBy").innerText = json.created_by.username;
+
+                            json.passengers.forEach(x => {
+                                var passengersList = document.getElementById("passengers");
+                                var listItem = document.createElement("li");
+                                listItem.setAttribute("class", "list-group-item");
+                                var s = "";
+                                if (x.title != null) {
+                                    s += x.title + " ";
+                                }
+                                listItem.innerText = s + x.first_name + " " + x.second_name;
+                                passengersList.appendChild(listItem);
+                            });
+
+                            json.flightLegs.forEach(x => {
+                                var passengersList = document.getElementById("flightLegs");
+                                var listItem = document.createElement("li");
+                                listItem.setAttribute("class", "list-group-item");
+                                listItem.innerText = x.number + ", " + x.departure_airport.name + " -> " + x.arrival_airport.name;
+                                passengersList.appendChild(listItem);
+                            });
+
+                            if (json.travelInsurance != null) {
+                                document.getElementById("travelInsurance").innerText = json.travelInsurance.title;
                             }
-                            listItem.innerText = s + x.first_name + " " + x.second_name;
-                            passengersList.appendChild(listItem);
-                        });
-
-                        json.flightLegs.forEach(x => {
-                            var passengersList = document.getElementById("flightLegs");
-                            var listItem = document.createElement("li");
-                            listItem.setAttribute("class", "list-group-item");
-                            listItem.innerText = x.number + ", " + x.departure_airport.name + " -> " + x.arrival_airport.name;
-                            passengersList.appendChild(listItem);
-                        });
-
-                        if (json.travelInsurance != null) {
-                            document.getElementById("travelInsurance").innerText = json.travelInsurance.title;
-                        }
-                        else {
-                            document.getElementById("travelInsurance").innerText = "-";
-                        }
-                        if (json.rentalCar != null) {
-                            document.getElementById("rentalCar").innerText = json.rentalCar.type + ", " + json.rentalCar.make + " " + json.rentalCar.model;
-                        }
-                        else {
-                            document.getElementById("rentalCar").innerText = "-";
-                        }
+                            else {
+                                document.getElementById("travelInsurance").innerText = "-";
+                            }
+                            if (json.rentalCar != null) {
+                                document.getElementById("rentalCar").innerText = json.rentalCar.type + ", " + json.rentalCar.make + " " + json.rentalCar.model;
+                            }
+                            else {
+                                document.getElementById("rentalCar").innerText = "-";
+                            }
+                        }, 1000);
                     },
                     function (code, json) {
                         document.getElementById("errorMessage").innerText = "ERROR: " + code + ", Message: " + json.detail;
@@ -76,7 +81,7 @@
                     function(json) {
                         setTimeout(function() {
                             document.location.href = "/booking/listBookings.html";
-                        }, 500);
+                        }, 1000);
                     },
                     function(code, json) {
                         document.getElementById("deleteConfirmationTitle").innerText = "Error";
@@ -154,7 +159,12 @@
                         </li>
                         <li class="list-group-item">
                             <h5>Passengers</h5>
-                            <ul class="list-group list-group-flush" id="passengers">
+                            <div class="text-center" id="spinnerLoading">
+                                <div class="spinner-border" role="status">
+                                    <span class="visually-hidden">Loading...</span>
+                                </div>
+                            </div>
+                            <ul class="list-group list-group-flush" id="passengers" style="display: none;">
                             </ul>
                         </li>
                         <li class="list-group-item">
@@ -173,9 +183,9 @@
                     </ul>
                 </div>
                 <div class="row justify-content-center">
-                    <div class="col-3">
+                    <div class="col-2">
                         <button type="button" class="btn btn-danger mt-5 w-100" data-bs-toggle="modal" data-bs-target="#finalConfirmation">
-                            <i class="fa-solid fa-trash"></i>&nbsp;Confirm Deletion
+                            <i class="fa-solid fa-trash"></i>&nbsp;Delete
                         </button>
                     </div>
                 </div>
@@ -197,7 +207,7 @@
                             </div>
                         </div>
                         <div class="modal-footer">
-                            <button type="button" class="btn btn-danger" id="deleteButton" onclick="deleteBooking()"><i class="fa-solid fa-trash"></i>&nbsp;Delete</button>
+                            <button type="button" class="btn btn-danger" id="deleteButton" onclick="deleteBooking()"><i class="fa-solid fa-trash"></i>&nbsp;Confirm</button>
                             <button type="button" class="btn btn-secondary" id="cancelButton" data-bs-dismiss="modal">Cancel</button>
                         </div>
                     </div>
