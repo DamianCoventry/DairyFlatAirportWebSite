@@ -15,8 +15,23 @@
 
                 var currentPage = (params.page == null ? 1 : params.page);
 
+                var options = {
+                    departureCityAction: params.dCityAct,
+                    departureCityValue: params.dCityVal,
+                    arrivalCityAction: params.aCityAct,
+                    arrivalCityValue: params.aCityVal,
+                    departureDateTimeAction: params.dDateTimeAct,
+                    departureDateTimeValueBeg: params.dDateTimeBegVal,
+                    departureDateTimeValueEnd: params.dDateTimeEndVal,
+                    arrivalDateTimeAction: params.aDateTimeAct,
+                    arrivalDateTimeValueBeg: params.aDateTimeBegVal,
+                    arrivalDateTimeValueEnd: params.aDateTimeEndVal,
+                    flightTimeAction: params.flightTimeAct,
+                    flightTimeValue: params.flightTimeMins
+                };
+
                 const api = new BookingAPI();
-                api.listFlights(currentPage, function (json) {
+                api.searchFlights(options, currentPage, function (json) {
                     setTimeout(function () {
                         var table = document.getElementById("flightsTable");
                         var oldTbody = table.tBodies[0];
@@ -40,16 +55,19 @@
                             // TODO: format date/time correctly with time zone
 
                             newCell = newRow.insertCell(2);
-                            newCell.appendChild(document.createTextNode(x.departure_airport.name));
+                            newCell.appendChild(document.createTextNode(x.departure_airport.city));
 
                             newCell = newRow.insertCell(3);
-                            newCell.appendChild(document.createTextNode(x.departure_date_time_utc));
+                            newCell.appendChild(document.createTextNode(new Date(x.departure_date_time_utc).toLocaleString("en-NZ", { timeZone: 'Pacific/Auckland' })));
 
                             newCell = newRow.insertCell(4);
-                            newCell.appendChild(document.createTextNode(x.arrival_airport.name));
+                            newCell.appendChild(document.createTextNode(x.arrival_airport.city));
 
                             newCell = newRow.insertCell(5);
-                            newCell.appendChild(document.createTextNode(x.arrival_date_time_utc));
+                            newCell.appendChild(document.createTextNode(new Date(x.arrival_date_time_utc).toLocaleString("en-NZ", { timeZone: 'Australia/Sydney' })));
+
+                            newCell = newRow.insertCell(6);
+                            newCell.appendChild(document.createTextNode(x.flight_time_mins));
                         });
 
                         oldTbody.parentNode.replaceChild(newTbody, oldTbody);
@@ -162,7 +180,7 @@
         <MAIN class="container">
             <header class="pb-3 mb-5 border-bottom">
                 <h1 class="h1 d-flex align-items-center text-dark text-decoration-none">
-                    <i class="fa-solid fa-earth-oceania"></i>
+                    <i class="fa-solid fa-search"></i>
                     <span>&nbsp;Search Results</span>
                 </h1>
             </header>
@@ -171,15 +189,16 @@
                     <tr>
                         <th scope="col">Flight</th>
                         <th scope="col">Aeroplane</th>
-                        <th scope="col">Departure Airport</th>
+                        <th scope="col">Departure City</th>
                         <th scope="col">Departure Date/Time</th>
-                        <th scope="col">Arrival Airport</th>
+                        <th scope="col">Arrival City</th>
                         <th scope="col">Arrival DateTime</th>
+                        <th scope="col">Flight Time (minutes)</th>
                     </tr>
                 </thead>
                 <tbody>
                     <tr>
-                        <td colspan="6">
+                        <td colspan="7">
                             <div class="text-center">
                                 <div class="spinner-border" role="status">
                                     <span class="visually-hidden">Loading...</span>

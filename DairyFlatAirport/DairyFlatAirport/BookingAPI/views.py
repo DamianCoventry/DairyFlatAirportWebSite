@@ -1,3 +1,6 @@
+from datetime import datetime
+
+from django.utils.dateparse import parse_datetime
 from oauth2_provider.contrib.rest_framework import TokenHasReadWriteScope
 from DairyFlatAirport.BookingAPI.serializers import *
 from rest_framework import permissions, mixins, viewsets
@@ -92,42 +95,66 @@ class SearchFlightsViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
     permission_classes = [permissions.IsAuthenticated, TokenHasReadWriteScope]
 
     def get_queryset(self):
-        # TODO: departure datetime: action, value
-        # TODO: departure dow bitflags
-        # TODO: arrival datetime: action, value
-        # TODO: arrival dow bitflags
-
         qs = FlightLeg.objects.all()
 
-        departureCityAction = self.request.query_params.get('dCityAct', '')
+        departureCityAction = self.request.query_params.get('dCityAct', '').lower()
         departureCity = self.request.query_params.get('dCityVal', '')
-        if departureCityAction == 'contains':
-            qs = qs.filter(departure_airport__city__icontains=departureCity)
-        elif departureCityAction == 'startswith':
-            qs = qs.filter(departure_airport__city__istartswith=departureCity)
-        elif departureCityAction == 'endswith':
-            qs = qs.filter(departure_airport__city__iendswith=departureCity)
-        elif departureCityAction == 'exact':
-            qs = qs.filter(departure_airport__city__iexact=departureCity)
+        if departureCity is not None and len(departureCity) > 0:
+            if departureCityAction == 'contains':
+                qs = qs.filter(departure_airport__city__icontains=departureCity)
+            elif departureCityAction == 'starts with':
+                qs = qs.filter(departure_airport__city__istartswith=departureCity)
+            elif departureCityAction == 'ends with':
+                qs = qs.filter(departure_airport__city__iendswith=departureCity)
+            elif departureCityAction == 'is exactly':
+                qs = qs.filter(departure_airport__city__iexact=departureCity)
 
-        arrivalCityAction = self.request.query_params.get('aCityAct', '')
+        arrivalCityAction = self.request.query_params.get('aCityAct', '').lower()
         arrivalCity = self.request.query_params.get('aCityVal', '')
-        if arrivalCityAction == 'contains':
-            qs = qs.filter(arrival_airport__city__icontains=arrivalCity)
-        elif arrivalCityAction == 'startswith':
-            qs = qs.filter(arrival_airport__city__istartswith=arrivalCity)
-        elif arrivalCityAction == 'endswith':
-            qs = qs.filter(arrival_airport__city__iendswith=arrivalCity)
-        elif arrivalCityAction == 'exact':
-            qs = qs.filter(arrival_airport__city__iexact=arrivalCity)
+        if arrivalCity is not None and len(arrivalCity) > 0:
+            if arrivalCityAction == 'contains':
+                qs = qs.filter(arrival_airport__city__icontains=arrivalCity)
+            elif arrivalCityAction == 'starts with':
+                qs = qs.filter(arrival_airport__city__istartswith=arrivalCity)
+            elif arrivalCityAction == 'ends with':
+                qs = qs.filter(arrival_airport__city__iendswith=arrivalCity)
+            elif arrivalCityAction == 'is exactly':
+                qs = qs.filter(arrival_airport__city__iexact=arrivalCity)
 
-        flightTimeAction = self.request.query_params.get('flightTimeAct', '')
+        departureDateTimeAction = self.request.query_params.get('dDateTimeAct', '').lower()
+        departureDateTimeBeg = self.request.query_params.get('dDateTimeBegVal', '')  # TODO: convert to utc
+        departureDateTimeEnd = self.request.query_params.get('dDateTimeEndVal', '')  # TODO: convert to utc
+        if departureDateTimeBeg is not None and len(departureDateTimeBeg) > 0:
+            if departureDateTimeAction == 'before':
+                qs = qs.filter(departure_date_time_utc__lt=departureDateTimeBeg)
+            elif departureDateTimeAction == 'after':
+                qs = qs.filter(departure_date_time_utc__gt=departureDateTimeBeg)
+            elif departureDateTimeAction == 'between':
+                if departureDateTimeEnd is not None and len(departureDateTimeEnd) > 0:
+                    qs = qs.filter(departure_date_time_utc__gte=departureDateTimeBeg)
+                    qs = qs.filter(departure_date_time_utc__lte=departureDateTimeEnd)
+
+        arrivalDateTimeAction = self.request.query_params.get('aDateTimeAct', '').lower()
+        arrivalDateTimeBeg = self.request.query_params.get('aDateTimeBegVal', '')  # TODO: convert to utc
+        arrivalDateTimeEnd = self.request.query_params.get('aDateTimeEndVal', '')  # TODO: convert to utc
+        if arrivalDateTimeBeg is not None and len(arrivalDateTimeBeg) > 0:
+            if arrivalDateTimeAction == 'before':
+                qs = qs.filter(arrival_date_time_utc__lt=arrivalDateTimeBeg)
+            elif arrivalDateTimeAction == 'after':
+                qs = qs.filter(arrival_date_time_utc__gt=arrivalDateTimeBeg)
+            elif arrivalDateTimeAction == 'between':
+                if arrivalDateTimeEnd is not None and len(arrivalDateTimeEnd) > 0:
+                    qs = qs.filter(arrival_date_time_utc__gte=arrivalDateTimeBeg)
+                    qs = qs.filter(arrival_date_time_utc__lte=arrivalDateTimeEnd)
+
+        flightTimeAction = self.request.query_params.get('flightTimeAct', '').lower()
         flightTimeMins = self.request.query_params.get('flightTimeMins', '')
-        if flightTimeAction == 'fewer':
-            qs = qs.filter(flight_time_minutes__lt=flightTimeMins)
-        elif flightTimeAction == 'exact':
-            qs = qs.filter(flight_time_minutes=flightTimeMins)
-        elif flightTimeAction == 'greater':
-            qs = qs.filter(flight_time_minutes__gt=flightTimeMins)
+        if flightTimeMins is not None and len(flightTimeMins) > 0:
+            if flightTimeAction == 'fewer than':
+                qs = qs.filter(flight_time_mins__lt=flightTimeMins)
+            elif flightTimeAction == 'is exactly':
+                qs = qs.filter(flight_time_mins=flightTimeMins)
+            elif flightTimeAction == 'greater than':
+                qs = qs.filter(flight_time_mins__gt=flightTimeMins)
 
         return qs.order_by('id')

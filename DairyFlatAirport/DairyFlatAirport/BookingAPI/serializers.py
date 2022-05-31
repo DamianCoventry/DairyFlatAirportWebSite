@@ -27,14 +27,14 @@ class AeroplaneSerializer(serializers.ModelSerializer):
 class AirportSerializer(serializers.ModelSerializer):
     class Meta:
         model = Airport
-        fields = ['id', 'code', 'name', 'city', 'country', 'timezone_hours', 'timezone_minutes']
+        fields = ['id', 'code', 'name', 'city', 'country', 'timezone']
 
 
 class FlightLegSerializer(serializers.ModelSerializer):
     class Meta:
         model = FlightLeg
         fields = ['id', 'number', 'aeroplane', 'departure_airport', 'arrival_airport', 'cost_dollars',
-                  'arrival_date_time_utc', 'departure_date_time_utc']
+                  'arrival_date_time_utc', 'departure_date_time_utc', 'flight_time_mins']
         depth = 1
 
 

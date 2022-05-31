@@ -34,6 +34,7 @@
                             document.getElementById("departsDateTime").value = json.departure_date_time_utc;
                             document.getElementById("arrivesAirport").value = json.arrival_airport.name;
                             document.getElementById("arrivesDateTime").value = json.arrival_date_time_utc;
+                            document.getElementById("flightTimeMins").value = json.flight_time_mins;
                         }, 1000);
                     },
                     function(code, json) {
@@ -117,6 +118,10 @@
                     <div class="col">
                         <label for="makeModel">Aeroplane Make/Model</label>
                         <input type="text" class="form-control" id="makeModel" placeholder="Aeroplane Make/Model" readonly>
+                    </div>
+                    <div class="col">
+                        <label for="makeModel">Flight Time (minutes)</label>
+                        <input type="text" class="form-control" id="flightTimeMins" placeholder="Flight Time (minutes)" readonly>
                     </div>
                 </div>
                 <div class="row">

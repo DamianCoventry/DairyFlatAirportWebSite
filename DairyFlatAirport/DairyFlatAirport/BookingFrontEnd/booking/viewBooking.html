@@ -111,6 +111,9 @@
 
                                 newCell = newRow.insertCell(5);
                                 newCell.appendChild(document.createTextNode(x.arrival_date_time_utc));
+
+                                newCell = newRow.insertCell(6);
+                                newCell.appendChild(document.createTextNode(x.flight_time_mins));
                             });
 
                             oldTbody.parentNode.replaceChild(newTbody, oldTbody);
@@ -606,11 +609,12 @@
                         <th scope="col">Departure Date/Time</th>
                         <th scope="col">Arrival Airport</th>
                         <th scope="col">Arrival DateTime</th>
+                        <th scope="col">Flight Time (minutes)</th>
                     </tr>
                 </thead>
                 <tbody>
                     <tr>
-                        <td colspan="6">
+                        <td colspan="7">
                             <div class="text-center">
                                 <div class="spinner-border" role="status">
                                     <span class="visually-hidden">Loading...</span>

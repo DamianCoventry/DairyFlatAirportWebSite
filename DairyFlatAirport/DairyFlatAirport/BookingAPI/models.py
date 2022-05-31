@@ -20,17 +20,14 @@ class Airport(models.Model):
     name = models.CharField(max_length=256, unique=True, null=False)
     city = models.CharField(max_length=128, null=False)
     country = models.CharField(max_length=128, null=False)
-    timezone_hours = models.IntegerField(default=0, null=False,
-                                         validators=[MinValueValidator(-12), MaxValueValidator(14)])
-    timezone_minutes = models.IntegerField(default=0, null=False,
-                                           validators=[MinValueValidator(0), MaxValueValidator(59)])
+    timezone = models.CharField(max_length=128, null=False, default='Pacific/Auckland')
 
 
 class FlightLeg(models.Model):
     def __str__(self):
         return f'Flight {self.number}, \'{self.departure_airport.name}\' -> \'{self.arrival_airport.name}\''
 
-    number = models.CharField(max_length=8, unique=True, null=False)
+    number = models.CharField(max_length=8, null=False)
     aeroplane = models.ForeignKey(Aeroplane, null=False, related_name='flightLegs', on_delete=models.CASCADE)
     departure_airport = models.ForeignKey(Airport, null=False, on_delete=models.CASCADE, related_name='departure')
     arrival_airport = models.ForeignKey(Airport, null=False, on_delete=models.CASCADE, related_name='arrival')
@@ -38,6 +35,8 @@ class FlightLeg(models.Model):
                                        validators=[MinValueValidator(1), MaxValueValidator(100000)])
     departure_date_time_utc = models.DateTimeField(auto_now_add=True, null=False)
     arrival_date_time_utc = models.DateTimeField(auto_now_add=True, null=False)
+    flight_time_mins = models.IntegerField(default=30, null=False,
+                                           validators=[MinValueValidator(1), MaxValueValidator(1000)])
 
 
 class Passenger(models.Model):

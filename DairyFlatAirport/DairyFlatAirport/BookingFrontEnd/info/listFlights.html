@@ -40,16 +40,21 @@
                             // TODO: format date/time correctly with time zone
 
                             newCell = newRow.insertCell(2);
-                            newCell.appendChild(document.createTextNode(x.departure_airport.name));
+                            newCell.appendChild(document.createTextNode(x.departure_airport.city));
 
                             newCell = newRow.insertCell(3);
-                            newCell.appendChild(document.createTextNode(x.departure_date_time_utc));
+                            var departsDateTime = new Date(x.departure_date_time_utc).toLocaleString("en-NZ", { timeZone: x.departure_airport.timezone });
+                            newCell.appendChild(document.createTextNode(departsDateTime + ' (' + x.departure_airport.timezone + ')'));
 
                             newCell = newRow.insertCell(4);
-                            newCell.appendChild(document.createTextNode(x.arrival_airport.name));
+                            newCell.appendChild(document.createTextNode(x.arrival_airport.city));
 
                             newCell = newRow.insertCell(5);
-                            newCell.appendChild(document.createTextNode(x.arrival_date_time_utc));
+                            var arrivesDateTime = new Date(x.arrival_date_time_utc).toLocaleString("en-NZ", { timeZone: x.arrival_airport.timezone });
+                            newCell.appendChild(document.createTextNode(arrivesDateTime + '\n(' + x.arrival_airport.timezone + ')'));
+
+                            newCell = newRow.insertCell(6);
+                            newCell.appendChild(document.createTextNode(x.flight_time_mins));
                         });
 
                         oldTbody.parentNode.replaceChild(newTbody, oldTbody);
@@ -171,15 +176,16 @@
                     <tr>
                         <th scope="col">Flight</th>
                         <th scope="col">Aeroplane</th>
-                        <th scope="col">Departure Airport</th>
+                        <th scope="col">Departs</th>
                         <th scope="col">Departure Date/Time</th>
-                        <th scope="col">Arrival Airport</th>
+                        <th scope="col">Arrives</th>
                         <th scope="col">Arrival DateTime</th>
+                        <th scope="col">Flight Time (minutes)</th>
                     </tr>
                 </thead>
                 <tbody>
                     <tr>
-                        <td colspan="6">
+                        <td colspan="7">
                             <div class="text-center">
                                 <div class="spinner-border" role="status">
                                     <span class="visually-hidden">Loading...</span>

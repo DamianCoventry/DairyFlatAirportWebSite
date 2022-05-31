@@ -14,6 +14,8 @@
             function showDepartureDateTimeBetween() {
                 departureDateTimeButton.innerText = 'between';
                 departureDateTimeEnd.style.display = "";
+                dDateTimeAct.value = 'between';
+                dDateTimeAct.value = text;
             }
             function hideDepartureDateTimeBetween(text) {
                 departureDateTimeButton.innerText = text;
@@ -22,10 +24,12 @@
             function showArrivalDateTimeBetween() {
                 arrivalDateTimeButton.innerText = 'between';
                 arrivalDateTimeEnd.style.display = "";
+                aDateTimeAct.value = 'between';
             }
             function hideArrivalDateTimeBetween(text) {
                 arrivalDateTimeButton.innerText = text;
                 arrivalDateTimeEnd.style.display = "none";
+                aDateTimeAct.value = text;
             }
         </SCRIPT>
     </HEAD>
@@ -90,14 +94,15 @@
                     <label for="departureCity" class="col-sm-2 col-form-label">Departure City</label>
                     <div class="col-sm-5">
                         <div class="input-group" id="departureCity">
-                            <button class="btn btn-success dropdown-toggle" id="departureCityButton" type="button" data-bs-toggle="dropdown" aria-expanded="false">contains</button>
+                            <input type="hidden" id="dCityAct" name="dCityAct" value="contains"/>
+                            <button type="button" class="btn btn-success dropdown-toggle" id="departureCityButton" data-bs-toggle="dropdown" aria-expanded="false">contains</button>
                             <ul class="dropdown-menu shadow">
-                                <li><button class="dropdown-item" type="button" onclick="departureCityButton.innerText='contains';">contains</button></li>
-                                <li><button class="dropdown-item" type="button" onclick="departureCityButton.innerText='starts with';">starts with</button></li>
-                                <li><button class="dropdown-item" type="button" onclick="departureCityButton.innerText='ends with';">ends with</button></li>
-                                <li><button class="dropdown-item" type="button" onclick="departureCityButton.innerText='is exactly';">is exactly</button></li>
+                                <li><button class="dropdown-item" type="button" onclick="departureCityButton.innerText='contains'; dCityAct.value='contains';">contains</button></li>
+                                <li><button class="dropdown-item" type="button" onclick="departureCityButton.innerText='starts with'; dCityAct.value='starts with';">starts with</button></li>
+                                <li><button class="dropdown-item" type="button" onclick="departureCityButton.innerText='ends with'; dCityAct.value='ends with';">ends with</button></li>
+                                <li><button class="dropdown-item" type="button" onclick="departureCityButton.innerText='is exactly'; dCityAct.value='is exactly';">is exactly</button></li>
                             </ul>
-                            <input type="text" class="form-control" id="departureCity" name="departureCity">
+                            <input type="text" class="form-control" id="departureCity" name="dCityVal">
                         </div>
                     </div>
                 </div>
@@ -106,14 +111,15 @@
                     <label for="arrivalCity" class="col-sm-2 col-form-label">Arrival City</label>
                     <div class="col-sm-5">
                         <div class="input-group" id="arrivalCity">
-                            <button class="btn btn-success dropdown-toggle" id="arrivalCityButton" type="button" data-bs-toggle="dropdown" aria-expanded="false">contains</button>
+                            <input type="hidden" id="aCityAct" name="aCityAct" value="contains"/>
+                            <button type="button" class="btn btn-success dropdown-toggle" id="arrivalCityButton" data-bs-toggle="dropdown" aria-expanded="false">contains</button>
                             <ul class="dropdown-menu shadow">
-                                <li><button class="dropdown-item" type="button" onclick="arrivalCityButton.innerText='contains';">contains</button></li>
-                                <li><button class="dropdown-item" type="button" onclick="arrivalCityButton.innerText='starts with';">starts with</button></li>
-                                <li><button class="dropdown-item" type="button" onclick="arrivalCityButton.innerText='ends with';">ends with</button></li>
-                                <li><button class="dropdown-item" type="button" onclick="arrivalCityButton.innerText='is exactly';">is exactly</button></li>
+                                <li><button class="dropdown-item" type="button" onclick="arrivalCityButton.innerText='contains'; aCityAct.value='contains';">contains</button></li>
+                                <li><button class="dropdown-item" type="button" onclick="arrivalCityButton.innerText='starts with'; aCityAct.value='starts with';">starts with</button></li>
+                                <li><button class="dropdown-item" type="button" onclick="arrivalCityButton.innerText='ends with'; aCityAct.value='ends with';">ends with</button></li>
+                                <li><button class="dropdown-item" type="button" onclick="arrivalCityButton.innerText='is exactly'; aCityAct.value='is exactly';">is exactly</button></li>
                             </ul>
-                            <input type="text" class="form-control" id="arrivalCity" name="arrivalCity">
+                            <input type="text" class="form-control" id="arrivalCity" name="aCityVal">
                         </div>
                     </div>
                 </div>
@@ -122,14 +128,15 @@
                     <label for="arrivalCity" class="col-sm-2 col-form-label">Departure Date/Time</label>
                     <div class="col-sm-5">
                         <div class="input-group" id="arrivalCity">
-                            <button class="btn btn-success dropdown-toggle" id="departureDateTimeButton" type="button" data-bs-toggle="dropdown" aria-expanded="false">before</button>
+                            <input type="hidden" id="dDateTimeAct" name="dDateTimeAct" value="before"/>
+                            <button type="button" class="btn btn-success dropdown-toggle" id="departureDateTimeButton" data-bs-toggle="dropdown" aria-expanded="false">before</button>
                             <ul class="dropdown-menu shadow">
                                 <li><button class="dropdown-item" type="button" onclick="hideDepartureDateTimeBetween('before');">before</button></li>
                                 <li><button class="dropdown-item" type="button" onclick="hideDepartureDateTimeBetween('after');">after</button></li>
                                 <li><button class="dropdown-item" type="button" onclick="showDepartureDateTimeBetween();">between</button></li>
                             </ul>
-                            <input type="datetime-local" class="form-control" id="departureDateTimeBegin" name="departureDateTimeBegin">
-                            <input type="datetime-local" class="form-control" id="departureDateTimeEnd" name="departureDateTimeEnd" style="display: none;">
+                            <input type="datetime-local" class="form-control" id="departureDateTimeBegin" name="dDateTimeBegVal">
+                            <input type="datetime-local" class="form-control" id="departureDateTimeEnd" name="dDateTimeEndVal" style="display: none;">
                         </div>
                     </div>
                 </div>
@@ -138,14 +145,15 @@
                     <label for="arrivalCity" class="col-sm-2 col-form-label">Arrival Date/Time</label>
                     <div class="col-sm-5">
                         <div class="input-group" id="arrivalCity">
-                            <button class="btn btn-success dropdown-toggle" id="arrivalDateTimeButton" type="button" data-bs-toggle="dropdown" aria-expanded="false">before</button>
+                            <input type="hidden" id="aDateTimeAct" name="aDateTimeAct" value="before"/>
+                            <button type="button" class="btn btn-success dropdown-toggle" id="arrivalDateTimeButton" data-bs-toggle="dropdown" aria-expanded="false">before</button>
                             <ul class="dropdown-menu shadow">
                                 <li><button class="dropdown-item" type="button" onclick="hideArrivalDateTimeBetween('before');">before</button></li>
                                 <li><button class="dropdown-item" type="button" onclick="hideArrivalDateTimeBetween('after');">after</button></li>
                                 <li><button class="dropdown-item" type="button" onclick="showArrivalDateTimeBetween();">between</button></li>
                             </ul>
-                            <input type="datetime-local" class="form-control" id="arrivalDateTimeBegin" name="arrivalDateTimeBegin">
-                            <input type="datetime-local" class="form-control" id="arrivalDateTimeEnd" name="arrivalDateTimeEnd" style="display: none;">
+                            <input type="datetime-local" class="form-control" id="arrivalDateTimeBegin" name="aDateTimeBegVal">
+                            <input type="datetime-local" class="form-control" id="arrivalDateTimeEnd" name="aDateTimeEndVal" style="display: none;">
                         </div>
                     </div>
                 </div>
@@ -154,13 +162,14 @@
                     <label for="arrivalCity" class="col-sm-2 col-form-label">Flight Time (mins)</label>
                     <div class="col-sm-5">
                         <div class="input-group" id="arrivalCity">
-                            <button class="btn btn-success dropdown-toggle" id="flightTimeButton" type="button" data-bs-toggle="dropdown" aria-expanded="false">fewer than</button>
+                            <input type="hidden" id="flightTimeAct" name="flightTimeAct" value="fewer than"/>
+                            <button type="button" class="btn btn-success dropdown-toggle" id="flightTimeButton" data-bs-toggle="dropdown" aria-expanded="false">fewer than</button>
                             <ul class="dropdown-menu shadow">
-                                <li><button class="dropdown-item" type="button" onclick="flightTimeButton.innerText='fewer than';">fewer than</button></li>
-                                <li><button class="dropdown-item" type="button" onclick="flightTimeButton.innerText='is exactly';">is exactly</button></li>
-                                <li><button class="dropdown-item" type="button" onclick="flightTimeButton.innerText='greater than';">greater than</button></li>
+                                <li><button class="dropdown-item" type="button" onclick="flightTimeButton.innerText='fewer than'; flightTimeAct.value='fewer than';">fewer than</button></li>
+                                <li><button class="dropdown-item" type="button" onclick="flightTimeButton.innerText='is exactly'; flightTimeAct.value='is exactly';">is exactly</button></li>
+                                <li><button class="dropdown-item" type="button" onclick="flightTimeButton.innerText='greater than'; flightTimeAct.value='greater than';">greater than</button></li>
                             </ul>
-                            <input type="number" class="form-control" id="flightTime" name="flightTime" min="1" max="500">
+                            <input type="number" class="form-control" id="flightTime" name="flightTimeMins" min="1" max="1000">
                         </div>
                     </div>
                 </div>
