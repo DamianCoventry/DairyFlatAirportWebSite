@@ -1,9 +1,8 @@
-from datetime import datetime
-
-from django.utils.dateparse import parse_datetime
+from datetime import datetime, timedelta
 from oauth2_provider.contrib.rest_framework import TokenHasReadWriteScope
-from DairyFlatAirport.BookingAPI.serializers import *
 from rest_framework import permissions, mixins, viewsets
+from DairyFlatAirport.BookingAPI.serializers import *
+import pytz
 
 
 class UserViewSet(viewsets.ModelViewSet):
@@ -95,66 +94,23 @@ class SearchFlightsViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
     permission_classes = [permissions.IsAuthenticated, TokenHasReadWriteScope]
 
     def get_queryset(self):
+        departureCityId = self.request.query_params.get('departureCity', 0)
+        arrivalCityId = self.request.query_params.get('arrivalCity', 0)
+
         qs = FlightLeg.objects.all()
+        qs = qs.filter(departure_airport__id=departureCityId)
+        qs = qs.filter(arrival_airport__id=arrivalCityId)
 
-        departureCityAction = self.request.query_params.get('dCityAct', '').lower()
-        departureCity = self.request.query_params.get('dCityVal', '')
-        if departureCity is not None and len(departureCity) > 0:
-            if departureCityAction == 'contains':
-                qs = qs.filter(departure_airport__city__icontains=departureCity)
-            elif departureCityAction == 'starts with':
-                qs = qs.filter(departure_airport__city__istartswith=departureCity)
-            elif departureCityAction == 'ends with':
-                qs = qs.filter(departure_airport__city__iendswith=departureCity)
-            elif departureCityAction == 'is exactly':
-                qs = qs.filter(departure_airport__city__iexact=departureCity)
+        departureDate = self.request.query_params.get('departureDate', '')  # expecting YYYY-MM-DD
+        timezone = self.request.query_params.get('timezone', '')  # expecting an IANA name
 
-        arrivalCityAction = self.request.query_params.get('aCityAct', '').lower()
-        arrivalCity = self.request.query_params.get('aCityVal', '')
-        if arrivalCity is not None and len(arrivalCity) > 0:
-            if arrivalCityAction == 'contains':
-                qs = qs.filter(arrival_airport__city__icontains=arrivalCity)
-            elif arrivalCityAction == 'starts with':
-                qs = qs.filter(arrival_airport__city__istartswith=arrivalCity)
-            elif arrivalCityAction == 'ends with':
-                qs = qs.filter(arrival_airport__city__iendswith=arrivalCity)
-            elif arrivalCityAction == 'is exactly':
-                qs = qs.filter(arrival_airport__city__iexact=arrivalCity)
+        if departureDate is not None and len(departureDate) > 0 and timezone is not None and len(timezone) > 0:
+            departureDate_naive = datetime.strptime(departureDate, "%Y-%m-%d")
 
-        departureDateTimeAction = self.request.query_params.get('dDateTimeAct', '').lower()
-        departureDateTimeBeg = self.request.query_params.get('dDateTimeBegVal', '')  # TODO: convert to utc
-        departureDateTimeEnd = self.request.query_params.get('dDateTimeEndVal', '')  # TODO: convert to utc
-        if departureDateTimeBeg is not None and len(departureDateTimeBeg) > 0:
-            if departureDateTimeAction == 'before':
-                qs = qs.filter(departure_date_time_utc__lt=departureDateTimeBeg)
-            elif departureDateTimeAction == 'after':
-                qs = qs.filter(departure_date_time_utc__gt=departureDateTimeBeg)
-            elif departureDateTimeAction == 'between':
-                if departureDateTimeEnd is not None and len(departureDateTimeEnd) > 0:
-                    qs = qs.filter(departure_date_time_utc__gte=departureDateTimeBeg)
-                    qs = qs.filter(departure_date_time_utc__lte=departureDateTimeEnd)
+            startOfDay = pytz.timezone(timezone).localize(departureDate_naive, is_dst=None)
+            endOfDay = startOfDay + timedelta(hours=23, minutes=59, seconds=59)
 
-        arrivalDateTimeAction = self.request.query_params.get('aDateTimeAct', '').lower()
-        arrivalDateTimeBeg = self.request.query_params.get('aDateTimeBegVal', '')  # TODO: convert to utc
-        arrivalDateTimeEnd = self.request.query_params.get('aDateTimeEndVal', '')  # TODO: convert to utc
-        if arrivalDateTimeBeg is not None and len(arrivalDateTimeBeg) > 0:
-            if arrivalDateTimeAction == 'before':
-                qs = qs.filter(arrival_date_time_utc__lt=arrivalDateTimeBeg)
-            elif arrivalDateTimeAction == 'after':
-                qs = qs.filter(arrival_date_time_utc__gt=arrivalDateTimeBeg)
-            elif arrivalDateTimeAction == 'between':
-                if arrivalDateTimeEnd is not None and len(arrivalDateTimeEnd) > 0:
-                    qs = qs.filter(arrival_date_time_utc__gte=arrivalDateTimeBeg)
-                    qs = qs.filter(arrival_date_time_utc__lte=arrivalDateTimeEnd)
-
-        flightTimeAction = self.request.query_params.get('flightTimeAct', '').lower()
-        flightTimeMins = self.request.query_params.get('flightTimeMins', '')
-        if flightTimeMins is not None and len(flightTimeMins) > 0:
-            if flightTimeAction == 'fewer than':
-                qs = qs.filter(flight_time_mins__lt=flightTimeMins)
-            elif flightTimeAction == 'is exactly':
-                qs = qs.filter(flight_time_mins=flightTimeMins)
-            elif flightTimeAction == 'greater than':
-                qs = qs.filter(flight_time_mins__gt=flightTimeMins)
+            qs = qs.filter(departure_date_time_utc__gte=startOfDay)
+            qs = qs.filter(departure_date_time_utc__lte=endOfDay)
 
         return qs.order_by('id')

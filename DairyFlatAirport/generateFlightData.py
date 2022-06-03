@@ -1,7 +1,8 @@
-from datetime import datetime, tzinfo, timedelta
+from datetime import datetime, timedelta
 from typing import Final
 
 import psycopg2
+import pytz
 
 # • A weekly “prestige” service to Sydney using the SyberJet aircraft. The outbound flight
 #   departs Dairy Flat on Friday early morning with the return inbound flight departing
@@ -29,7 +30,6 @@ import psycopg2
 
 
 # these numbers are the PKs within my database
-import pytz
 
 SYBERJET_SJ30I: Final = 1
 CIRRUS_SF50_A: Final = 2
@@ -101,7 +101,7 @@ def quote(s):
 
 
 def toRdbmsDateTime(dt):
-    return quote(dt.astimezone(pytz.UTC).isoformat())
+    return quote(dt.astimezone(pytz.UTC).isoformat())  # store the datetime values in the RDBMS as UTC
 
 
 def insertIntoFlightLeg(values):
@@ -124,9 +124,8 @@ def insertFlightLeg(cursor, flightNumber, flightCost, aeroplane, departureAirpor
             str(flightTime)))
 
 
-def makeFlight(cursor, route, flightNumber, aeroplane,
-               departureAirport, departureDateTime,
-               arrivalAirport, arrivalAirportTZ=None):
+def makeFlight(cursor, route, flightNumber, aeroplane, departureAirport, departureDateTime, arrivalAirport,
+               arrivalAirportTZ=None):
     flightTime = FLIGHT_TIMES[route]
     departs = departureDateTime
     arrives = departs + timedelta(minutes=flightTime)
@@ -153,7 +152,7 @@ def insertSydneyFlightLegs(cursor, aeroplanePK):
     sunday1May2022_NZST = nzst.localize(sunday1May2022_naive, is_dst=None)
     sunday1May2022_AEST = aest.localize(sunday1May2022_naive, is_dst=None)
 
-    friEarlyMorningNZST = sunday1May2022_NZST + timedelta(days=5, hours=6)
+    friEarlyMorningNZST = sunday1May2022_NZST + timedelta(days=5, hours=5, minutes=30)
     friMidMorningNZST = sunday1May2022_NZST + timedelta(days=5, hours=9)
     sunMidAfternoonAEST = sunday1May2022_AEST + timedelta(days=7, hours=15)
 
@@ -259,10 +258,10 @@ def insertChathamIslandsFlightLegs(cursor, aeroplanePK):
 
     for i in range(NUM_OF_WEEKS):
         makeFlight(cursor, 'nsh->chi', 65, aeroplanePK,
-                   ROTORUA_AIRPORT, tueMidMorningNZST, TUUTA_AIRPORT, chast)  # different tz
+                   NORTH_SHORE_AERODROME, tueMidMorningNZST, TUUTA_AIRPORT, chast)  # different tz
 
         makeFlight(cursor, 'nsh->chi', 66, aeroplanePK,
-                   ROTORUA_AIRPORT, tueMidMorningNZST + timedelta(days=3), TUUTA_AIRPORT, chast)  # different tz
+                   NORTH_SHORE_AERODROME, tueMidMorningNZST + timedelta(days=3), TUUTA_AIRPORT, chast)  # different tz
 
         makeFlight(cursor, 'chi->nsh', 67, aeroplanePK,
                    TUUTA_AIRPORT, wedMidMorningCHAST, NORTH_SHORE_AERODROME, nzst)  # different tz

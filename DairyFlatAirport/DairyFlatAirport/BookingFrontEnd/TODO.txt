@@ -1,3 +1,11 @@
+DONE    selectFlights page:
+DONE            Conditionally insert return flight into 
+DONE            Make radio buttons mutually exclusive
+DONE            Enable/disable the Next buttons
+DONE            When using the previous button, generate the correct URL params
+DONE            When using the next button, generate the correct URL params
+                Update the itinerary on the right side
+                Handle 'no flights happening between those dates" nicely
 DONE    Landing
         Search for flights
             - "The ability for a user to conveniently browse the data for flights between two centres on (or between) selected dates."
@@ -56,7 +64,9 @@ DONE    Put a minimum time on spinners
         Use that horrible looking mapping program for the web dev assignment
         Do not allow bookings if aeroplane is full
         the 'right chevron' on the paginator has the wrong page value
-
+        Use the other parts of the 'book a flights' form
+        Print the user's timezone on the GUI where dates are entered
+        How to implement multistop?
 
 
 

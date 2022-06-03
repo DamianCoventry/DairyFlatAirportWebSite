@@ -16,18 +16,9 @@
                 var currentPage = (params.page == null ? 1 : params.page);
 
                 var options = {
-                    departureCityAction: params.dCityAct,
-                    departureCityValue: params.dCityVal,
-                    arrivalCityAction: params.aCityAct,
-                    arrivalCityValue: params.aCityVal,
-                    departureDateTimeAction: params.dDateTimeAct,
-                    departureDateTimeValueBeg: params.dDateTimeBegVal,
-                    departureDateTimeValueEnd: params.dDateTimeEndVal,
-                    arrivalDateTimeAction: params.aDateTimeAct,
-                    arrivalDateTimeValueBeg: params.aDateTimeBegVal,
-                    arrivalDateTimeValueEnd: params.aDateTimeEndVal,
-                    flightTimeAction: params.flightTimeAct,
-                    flightTimeValue: params.flightTimeMins
+                    departureCity: params.fromCity,
+                    arrivalCity: params.toCity,
+                    departureDate: params.leaveDate
                 };
 
                 const api = new BookingAPI();

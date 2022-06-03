@@ -10,70 +10,188 @@
         <LINK href="/styles/wizard.css" rel="stylesheet"/>
 
         <SCRIPT type="text/javascript" src="/javascript/bookingAPI.js"></SCRIPT>
+        
         <SCRIPT type="text/javascript">
             window.onload = function() {
-                const api = new BookingAPI();
-                api.listFlights(function (json) {
-                    var table = document.getElementById("flightsTable");
-                    var oldTbody = table.tBodies[0];
-                    var newTbody = document.createElement("tbody");
+                document.getElementById('leaveDate').valueAsDate = new Date();
+                var oneWeekFromToday = new Date();
+                oneWeekFromToday.setDate(oneWeekFromToday.getDate() + 7);
+                document.getElementById('returnDate').valueAsDate = oneWeekFromToday;
 
+                timezoneId1.innerText = Intl.DateTimeFormat().resolvedOptions().timeZone;
+                timezoneId2.innerText = timezoneId1.innerText;
+                timezoneId3.value = timezoneId1.innerText;
+
+                setTimeout(function () {
+                    const api = new BookingAPI();
+                    api.listAirports(1, processReceivedAirportPage,
+                        function (code, json) {
+                            document.getElementById("title").value = "code: " + code + ", message: " + json.detail;
+                        });
+                    }, 500);
+            }
+
+            function processReceivedAirportPage(json) {
+                if (json.results != null) {
                     json.results.forEach(x => {
-                        var newRow = newTbody.insertRow(-1);
+                            var option = document.createElement("option");
+                            option.setAttribute("value", x.id);
+                            option.innerText = x.city; // TODO: use the rest of the information
+                            fromCity.appendChild(option);
+                            option = document.createElement("option");
+                            option.setAttribute("value", x.id);
+                            option.innerText = x.city; // TODO: use the rest of the information
+                            fromCity.appendChild(option);
+                            toCity.appendChild(option);
+                        });
 
-                        var link = document.createElement('a');
-                        link.setAttribute('href', "/info/viewFlight.html?id=" + x.id);
-                        link.innerText = x.number;
-                        var newCell = newRow.insertCell(0);
-                        newCell.appendChild(link);
-
-                        link = document.createElement('a');
-                        link.setAttribute('href', "/info/viewAeroplane.html?id=" + x.aeroplane.id);
-                        link.innerText = x.aeroplane.make_model;
-                        newCell = newRow.insertCell(1);
-                        newCell.appendChild(link);
-
-                        newCell = newRow.insertCell(2);
-                        // TODO: format departure_time_of_day nicely
-                        // TODO: calculate correct timezone
-                        var departs = x.departure_airport.name + " " + x.departure_time_of_day;
-                        newCell.appendChild(document.createTextNode(departs));
-
-                        newCell = newRow.insertCell(3);
-                        // TODO: calculate arrival time, in correct timezone
-                        newCell.appendChild(document.createTextNode(x.arrival_airport.name));
-
-                        newCell = newRow.insertCell(4);
-                        newCell.appendChild(document.createTextNode(x.flight_time_minutes));
-
-                        newCell = newRow.insertCell(5);
-                        var daysOfWeek = "";
-                        if (x.departs_sun === true) daysOfWeek += "Sun,"
-                        if (x.departs_mon === true) daysOfWeek += "Mon,"
-                        if (x.departs_tue === true) daysOfWeek += "Tue,"
-                        if (x.departs_wed === true) daysOfWeek += "Wed,"
-                        if (x.departs_thu === true) daysOfWeek += "Thu,"
-                        if (x.departs_fri === true) daysOfWeek += "Fri,"
-                        if (x.departs_sat === true) daysOfWeek += "Sat,"
-                        if (daysOfWeek === "Mon,Tue,Wed,Thu,Fri,") {
-                            daysOfWeek = "Mon-Fri,"
+                    if (json.next != null) {
+                        const re = /\?page=(.+)$/;
+                        const nextPage = re.exec(json.next);
+                        if (nextPage != null && nextPage.length > 1) {
+                            const api = new BookingAPI();
+                            api.listAirports(nextPage[1], processReceivedAirportPage,
+                                function (code, json) {
+                                    document.getElementById("title").value = "code: " + code + ", message: " + json.detail;
+                                });
+                            return;
                         }
-                        newCell.appendChild(document.createTextNode(daysOfWeek.slice(0, -1))); // remove trailing ',' character
+                    }
+                }
+
+                // ?fromCity=1
+                // &toCity=6
+                // &tripType=return
+                // &leaveDate=2022-06-02
+                // &returnDate=2022-06-09
+                // &numPassengers=1
+
+                // ?flyTo=rotorua
+
+                const params = new Proxy(new URLSearchParams(window.location.search), {
+                        get: (searchParams, prop) => searchParams.get(prop),
                     });
 
-                    oldTbody.parentNode.replaceChild(newTbody, oldTbody);
-                },
-                function(code, json) {
-                    var table = document.getElementById("flightsTable");
-                    var oldTbody = table.tBodies[0];
-                    var newTbody = document.createElement("tbody");
+                var selectedFromCity = null, selectedToCity = null;
+                if (params.flyTo != null && doesSelectContainOption(toCity, params.flyTo)) {
+                    selectedFromCity = getFirstNonMatchingSelectOption(fromCity, params.flyTo);
+                    selectedToCity = params.flyTo;
+                }
+                else if(params.fromCity != null && params.toCity != null) {
+                    fromCity.value = params.fromCity;
+                    selectedFromCity = fromCity.options[fromCity.selectedIndex].text;
+                    toCity.value = params.toCity;
+                    selectedToCity = toCity.options[toCity.selectedIndex].text;
+                }
+                else { // defaults
+                    selectedFromCity = 'North Shore';
+                    selectedToCity = 'Rotorua'
+                }
 
-                    var newRow = newTbody.insertRow(-1);
-                    var newCell = newRow.insertCell(0);
-                    newCell.appendChild(document.createTextNode("code: " + code + ", message: " + json.detail));
+                selectOption(toCity, selectedToCity);
+                selectOption(fromCity, selectedFromCity);
+                disableSelectOption(toCity, selectedFromCity);
+                disableSelectOption(fromCity, selectedToCity);
 
-                    oldTbody.parentNode.replaceChild(newTbody, oldTbody);
-                });
+                fromCityName.value = selectedFromCity;
+                toCityName.value = selectedToCity;
+                searchButton.disabled = false;
+
+                if (params.tripType != null) {
+                    returnTrip.checked = (params.tripType.toLowerCase() === 'return');
+                    oneWayTrip.checked = (params.tripType.toLowerCase() === 'oneway');
+                }
+
+                if (params.numPassengers != null) {
+                    numPassengers.value = params.numPassengers;
+                }
+
+                if (params.leaveDate != null) {
+                    leaveDate.value = params.leaveDate;
+                }
+
+                if (params.returnDate != null) {
+                    returnDate.value = params.returnDate;
+                }
+
+                swapButtonDiv.style.display = '';
+                fromCityDiv.style.display = '';
+                toCityDiv.style.display = '';
+                retrievingCitiesSpinner.style.display = 'none';
+            }
+
+            function doesSelectContainOption(select, option) {
+                for (var i = 0; i< select.length; ++i) {
+                    if (select.options[i].text.toLowerCase() == option.toLowerCase()) {
+                        return true;
+                    }
+                }
+                return false;
+            }
+
+            function disableSelectOption(select, option) {
+                for (var i = 0; i< select.length; ++i) {
+                    select.options[i].disabled =
+                        (select.options[i].text.toLowerCase() == option.toLowerCase());
+                }
+            }
+
+            function selectOption(select, option) {
+                for (var i = 0; i< select.length; ++i) {
+                    if (select.options[i].text.toLowerCase() == option.toLowerCase()) {
+                        select.value = select.options[i].value;
+                        return;
+                    }
+                }
+            }
+
+            function getFirstNonMatchingSelectOption(select, option) {
+                for (var i = 0; i< select.length; ++i) {
+                    if (select.options[i].text.toLowerCase() != option.toLowerCase()) {
+                        return select.options[i].text;
+                    }
+                }
+                return option;
+            }
+
+            function returnTripChecked() {
+                returnDateDiv.style.display = '';
+            }
+            function oneWayTripChecked() {
+                returnDateDiv.style.display = 'none';
+            }
+
+            function searchButtonclicked() {
+                const forms = document.querySelectorAll('.needs-validation');
+                Array.from(forms).forEach(form => {
+                    if (form.checkValidity()) {
+                        form.submit();
+                    }
+                    else {
+                        event.preventDefault();
+                        event.stopPropagation();
+                        form.classList.add('was-validated');
+                    }
+                }, false);
+            }
+
+            function fromCityChanged() {
+                fromCityName.value = fromCity.options[fromCity.selectedIndex].text;
+                disableSelectOption(toCity, fromCityName.value);
+            }
+
+            function toCityChanged() {
+                toCityName.value = toCity.options[toCity.selectedIndex].text;
+                disableSelectOption(fromCity, toCityName.value);
+            }
+
+            function swapFromAndTo() {
+                a = fromCity.options[fromCity.selectedIndex].text;
+                b = toCity.options[toCity.selectedIndex].text;
+                selectOption(fromCity, b);
+                selectOption(toCity, a);
+                fromCityChanged();
+                toCityChanged();
             }
         </SCRIPT>
     </HEAD>
@@ -111,6 +229,7 @@
             </DIV>
         </NAV>
         <MAIN class="container">
+
             <HEADER class="pb-3 mt-3 mb-5 border-bottom">
                 <H1 class="h1 d-flex align-items-center text-dark text-decoration-none">
                     <i class="fa-solid fa-calendar-days"></i>
@@ -130,55 +249,99 @@
                 </ul>
             </DIV>
 
-            <div class="row">
-                <div class="col-md-7">
-                    <h4 class="mb-3 text-primary">Search for Flights</h4>
+            <div class="row justify-content-evenly">
 
-                    <div>TODO: put Search for Flights form here</div>
+                <div class="col-md-6">
+                    <h4 class="mb-3 text-primary" id="title">Search for Flights</h4>
 
-                    <a class="btn btn-primary" href="/booking/selectFlights.html">Next</a>
+                    <FORM action="/booking/selectFlights.html" method="GET" class="needs-validation" novalidate>
 
+                        <div class="row mb-3">
+                            <DIV class="col" id="fromCityDiv" style="display: none;">
+                                <LABEL for="fromCity" class="form-label">From</LABEL>
+                                <SELECT id="fromCity" name="fromCity" class="form-control" onchange="fromCityChanged();" required></SELECT>
+                                <DIV class="invalid-feedback">Please enter a city to travel from</DIV>
+                                <INPUT type="hidden" id="fromCityName" name="fromCityName"/>
+                            </DIV>
+
+                            <div class="col col-md-auto align-self-end" id="swapButtonDiv" style="display: none;">
+                                <BUTTON class="btn btn-success" type="button" onclick="swapFromAndTo();">
+                                    <i class="fa-solid fa-arrow-right-arrow-left"></i>
+                                </BUTTON>
+                            </div>
+
+                            <div class="col" id="toCityDiv" style="display: none;">
+                                <LABEL for="toCity" class="form-label">To</LABEL>
+                                <SELECT id="toCity" name="toCity" class="form-control" onchange="toCityChanged();" required></SELECT>
+                                <div class="invalid-feedback">Please enter a city to travel to</div>
+                                <input type="hidden" id="toCityName" name="toCityName"/>
+                            </div>
+
+                            <div class="col text-center" id="retrievingCitiesSpinner">
+                                <span class="spinner-border text-end text-success" role="status"></span>
+                            </div>
+                        </div>
+
+                        <div class="row mb-3">
+                            <div class="col-3">
+                                <div class="form-check">
+                                    <LABEL for="returnTrip" class="form-check-label">Return trip</LABEL>
+                                    <INPUT type="radio" id="returnTrip" name="tripType" value="return" class="form-check-input" onchange="returnTripChecked();" checked/>
+                                </div>
+                            </div>
+                            <div class="col">
+                                <div class="form-check">
+                                    <LABEL for="oneWayTrip" class="form-check-label">One-way trip</LABEL>
+                                    <INPUT type="radio" id="oneWayTrip" name="tripType" value="oneway" class="form-check-input" onchange="oneWayTripChecked();"/>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row mb-3">
+                            <div class="col">
+                                <LABEL for="leaveDate" class="form-label" id="leaveDateLabel">Leave Date</LABEL>
+                                <INPUT type="date" id="leaveDate" name="leaveDate" class="form-control" required/>
+                                <small class="text-muted" id="leaveDateTimezone">Timezone:&nbsp;
+                                    <span class="text-decoration-underline" id="timezoneId1"></span></small>
+                                <div class="invalid-feedback">Please choose a leave date</div>
+                            </div>
+                            <div class="col" id="returnDateDiv">
+                                <LABEL for="returnDate" class="form-label" id="returnDateLabel">Return Date</LABEL>
+                                <INPUT type="date" id="returnDate" name="returnDate" class="form-control" required/>
+                                <small class="text-muted" id="returnDateTimezone">Timezone:&nbsp;
+                                    <span class="text-decoration-underline" id="timezoneId2"></span></small>
+                                <div class="invalid-feedback">Please choose a return date</div>
+                            </div>
+                            <input type="hidden" id="timezoneId3" name="timezone"/>
+                        </div>
+
+                        <div class="row mb-3">
+                            <div class="col">
+                                <LABEL for="fromCity" class="form-label">Number of Passengers</LABEL>
+                                <INPUT type="number" id="numPassengers" name="numPassengers" class="form-control" value="1" min="1" max="6" required/>
+                                <div class="invalid-feedback">Please enter a number from 1 to 6 inclusive</div>
+                            </div>
+                        </div>
+
+                        <div class="row my-4 justify-content-center">
+                            <div class="col text-end">
+                                <button type="button" class="btn btn-primary" id="searchButton" onclick="searchButtonclicked();" disabled>
+                                    <i class="fa-solid fa-search"></i>&nbsp;Search
+                                </button>
+                            </div>
+                        </div>
+                    </FORM>
                 </div>
-                <div class="col-md-5 col-lg-4 order-md-last">
-                    <h4 class="d-flex justify-content-between align-items-center mb-3">
-                        <span class="text-primary">Your Itinerary</span>
-                        <span class="badge bg-primary rounded-pill">3</span>
-                    </h4>
-                    <ul class="list-group mb-3">
-                        <li class="list-group-item d-flex justify-content-between lh-sm">
-                            <div>
-                                <h6 class="my-0">Product name</h6>
-                                <small class="text-muted">Brief description</small>
-                            </div>
-                            <span class="text-muted">$12</span>
-                        </li>
-                        <li class="list-group-item d-flex justify-content-between lh-sm">
-                            <div>
-                                <h6 class="my-0">Second product</h6>
-                                <small class="text-muted">Brief description</small>
-                            </div>
-                            <span class="text-muted">$8</span>
-                        </li>
-                        <li class="list-group-item d-flex justify-content-between lh-sm">
-                            <div>
-                                <h6 class="my-0">Third item</h6>
-                                <small class="text-muted">Brief description</small>
-                            </div>
-                            <span class="text-muted">$5</span>
-                        </li>
-                        <li class="list-group-item d-flex justify-content-between">
-                            <span>Total (USD)</span>
-                            <strong>$20</strong>
-                        </li>
-                    </ul>
-                </div>
+
             </div>
+
             <FOOTER class="container">
                 <P>Built by Damian Coventry, Copyright &copy; 2022, all rights reserved. &middot; <A href="#">Privacy</A> &middot; <A href="#">Terms</A>
                 </P>
                 <P>Flight icon created by Freepik &middot; <A href="https://www.flaticon.com/free-icons/plane" title="plane icons">Flaticon</A>
                 </P>
             </FOOTER>
+
         </MAIN>
         <SCRIPT src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-ka7Sk0Gln4gmtz2MlQnikT1wXgYsOg+OMhuP+IlRH9sENBO0LRn5q+8nbTov4+1p" crossorigin="anonymous">
         </SCRIPT>
