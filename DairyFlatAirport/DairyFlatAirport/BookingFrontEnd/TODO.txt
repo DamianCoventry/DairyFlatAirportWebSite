@@ -4,41 +4,24 @@ DONE            Make radio buttons mutually exclusive
 DONE            Enable/disable the Next buttons
 DONE            When using the previous button, generate the correct URL params
 DONE            When using the next button, generate the correct URL params
-                Update the itinerary on the right side
-                Handle 'no flights happening between those dates" nicely
+DONE            Update the itinerary on the right side
+DONE            Handle 'no flights happening between those dates" nicely
 DONE    Landing
-        Search for flights
-            - "The ability for a user to conveniently browse the data for flights between two centres on (or between) selected dates."
-            - "It is expected that you use actual dates and not just days of the week."
-            - format departure_time_of_day nicely
-            - calculate correct timezone
-            - calculate arrival time, in correct timezone
-        View search results
-        List/filter flights (1)
-DONE        - insert pager
-            - "It is expected that you use actual dates and not just days of the week."
-            - format departure_time_of_day nicely
-            - calculate correct timezone
-            - calculate arrival time, in correct timezone
-        View flight
-            - "It is expected that you use actual dates and not just days of the week."
-            - format departure_time_of_day nicely
-            - calculate correct timezone
-            - calculate arrival time, in correct timezone
-        List/filter aeroplanes
+DONE    Search for flights
+DONE        - "The ability for a user to conveniently browse the data for flights between two centres on (or between) selected dates."
+DONE        - "It is expected that you use actual dates and not just days of the week."
+DONE        - format departure_time_of_day nicely
+DONE        - calculate correct timezone
+DONE        - calculate arrival time, in correct timezone
+DONE    List/filter aeroplanes
 DONE        - insert pager
         View aeroplane needs an image
-        List/filter flights (2)
-DONE        - insert pager
-            - "It is expected that you use actual dates and not just days of the week."
-            - format departure_time_of_day nicely
-            - calculate correct timezone
-            - calculate arrival time, in correct timezone
-        Select your flights
-            - "It is expected that you use actual dates and not just days of the week."
-            - format departure_time_of_day nicely
-            - calculate correct timezone
-            - calculate arrival time, in correct timezone
+        Insurance types need an image each
+DONE    Select your flights
+DONE        - "It is expected that you use actual dates and not just days of the week."
+DONE        - format departure_time_of_day nicely
+DONE        - calculate correct timezone
+DONE        - calculate arrival time, in correct timezone
         Passenger details
         Extras
         Select your seats
@@ -56,16 +39,15 @@ DONE    Edit extras
         Get authentication code dynamically
         Reorganize toolbar left hand links
 DONE    Put a minimum time on spinners
-        on the viewFlight page: Change text within the Flight table to links for the viewAeroplane page
         on the viewAeroplane page: Change text within text boxes to links for the viewFlight page
-        Make the buttons on the home page 'do the right thing'
+DONE    Make the buttons on the home page 'do the right thing'
         If 401 received, then route to a 'please login' screen.
         Should not be showing other people's data. Need to compare against 'created_by' column/variable.
         Use that horrible looking mapping program for the web dev assignment
         Do not allow bookings if aeroplane is full
         the 'right chevron' on the paginator has the wrong page value
-        Use the other parts of the 'book a flights' form
-        Print the user's timezone on the GUI where dates are entered
+DONE    Use the other parts of the 'book a flight' form
+DONE    Print the user's timezone on the GUI where dates are entered
         How to implement multistop?
 
 
@@ -81,7 +63,7 @@ Questions
         View/edit user?
         Delete user?
         Use refresh token?
-        Get rid of search box in toolbar? Or redirect to search results page?
+DONE    Get rid of search box in toolbar? Or redirect to search results page?
         CTA buttons for empty lists?
 
 

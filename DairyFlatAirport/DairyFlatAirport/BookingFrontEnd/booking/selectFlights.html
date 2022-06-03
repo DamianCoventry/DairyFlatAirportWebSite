@@ -31,12 +31,15 @@
                         get: (searchParams, prop) => searchParams.get(prop),
                     });
 
-                toCityName1.innerText = params.toCityName;
-                toCityName2.innerText = params.toCityName;
-                toCityName3.innerText = params.toCityName;
                 fromCityName1.innerHTML = params.fromCityName;
                 fromCityName2.innerHTML = params.fromCityName;
                 fromCityName3.innerHTML = params.fromCityName;
+
+                toCityName1.innerText = params.toCityName;
+                toCityName2.innerText = params.toCityName;
+                toCityName3.innerText = params.toCityName;
+                numPassengers.innerText = params.numPassengers;
+
                 fromCityDate.innerText = toLocaleDate(new Date(params.leaveDate), params.timezone);
                 toCityDate.innerText = toLocaleDate(new Date(params.returnDate), params.timezone);
 
@@ -48,7 +51,7 @@
                     params.leaveDate, params.timezone,
                     true);
 
-                if (params.tripType === 'return') {
+                if (isReturnTrip()) {
                     createFlightPagination(params.returnDate, params.timezone, false, 'returnDate');
                     searchFlights(
                         params.page == null ? 1 : params.page,
@@ -59,7 +62,16 @@
                 }
                 else {
                     returnFlightGUI.style.display = 'none';
+                    returnFlightItineraryGUI.style.display = 'none';
                 }
+            }
+
+            function isReturnTrip() {
+                const params = new Proxy(new URLSearchParams(window.location.search), {
+                        get: (searchParams, prop) => searchParams.get(prop),
+                    });
+
+                return params.tripType === 'return';
             }
 
             function insertTableSpinner(flightTableName) {
@@ -167,8 +179,60 @@
                             newCell.appendChild(document.createTextNode(s + (x.flight_time_mins%60) + 'm'));
 
                             newCell = newRow.insertCell(5);
-                            newCell.appendChild(document.createTextNode('$' + x.cost_dollars));
+                            span = document.createElement('span');
+                            span.appendChild(document.createTextNode('$'));
+                            newCell.appendChild(span);
+
+                            span = document.createElement('span');
+                            span.setAttribute('id', (outbound ? 'outboundCost' : 'inboundCost') + x.id);
+                            span.appendChild(document.createTextNode(x.cost_dollars));
+                            newCell.appendChild(span);
                         });
+
+                        if (json.results.length == 0) {
+                            var newRow = newTbody.insertRow(-1);
+
+                            var newCell = newRow.insertCell(0);
+                            newCell.setAttribute('colspan', '6');
+
+                            var div1 = document.createElement('div');
+                            div1.setAttribute('class', 'row');
+
+                            var div2 = document.createElement('div');
+                            div2.setAttribute('class', 'col text-center');
+
+                            const params = new Proxy(new URLSearchParams(window.location.search), {
+                                    get: (searchParams, prop) => searchParams.get(prop),
+                                });
+
+                            var span = document.createElement('span');
+                            span.setAttribute('class', 'fst-italic');
+                            span.innerText = 'There are no flights from ';
+                            div2.appendChild(span);
+
+                            span = document.createElement('span');
+                            span.setAttribute('class', 'fst-italic fw-bold text-success');
+                            span.innerText = outbound ? params.fromCityName : params.toCityName;
+                            div2.appendChild(span);
+
+                            span = document.createElement('span');
+                            span.setAttribute('class', 'fst-italic');
+                            span.innerText = ' to ';
+                            div2.appendChild(span);
+
+                            span = document.createElement('span');
+                            span.setAttribute('class', 'fst-italic fw-bold text-success');
+                            span.innerText = outbound ? params.toCityName : params.fromCityName;
+                            div2.appendChild(span);
+
+                            span = document.createElement('span');
+                            span.setAttribute('class', 'fst-italic');
+                            span.innerText = ' on this date.';
+                            div2.appendChild(span);
+
+                            div1.appendChild(div2);                            
+                            newCell.appendChild(div1);
+                        }
 
                         oldTbody.parentNode.replaceChild(newTbody, oldTbody);
                     }, 1000);
@@ -187,18 +251,22 @@
             }
 
             function outboundRadioButtonChanged(event) {
-                radioButtonChanged('outboundFlightId', event);
-                updateFlightTime(fromCityTime, true);
-                updateTotalPrice();
+                console.log('outboundRadioButtonChanged');
+                uncheckOtherRadioButtons('outboundFlightId', event);
+                enableOrDisableNextButton();
+                updateItineraryDateTime(fromCityTime, true);
+                updateItineraryTotalCost();
             }
 
             function inboundRadioButtonChanged(event) {
-                radioButtonChanged('inboundFlightId', event);
-                updateFlightTime(toCityTime, false);
-                updateTotalPrice();
+                console.log('inboundRadioButtonChanged');
+                uncheckOtherRadioButtons('inboundFlightId', event);
+                enableOrDisableNextButton();
+                updateItineraryDateTime(toCityTime, false);
+                updateItineraryTotalCost();
             }
 
-            function radioButtonChanged(namePrefix, event) {
+            function uncheckOtherRadioButtons(namePrefix, event) {
                 if (!event.currentTarget.checked) {
                     return;
                 }
@@ -209,11 +277,9 @@
                         x.checked = (event.currentTarget.id == x.id);
                     }
                 }
-
-                enableNextButton();
             }
 
-            function updateFlightTime(updateThisSpan, outbound) {
+            function updateItineraryDateTime(updateThisSpan, outbound) {
                 var flightPrefix = '', timePrefix = '', timezonePrefix = '';
                 if (outbound) {
                     flightPrefix = 'outboundFlightId';
@@ -226,8 +292,8 @@
                     timezonePrefix = 'inboundTimezone';
                 }
 
-                var timePrefixSpan = getCheckedFlightRowValue('span', flightPrefix, timePrefix);
-                var timezonePrefixSpan = getCheckedFlightRowValue('small', flightPrefix, timezonePrefix);
+                var timePrefixSpan = getChosenFlightValue('span', flightPrefix, timePrefix);
+                var timezonePrefixSpan = getChosenFlightValue('small', flightPrefix, timezonePrefix);
 
                 if (timePrefixSpan != null && timezonePrefixSpan != null) {
                     updateThisSpan.innerHTML =
@@ -239,11 +305,33 @@
                 }
             }
 
-            function updateTotalPrice() {
-                // TODO: totalPrice
+            function updateItineraryTotalCost() {
+                var cost = 0;
+
+                var outboundCost = getChosenFlightValue('span', 'outboundFlightId', 'outboundCost');
+                if (outboundCost != null) {
+                    console.log('outbound cost for outboundFlightId is ' + outboundCost);
+                    cost += parseInt(outboundCost);
+                }
+                else {
+                    console.log('could not locate outbound cost for outboundFlightId');
+                }
+
+                if (isReturnTrip()) {
+                    var inboundCost = getChosenFlightValue('span', 'inboundFlightId', 'inboundCost');
+                    if (inboundCost != null) {
+                        console.log('inbound cost for outboundFlightId is ' + inboundCost);
+                        cost += parseInt(inboundCost);
+                    }
+                    else {
+                        console.log('could not locate inbound cost for inboundFlightId');
+                    }
+                }
+
+                totalCost.innerText = parseInt(numPassengers.innerText) * cost;
             }
 
-            function enableNextButton() {
+            function enableOrDisableNextButton() {
                 const params = new Proxy(new URLSearchParams(window.location.search), {
                         get: (searchParams, prop) => searchParams.get(prop),
                     });
@@ -251,7 +339,7 @@
                 var outboundChecked = isRadioButtonChecked('outboundFlightId');
 
                 var inboundChecked = true;
-                if (params.tripType === 'return') {
+                if (isReturnTrip()) {
                     inboundChecked = isRadioButtonChecked('inboundFlightId');
                 }
 
@@ -275,7 +363,7 @@
                 return false;
             }
 
-            function getCheckedFlightId(namePrefix) {
+            function getChosenFlightId(namePrefix) {
                 var radioButtons = document.getElementsByTagName('input');
                 for (var i = 0; i < radioButtons.length; ++i) {
                     var x = radioButtons[i];
@@ -286,17 +374,20 @@
                 return null;
             }
 
-            function getCheckedFlightRowValue(tagName, flightNamePrefix, spanValuePrefix) {
-                var inputFlightId = getCheckedFlightId(flightNamePrefix);
-                if (inputFlightId == null) {
+            function getChosenFlightValue(tagName, flightNamePrefix, spanValuePrefix) {
+                var chosenFlightId = getChosenFlightId(flightNamePrefix);
+                if (chosenFlightId == null) {
+                    console.log('no flight is chosen for ' + flightNamePrefix);
                     return null;
                 }
+
+                console.log('flight ' + chosenFlightId + ' is chosen for ' + flightNamePrefix);
 
                 var spans = document.getElementsByTagName(tagName);
                 for (var i = 0; i < spans.length; ++i) {
                     if (spans[i].id.substring(0, spanValuePrefix.length) == spanValuePrefix) {
                         var spanFlightId = spans[i].id.substring(spanValuePrefix.length);
-                        if (spanFlightId == inputFlightId) {
+                        if (spanFlightId == chosenFlightId) {
                             return spans[i].innerText;
                         }
                     }
@@ -340,12 +431,15 @@
 
                 if (outbound) {
                     fetchNewFlightData('departsFlightTable', dateObject, timezone, true);
-                    updateFlightTime(fromCityTime, true);
+                    updateItineraryDateTime(fromCityTime, true);
                 }
                 else {
                     fetchNewFlightData('arrivesFlightTable', dateObject, timezone, false);
-                    updateFlightTime(toCityTime, false);
+                    updateItineraryDateTime(toCityTime, false);
                 }
+
+                nextButton.disabled = true;
+                updateItineraryTotalCost();
             }
 
             function createFlightPagination(dateString, timezone, outbound, hiddenId) {
@@ -356,6 +450,13 @@
                 var pagination = (outbound ? departsDatePagination : arrivesDatePagination);
                 while (pagination.hasChildNodes()) {
                     pagination.removeChild(pagination.firstChild);
+                }
+
+                if (outbound) {
+                    fromCityDate.innerText = toLocaleDate(new Date(dateObject), timezone);
+                }
+                else {
+                    toCityDate.innerText = toLocaleDate(new Date(dateObject), timezone);
                 }
 
                 var d = new Date();
@@ -417,12 +518,12 @@
                         get: (searchParams, prop) => searchParams.get(prop),
                     });
 
-                // TODO: totalPrice
+                // TODO: totalCost
 
                 window.location.href = "/booking/passengerDetails.html" +
                         "?numPassengers=" + params.numPassengers +
-                        "&outboundFlightId=" + getCheckedFlightId('outboundFlightId') +
-                        "&inboundFlightId=" + getCheckedFlightId('inboundFlightId') +
+                        "&outboundFlightId=" + getChosenFlightId('outboundFlightId') +
+                        "&inboundFlightId=" + getChosenFlightId('inboundFlightId') +
                         "&fromCity=" + params.fromCity +
                         "&fromCityName=" + params.fromCityName +
                         "&toCity=" + params.toCity +
@@ -608,7 +709,6 @@
                 </div>
 
                 <div class="col-md-4 col-lg-3 order-md-last">
-                    
                     <div class="card">
                         <div class="card-header">
                             <h4 class="text-primary">Your Itinerary</h4>
@@ -621,62 +721,30 @@
                             <p class="card-text mt-0">
                                 <span id="fromCityDate"></span>&nbsp;<span id="fromCityTime"></span>
                             </p>
-                            <h5 class="card-title mt-5">Return trip</h5>
-                            <p class="card-text my-0">
-                                <span class="text-success fw-bold" id="toCityName3"></span> to <span class="text-success fw-bold" id="fromCityName3"></span>
+                            <span id="returnFlightItineraryGUI">
+                                <h5 class="card-title mt-5">Return trip</h5>
+                                <p class="card-text my-0">
+                                    <span class="text-success fw-bold" id="toCityName3"></span> to <span class="text-success fw-bold" id="fromCityName3"></span>
+                                </p>
+                                <p class="card-text mt-0 mb-4">
+                                    <span id="toCityDate"></span>&nbsp;<span id="toCityTime"></span>
+                                </p>
+                            </span>
+                            <p class="card-text mb-1">
+                                <div class="row">
+                                    <span class="col">Num Passengers </span>
+                                    <strong class="col text-end" id="numPassengers">1</strong>
+                                </div>
                             </p>
-                            <p class="card-text mt-0 mb-4">
-                                <span id="toCityDate"></span>&nbsp;<span id="toCityTime"></span>
-                            </p>
+                        </div>
+                        <div class="card-footer">
+                            <div class="row">
+                                <span class="col">Total (NZD)</span>
+                                <strong class="col text-end">$<span id="totalCost">0</span></strong>
+                            </div>
                         </div>
                     </div>
                 </div>
-
-                <!-- <div class="col-md-4 col-lg-3 order-md-last">
-                    <h4 class="mb-3">
-                        <span class="text-primary">Your Itinerary</span>
-                    </h4>
-                    <ul class="list-group mb-3">
-                        <li class="list-group-item d-flex justify-content-between lh-sm">
-                            <div>
-                                <h6 class="my-0">Outbound trip</h6>
-                                <small class="text-muted"><strong id="fromCityName2"></strong> to <strong id="toCityName2"></strong></small>
-                            </div>
-                        </li>
-                        <li class="list-group-item d-flex justify-content-between lh-sm">
-                            <div class="row">
-                                <div class="col">
-                                    <small class="text-muted">Thu, 2 Jun 4:30 PM</small>
-                                </div>
-                            </div>
-                            <div class="row">
-                                <div class="col">
-                                    <small class="text-muted">Pacific/Auckland time</small>
-                                </div>
-                            </div>
-                        </li>
-                        <li class="list-group-item d-flex justify-content-between lh-sm">
-                            <div>
-                                <h6 class="my-0">Return trip</h6>
-                                <small class="text-muted"><strong id="toCityName3"></strong> to <strong id="fromCityName3"></strong></small>
-                                <small class="text-muted">Thu, 2 Jun</small>
-                                <small class="text-muted">4:30 PM</small>
-                                <small class="text-muted">Pacific/Auckland time</small>
-                            </div>
-                        </li>
-                        <li class="list-group-item d-flex justify-content-between lh-sm">
-                            <div>
-                                <h6 class="my-0">Third item</h6>
-                                <small class="text-muted">Brief description</small>
-                            </div>
-                            <span class="text-muted">$5</span>
-                        </li>
-                        <li class="list-group-item d-flex justify-content-between">
-                            <span>Total (NZD)</span>
-                            <strong>$<span id="totalPrice">0</span></strong>
-                        </li>
-                    </ul>
-                </div> -->
 
             </div>
             <FOOTER class="container">
