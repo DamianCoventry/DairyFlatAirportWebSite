@@ -518,19 +518,22 @@
                         get: (searchParams, prop) => searchParams.get(prop),
                     });
 
-                // TODO: totalCost
+                var inboundFlightId = getChosenFlightId('inboundFlightId');
 
                 window.location.href = "/booking/passengerDetails.html" +
                         "?numPassengers=" + params.numPassengers +
                         "&outboundFlightId=" + getChosenFlightId('outboundFlightId') +
-                        "&inboundFlightId=" + getChosenFlightId('inboundFlightId') +
+                        "&inboundFlightId=" + (inboundFlightId == null ? '' : inboundFlightId) +
+                        "&totalCost=" + totalCost.innerText +
                         "&fromCity=" + params.fromCity +
                         "&fromCityName=" + params.fromCityName +
-                        "&toCity=" + params.toCity +
-                        "&toCityName=" + params.toCityName +
+                        "&toCity=" + (params.toCity == null ? '' : params.toCity) +
+                        "&toCityName=" + (params.toCityName == null ? '' : params.toCityName) +
                         "&tripType=" + params.tripType +
                         "&leaveDate=" + leaveDate.value +
-                        "&returnDate=" + returnDate.value +
+                        "&leaveTime=" + fromCityTime.innerText +
+                        "&returnDate=" + (returnDate.value == null ? '' : returnDate.value) +
+                        "&returnTime=" + toCityTime.innerText +
                         "&timezone=" + params.timezone;
             }
         </SCRIPT>

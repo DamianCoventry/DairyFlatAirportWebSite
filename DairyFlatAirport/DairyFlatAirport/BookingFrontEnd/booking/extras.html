@@ -148,41 +148,46 @@
                             </a>
                         </div>
                     </div>
+                </div>
 
+                <div class="col-md-4 col-lg-3 order-md-last">
+                    <div class="card">
+                        <div class="card-header">
+                            <h4 class="text-primary">Your Itinerary</h4>
+                        </div>
+                        <div class="card-body">
+                            <h5 class="card-title mt-4">Outbound trip</h5>
+                            <p class="card-text my-0">
+                                <span class="text-success fw-bold" id="fromCityName2"></span> to <span class="text-success fw-bold" id="toCityName2"></span>
+                            </p>
+                            <p class="card-text mt-0">
+                                <span id="fromCityDate"></span>&nbsp;<span id="fromCityTime"></span>
+                            </p>
+                            <span id="returnFlightItineraryGUI">
+                                <h5 class="card-title mt-5">Return trip</h5>
+                                <p class="card-text my-0">
+                                    <span class="text-success fw-bold" id="toCityName3"></span> to <span class="text-success fw-bold" id="fromCityName3"></span>
+                                </p>
+                                <p class="card-text mt-0 mb-4">
+                                    <span id="toCityDate"></span>&nbsp;<span id="toCityTime"></span>
+                                </p>
+                            </span>
+                            <p class="card-text mb-1">
+                                <div class="row">
+                                    <span class="col">Num Passengers </span>
+                                    <strong class="col text-end" id="numPassengers">1</strong>
+                                </div>
+                            </p>
+                        </div>
+                        <div class="card-footer">
+                            <div class="row">
+                                <span class="col">Total (NZD)</span>
+                                <strong class="col text-end">$<span id="totalCost">0</span></strong>
+                            </div>
+                        </div>
+                    </div>
                 </div>
-                <div class="col-md-5 col-lg-4 order-md-last">
-                    <h4 class="d-flex justify-content-between align-items-center mb-3">
-                        <span class="text-primary">Your Itinerary</span>
-                        <span class="badge bg-primary rounded-pill">3</span>
-                    </h4>
-                    <ul class="list-group mb-3">
-                        <li class="list-group-item d-flex justify-content-between lh-sm">
-                            <div>
-                                <h6 class="my-0">Product name</h6>
-                                <small class="text-muted">Brief description</small>
-                            </div>
-                            <span class="text-muted">$12</span>
-                        </li>
-                        <li class="list-group-item d-flex justify-content-between lh-sm">
-                            <div>
-                                <h6 class="my-0">Second product</h6>
-                                <small class="text-muted">Brief description</small>
-                            </div>
-                            <span class="text-muted">$8</span>
-                        </li>
-                        <li class="list-group-item d-flex justify-content-between lh-sm">
-                            <div>
-                                <h6 class="my-0">Third item</h6>
-                                <small class="text-muted">Brief description</small>
-                            </div>
-                            <span class="text-muted">$5</span>
-                        </li>
-                        <li class="list-group-item d-flex justify-content-between">
-                            <span>Total (USD)</span>
-                            <strong>$20</strong>
-                        </li>
-                    </ul>
-                </div>
+                
             </div>
             <FOOTER class="container">
                 <P>Built by Damian Coventry, Copyright &copy; 2022, all rights reserved. &middot; <A href="#">Privacy</A> &middot; <A href="#">Terms</A>

@@ -152,7 +152,7 @@
                     });
             }
 
-            function saveButtonclicked() {
+            function saveButtonClicked() {
                 const forms = document.querySelectorAll('.needs-validation');
                 Array.from(forms).forEach(form => {
                     if (form.checkValidity()) {
@@ -271,7 +271,7 @@
                         </span>
                     </DIV>
                     <DIV class="col-md-auto text-end">
-                        <button type="button" id="saveButton" class="btn btn-primary" onclick="saveButtonclicked();"><i class="fa-solid fa-floppy-disk"></i>&nbsp;Save</button>
+                        <button type="button" id="saveButton" class="btn btn-primary" onclick="saveButtonClicked();"><i class="fa-solid fa-floppy-disk"></i>&nbsp;Save</button>
                         <A class="btn btn-secondary" id="cancel" href="/booking/viewBooking.html">Cancel</A>
                     </DIV>
                 </DIV>

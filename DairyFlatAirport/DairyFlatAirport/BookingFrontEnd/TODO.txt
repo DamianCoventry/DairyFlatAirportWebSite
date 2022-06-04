@@ -22,7 +22,7 @@ DONE        - "It is expected that you use actual dates and not just days of the
 DONE        - format departure_time_of_day nicely
 DONE        - calculate correct timezone
 DONE        - calculate arrival time, in correct timezone
-        Passenger details
+WIP     Passenger details
         Extras
         Select your seats
         Review
