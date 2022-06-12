@@ -35,7 +35,7 @@
                             document.getElementById("arrivesAirport").value = json.arrival_airport.name;
                             document.getElementById("arrivesDateTime").value = json.arrival_date_time_utc;
                             document.getElementById("flightTimeMins").value = json.flight_time_mins;
-                        }, 1000);
+                        }, 500);
                     },
                     function(code, json) {
                         document.getElementById("flight").value = "code: " + code + ", message: " + json.detail;

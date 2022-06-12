@@ -56,7 +56,7 @@
                             else {
                                 document.getElementById("rentalCar").innerText = "-";
                             }
-                        }, 1000);
+                        }, 500);
                     },
                     function (code, json) {
                         document.getElementById("errorMessage").innerText = "ERROR: " + code + ", Message: " + json.detail;
@@ -81,7 +81,7 @@
                     function(json) {
                         setTimeout(function() {
                             document.location.href = "/booking/listBookings.html";
-                        }, 1000);
+                        }, 500);
                     },
                     function(code, json) {
                         document.getElementById("deleteConfirmationTitle").innerText = "Error";

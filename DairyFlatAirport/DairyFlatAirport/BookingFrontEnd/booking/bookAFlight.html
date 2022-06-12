@@ -10,6 +10,7 @@
         <LINK href="/styles/wizard.css" rel="stylesheet"/>
 
         <SCRIPT type="text/javascript" src="/javascript/bookingAPI.js"></SCRIPT>
+        <SCRIPT type="text/javascript" src="/javascript/booking.js"></SCRIPT>
         
         <SCRIPT type="text/javascript">
             window.onload = function() {
@@ -59,14 +60,10 @@
                     }
                 }
 
-                // ?fromCity=1
-                // &toCity=6
-                // &tripType=return
-                // &leaveDate=2022-06-02
-                // &returnDate=2022-06-09
-                // &numPassengers=1
+                // ?flyTo=Rotorua
+                // ?source=session
 
-                // ?flyTo=rotorua
+                const booking = new Booking();
 
                 const params = new Proxy(new URLSearchParams(window.location.search), {
                         get: (searchParams, prop) => searchParams.get(prop),
@@ -77,13 +74,14 @@
                     selectedFromCity = getFirstNonMatchingSelectOption(fromCity, params.flyTo);
                     selectedToCity = params.flyTo;
                 }
-                else if(params.fromCity != null && params.toCity != null) {
-                    fromCity.value = params.fromCity;
+                else if(params.source != null && params.source == 'session') {
+                    fromCity.value = booking.getFromCityId();
                     selectedFromCity = fromCity.options[fromCity.selectedIndex].text;
-                    toCity.value = params.toCity;
+                    toCity.value = booking.getToCityId();
                     selectedToCity = toCity.options[toCity.selectedIndex].text;
                 }
                 else { // defaults
+                    booking.clear();
                     selectedFromCity = 'North Shore';
                     selectedToCity = 'Rotorua'
                 }
@@ -97,27 +95,28 @@
                 toCityName.value = selectedToCity;
                 searchButton.disabled = false;
 
-                if (params.tripType != null) {
-                    returnTrip.checked = (params.tripType.toLowerCase() === 'return');
-                    oneWayTrip.checked = (params.tripType.toLowerCase() === 'oneway');
+                if (booking.hasTripType()) {
+                    returnTrip.checked = (booking.getTripType() === 'return');
+                    oneWayTrip.checked = (booking.getTripType() === 'oneway');
                 }
 
-                if (params.numPassengers != null) {
-                    numPassengers.value = params.numPassengers;
+                if (booking.hasNumPassengers()) {
+                    numPassengers.value = booking.getNumPassengers();
                 }
 
-                if (params.leaveDate != null) {
-                    leaveDate.value = params.leaveDate;
+                if (booking.hasLeaveDate()) {
+                    leaveDate.value = booking.getLeaveDate();
                 }
 
-                if (params.returnDate != null) {
-                    returnDate.value = params.returnDate;
+                if (booking.hasReturnDate()) {
+                    returnDate.value = booking.getReturnDate();
                 }
 
                 swapButtonDiv.style.display = '';
                 fromCityDiv.style.display = '';
                 toCityDiv.style.display = '';
                 retrievingCitiesSpinner.style.display = 'none';
+                returnDateDiv.style.display = (returnTrip.checked ? '' : 'none');
             }
 
             function doesSelectContainOption(select, option) {
@@ -146,6 +145,10 @@
             }
 
             function getFirstNonMatchingSelectOption(select, option) {
+                if (option.toLowerCase() != 'north shore') {
+                    return 'North Shore';
+                }
+
                 for (var i = 0; i< select.length; ++i) {
                     if (select.options[i].text.toLowerCase() != option.toLowerCase()) {
                         return select.options[i].text;
@@ -165,7 +168,8 @@
                 const forms = document.querySelectorAll('.needs-validation');
                 Array.from(forms).forEach(form => {
                     if (form.checkValidity()) {
-                        form.submit();
+                        saveBooking();
+                        window.location.href = "/booking/selectFlights.html";
                     }
                     else {
                         event.preventDefault();
@@ -192,6 +196,19 @@
                 selectOption(toCity, a);
                 fromCityChanged();
                 toCityChanged();
+            }
+
+            function saveBooking() {
+                const booking = new Booking();
+                booking.setFromCityId(fromCity.value);
+                booking.setFromCityName(fromCityName.value);
+                booking.setToCityId(toCity.value);
+                booking.setToCityName(toCityName.value);
+                booking.setTripType(returnTrip.checked ? 'return' : 'oneway');
+                booking.setLeaveDate(leaveDate.value);
+                booking.setReturnDate(returnDate.value);
+                booking.setTimezone(timezoneId3.value);
+                booking.setNumPassengers(numPassengers.value);
             }
         </SCRIPT>
     </HEAD>
@@ -250,7 +267,7 @@
                 <div class="col-md-6">
                     <h4 class="mb-3 text-primary" id="title">Search for Flights</h4>
 
-                    <FORM action="/booking/selectFlights.html" method="GET" class="needs-validation" novalidate>
+                    <FORM class="needs-validation" novalidate>
 
                         <div class="row mb-3">
                             <DIV class="col" id="fromCityDiv" style="display: none;">

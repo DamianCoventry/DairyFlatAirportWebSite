@@ -10,55 +10,98 @@
         <LINK href="/styles/wizard.css" rel="stylesheet"/>
 
         <SCRIPT type="text/javascript" src="/javascript/bookingAPI.js"></SCRIPT>
+        <SCRIPT type="text/javascript" src="/javascript/booking.js"></SCRIPT>
+
         <SCRIPT type="text/javascript">
             window.onload = function() {
+                const booking = new Booking();
+                fromCityName2.innerHTML = booking.getFromCityName();
+                fromCityName3.innerHTML = booking.getFromCityName();
 
-                // ?numPassengers=1
-                // &outboundFlightId=5087
-                // &inboundFlightId=
-                // &totalCost=148
-                // &fromCity=1
-                // &fromCityName=North%20Shore
-                // &toCity=2
-                // &toCityName=Rotorua
-                // &tripType=oneway
-                // &leaveDate=2022-06-06
-                // &leaveTime=6:00%20AM%20Pacific/Auckland%20time
-                // &returnDate=
-                // &returnTime=
-                // &timezone=Pacific/Auckland
+                toCityName2.innerText = booking.getToCityName();
+                toCityName3.innerText = booking.getToCityName();
 
-                const params = new Proxy(new URLSearchParams(window.location.search), {
-                        get: (searchParams, prop) => searchParams.get(prop),
-                    });
+                totalCost.innerText = booking.getTotalCost();
+                numPassengers.innerText = booking.getNumPassengers();
+                hideUnnecessaryPassengerGUIs(booking.getNumPassengers());
 
-                fromCityName2.innerHTML = params.fromCityName;
-                fromCityName3.innerHTML = params.fromCityName;
+                fromCityDate.innerText = toLocaleDate(new Date(booking.getLeaveDate()), booking.getTimezone());
+                toCityDate.innerText = toLocaleDate(new Date(booking.getReturnDate()), booking.getTimezone());
 
-                toCityName2.innerText = params.toCityName;
-                toCityName3.innerText = params.toCityName;
+                fromCityTime.innerHTML = buildTimeHtml(booking.getLeaveTime());
+                toCityTime.innerHTML = buildTimeHtml(booking.getReturnTime());
 
-                totalCost.innerText = params.totalCost;
-                numPassengers.innerText = params.numPassengers;
-                hideUnnecessaryPassengerGUIs(params.numPassengers);
-
-                fromCityDate.innerText = toLocaleDate(new Date(params.leaveDate), params.timezone);
-                toCityDate.innerText = toLocaleDate(new Date(params.returnDate), params.timezone);
-
-                fromCityTime.innerHTML = buildTimeHtml(params.leaveTime);
-                toCityTime.innerHTML = buildTimeHtml(params.returnTime);
-
-                if (!isReturnTrip()) {
-                    returnFlightItineraryGUI.style.display = 'none';
-                }
+                returnFlightItineraryGUI.style.display = booking.isReturnTrip() ? '' : 'none';
             }
 
             function hideUnnecessaryPassengerGUIs(numPassengers) {
-                if (numPassengers < 6) mainForm.removeChild(passenger6);
-                if (numPassengers < 5) mainForm.removeChild(passenger5);
-                if (numPassengers < 4) mainForm.removeChild(passenger4);
-                if (numPassengers < 3) mainForm.removeChild(passenger3);
-                if (numPassengers < 2) mainForm.removeChild(passenger2);
+                const booking = new Booking();
+                if (numPassengers < 6) {
+                    mainForm.removeChild(passenger6);
+                }
+                else {
+                    title6.value = booking.getTitle6();
+                    firstName6.value = booking.getFirstName6();
+                    lastName6.value = booking.getLastName6();
+                    emailAddress6.value = booking.getEmailAddress6();
+                    phoneNumber6.value = booking.getPhoneNumber6();
+                    specialAssistance6.value = booking.getSpecialAssistance6();
+                }
+
+                if (numPassengers < 5) {
+                    mainForm.removeChild(passenger5);
+                }
+                else {
+                    title5.value = booking.getTitle5();
+                    firstName5.value = booking.getFirstName5();
+                    lastName5.value = booking.getLastName5();
+                    emailAddress5.value = booking.getEmailAddress5();
+                    phoneNumber5.value = booking.getPhoneNumber5();
+                    specialAssistance5.value = booking.getSpecialAssistance5();
+                }
+
+                if (numPassengers < 4) {
+                    mainForm.removeChild(passenger4);
+                }
+                else {
+                    title4.value = booking.getTitle4();
+                    firstName4.value = booking.getFirstName4();
+                    lastName4.value = booking.getLastName4();
+                    emailAddress4.value = booking.getEmailAddress4();
+                    phoneNumber4.value = booking.getPhoneNumber4();
+                    specialAssistance4.value = booking.getSpecialAssistance4();
+                }
+
+                if (numPassengers < 3) {
+                    mainForm.removeChild(passenger3);
+                }
+                else {
+                    title3.value = booking.getTitle3();
+                    firstName3.value = booking.getFirstName3();
+                    lastName3.value = booking.getLastName3();
+                    emailAddress3.value = booking.getEmailAddress3();
+                    phoneNumber3.value = booking.getPhoneNumber3();
+                    specialAssistance3.value = booking.getSpecialAssistance3();
+                }
+
+                if (numPassengers < 2) {
+                    mainForm.removeChild(passenger2);
+                }
+                else {
+                    title2.value = booking.getTitle2();
+                    firstName2.value = booking.getFirstName2();
+                    lastName2.value = booking.getLastName2();
+                    emailAddress2.value = booking.getEmailAddress2();
+                    phoneNumber2.value = booking.getPhoneNumber2();
+                    specialAssistance2.value = booking.getSpecialAssistance2();
+                }
+
+                title1.value = booking.getTitle1();
+                firstName1.value = booking.getFirstName1();
+                lastName1.value = booking.getLastName1();
+                emailAddress1.value = booking.getEmailAddress1();
+                phoneNumber1.value = booking.getPhoneNumber1();
+                specialAssistance1.value = booking.getSpecialAssistance1();
             }
 
             function buildTimeHtml(timeString) {
@@ -69,15 +112,6 @@
                            '<small class="text-muted fst-italic" style="font-size: x-small">' + results[3] + '</small>';
                 }
                 return '';
-            }
-
-            function isReturnTrip() {
-                const params = new Proxy(new URLSearchParams(window.location.search), {
-                        get: (searchParams, prop) => searchParams.get(prop),
-                    });
-
-                console.log('params.tripType = ' + params.tripType);
-                return params.tripType === 'return';
             }
 
             function toLocaleDate(dateTime, timezone) {
@@ -91,27 +125,14 @@
             }
 
             function previousButtonClicked() {
-                const params = new Proxy(new URLSearchParams(window.location.search), {
-                        get: (searchParams, prop) => searchParams.get(prop),
-                    });
-
-                window.location.href = "/booking/selectFlights.html" +
-                        "?fromCity=" + params.fromCity +
-                        "&fromCityName=" + params.fromCityName +
-                        "&toCity=" + params.toCity +
-                        "&toCityName=" + params.toCityName +
-                        "&tripType=" + params.tripType +
-                        "&leaveDate=" + params.leaveDate +
-                        "&returnDate=" + params.returnDate +
-                        "&timezone=" + params.timezone +
-                        "&numPassengers=" + params.numPassengers;
+                window.location.href = "/booking/selectFlights.html";
             }
 
             function nextButtonClicked() {
                 const forms = document.querySelectorAll('.needs-validation');
                 Array.from(forms).forEach(form => {
                     if (form.checkValidity()) {
-                        // TODO: save all form data somewhere
+                        saveBooking();
                         document.location.href = "/booking/extras.html";
                     }
                     else {
@@ -120,6 +141,56 @@
                         form.classList.add('was-validated');
                     }
                 }, false);
+            }
+
+            function saveBooking() {
+                const booking = new Booking();
+                if (booking.getNumPassengers() >= 6) {
+                    booking.setTitle6(title6.value);
+                    booking.setFirstName6(firstName6.value);
+                    booking.setLastName6(lastName6.value);
+                    booking.setEmailAddress6(emailAddress6.value);
+                    booking.setPhoneNumber6(phoneNumber6.value);
+                    booking.setSpecialAssistance6(specialAssistance6.value);
+                }
+                if (booking.getNumPassengers() >= 5) {
+                    booking.setTitle5(title5.value);
+                    booking.setFirstName5(firstName5.value);
+                    booking.setLastName5(lastName5.value);
+                    booking.setEmailAddress5(emailAddress5.value);
+                    booking.setPhoneNumber5(phoneNumber5.value);
+                    booking.setSpecialAssistance5(specialAssistance5.value);
+                }
+                if (booking.getNumPassengers() >= 4) {
+                    booking.setTitle4(title4.value);
+                    booking.setFirstName4(firstName4.value);
+                    booking.setLastName4(lastName4.value);
+                    booking.setEmailAddress4(emailAddress4.value);
+                    booking.setPhoneNumber4(phoneNumber4.value);
+                    booking.setSpecialAssistance4(specialAssistance4.value);
+                }
+                if (booking.getNumPassengers() >= 3) {
+                    booking.setTitle3(title3.value);
+                    booking.setFirstName3(firstName3.value);
+                    booking.setLastName3(lastName3.value);
+                    booking.setEmailAddress3(emailAddress3.value);
+                    booking.setPhoneNumber3(phoneNumber3.value);
+                    booking.setSpecialAssistance3(specialAssistance3.value);
+                }
+                if (booking.getNumPassengers() >= 2) {
+                    booking.setTitle2(title2.value);
+                    booking.setFirstName2(firstName2.value);
+                    booking.setLastName2(lastName2.value);
+                    booking.setEmailAddress2(emailAddress2.value);
+                    booking.setPhoneNumber2(phoneNumber2.value);
+                    booking.setSpecialAssistance2(specialAssistance2.value);
+                }
+                booking.setTitle1(title1.value);
+                booking.setFirstName1(firstName1.value);
+                booking.setLastName1(lastName1.value);
+                booking.setEmailAddress1(emailAddress1.value);
+                booking.setPhoneNumber1(phoneNumber1.value);
+                booking.setSpecialAssistance1(specialAssistance1.value);
             }
         </SCRIPT>
     </HEAD>

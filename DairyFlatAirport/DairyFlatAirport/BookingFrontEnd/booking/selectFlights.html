@@ -14,64 +14,45 @@
         <LINK href="/styles/wizard.css" rel="stylesheet"/>
 
         <SCRIPT type="text/javascript" src="/javascript/bookingAPI.js"></SCRIPT>
+        <SCRIPT type="text/javascript" src="/javascript/booking.js"></SCRIPT>
+
         <SCRIPT type="text/javascript">
             window.onload = function() {
+                const booking = new Booking();
 
-                // ?fromCity=1
-                // &fromCityName=North+Shore
-                // &toCity=6
-                // &toCityName=Chatham+Islands
-                // &tripType=return
-                // &leaveDate=2022-06-02
-                // &returnDate=2022-06-09
-                // &timezone=Pacific%2FAuckland
-                // &numPassengers=1
+                fromCityName1.innerHTML = booking.getFromCityName();
+                fromCityName2.innerHTML = booking.getFromCityName();
+                fromCityName3.innerHTML = booking.getFromCityName();
 
-                const params = new Proxy(new URLSearchParams(window.location.search), {
-                        get: (searchParams, prop) => searchParams.get(prop),
-                    });
+                toCityName1.innerText = booking.getToCityName();
+                toCityName2.innerText = booking.getToCityName();
+                toCityName3.innerText = booking.getToCityName();
+                numPassengers.innerText = booking.getNumPassengers();
 
-                fromCityName1.innerHTML = params.fromCityName;
-                fromCityName2.innerHTML = params.fromCityName;
-                fromCityName3.innerHTML = params.fromCityName;
+                fromCityDate.innerText = toLocaleDate(new Date(booking.getLeaveDate()), booking.getTimezone());
+                toCityDate.innerText = toLocaleDate(new Date(booking.getReturnDate()), booking.getTimezone());
 
-                toCityName1.innerText = params.toCityName;
-                toCityName2.innerText = params.toCityName;
-                toCityName3.innerText = params.toCityName;
-                numPassengers.innerText = params.numPassengers;
-
-                fromCityDate.innerText = toLocaleDate(new Date(params.leaveDate), params.timezone);
-                toCityDate.innerText = toLocaleDate(new Date(params.returnDate), params.timezone);
-
-                createFlightPagination(params.leaveDate, params.timezone, true, 'leaveDate');
+                createFlightPagination(booking.getLeaveDate(), booking.getTimezone(), true, 'leaveDate');
                 searchFlights(
-                    params.page == null ? 1 : params.page,
+                    1, // TODO: how to handle pagination?
                     "departsFlightTable",
-                    params.fromCity, params.toCity,
-                    params.leaveDate, params.timezone,
+                    booking.getFromCityId(), booking.getToCityId(),
+                    booking.getLeaveDate(), booking.getTimezone(),
                     true);
 
-                if (isReturnTrip()) {
-                    createFlightPagination(params.returnDate, params.timezone, false, 'returnDate');
+                if (booking.isReturnTrip()) {
+                    createFlightPagination(booking.getReturnDate(), booking.getTimezone(), false, 'returnDate');
                     searchFlights(
-                        params.page == null ? 1 : params.page,
+                        1, // TODO: how to handle pagination?
                         "arrivesFlightTable",
-                        params.fromCity, params.toCity,
-                        params.returnDate, params.timezone,
+                        booking.getFromCityId(), booking.getToCityId(),
+                        booking.getReturnDate(), booking.getTimezone(),
                         false);
                 }
                 else {
                     returnFlightGUI.style.display = 'none';
                     returnFlightItineraryGUI.style.display = 'none';
                 }
-            }
-
-            function isReturnTrip() {
-                const params = new Proxy(new URLSearchParams(window.location.search), {
-                        get: (searchParams, prop) => searchParams.get(prop),
-                    });
-
-                return params.tripType === 'return';
             }
 
             function insertTableSpinner(flightTableName) {
@@ -101,12 +82,9 @@
             }
 
             function fetchNewFlightData(flightTableName, dateObject, timezone, outbound) {
-                const params = new Proxy(new URLSearchParams(window.location.search), {
-                        get: (searchParams, prop) => searchParams.get(prop),
-                    });
-
                 insertTableSpinner(flightTableName);
-                searchFlights(1, flightTableName, params.fromCity, params.toCity, dateObject, timezone, outbound);
+                const booking = new Booking();
+                searchFlights(1, flightTableName, booking.getFromCityId(), booking.getToCityId(), dateObject, timezone, outbound);
             }
 
             function searchFlights(currentPage, flightTableName, fromCity, toCity, leaveDate, timezone, outbound) {
@@ -120,6 +98,8 @@
                 const api = new BookingAPI();
                 api.searchFlights(options, currentPage, function (json) {
                     setTimeout(function () {
+                        const booking = new Booking();
+
                         var table = document.getElementById(flightTableName);
                         var oldTbody = table.tBodies[0];
                         var newTbody = document.createElement("tbody");
@@ -134,10 +114,16 @@
                             radio.setAttribute('id', idName);
                             radio.setAttribute('name', idName);
                             if (outbound) {
-                                radio.onchange = outboundRadioButtonChanged;
+                                radio.onchange = outboundRadioButtonClicked;
+                                if (x.id == booking.getOutboundFlightId()) {
+                                    radio.checked = true;
+                                }
                             }
                             else {
-                                radio.onchange = inboundRadioButtonChanged;
+                                radio.onchange = inboundRadioButtonClicked;
+                                if (x.id == booking.getInboundFlightId()) {
+                                    radio.checked = true;
+                                }
                             }
                             var newCell = newRow.insertCell(0);
                             newCell.appendChild(radio);
@@ -201,10 +187,6 @@
                             var div2 = document.createElement('div');
                             div2.setAttribute('class', 'col text-center');
 
-                            const params = new Proxy(new URLSearchParams(window.location.search), {
-                                    get: (searchParams, prop) => searchParams.get(prop),
-                                });
-
                             var span = document.createElement('span');
                             span.setAttribute('class', 'fst-italic');
                             span.innerText = 'There are no flights from ';
@@ -212,7 +194,7 @@
 
                             span = document.createElement('span');
                             span.setAttribute('class', 'fst-italic fw-bold text-success');
-                            span.innerText = outbound ? params.fromCityName : params.toCityName;
+                            span.innerText = outbound ? booking.getFromCityName() : booking.getToCityName();
                             div2.appendChild(span);
 
                             span = document.createElement('span');
@@ -222,7 +204,7 @@
 
                             span = document.createElement('span');
                             span.setAttribute('class', 'fst-italic fw-bold text-success');
-                            span.innerText = outbound ? params.toCityName : params.fromCityName;
+                            span.innerText = outbound ? booking.getToCityName() : booking.getFromCityName();
                             div2.appendChild(span);
 
                             span = document.createElement('span');
@@ -235,7 +217,9 @@
                         }
 
                         oldTbody.parentNode.replaceChild(newTbody, oldTbody);
-                    }, 1000);
+                        enableOrDisableNextButton();
+                        updateItineraryTotalCost();
+                    }, 500);
                 },
                 function(code, json) {
                     var table = document.getElementById(flightTableName);
@@ -250,16 +234,14 @@
                 });
             }
 
-            function outboundRadioButtonChanged(event) {
-                console.log('outboundRadioButtonChanged');
+            function outboundRadioButtonClicked(event) {
                 uncheckOtherRadioButtons('outboundFlightId', event);
                 enableOrDisableNextButton();
                 updateItineraryDateTime(fromCityTime, true);
                 updateItineraryTotalCost();
             }
 
-            function inboundRadioButtonChanged(event) {
-                console.log('inboundRadioButtonChanged');
+            function inboundRadioButtonClicked(event) {
                 uncheckOtherRadioButtons('inboundFlightId', event);
                 enableOrDisableNextButton();
                 updateItineraryDateTime(toCityTime, false);
@@ -317,7 +299,8 @@
                     console.log('could not locate outbound cost for outboundFlightId');
                 }
 
-                if (isReturnTrip()) {
+                const booking = new Booking();
+                if (booking.isReturnTrip()) {
                     var inboundCost = getChosenFlightValue('span', 'inboundFlightId', 'inboundCost');
                     if (inboundCost != null) {
                         console.log('inbound cost for outboundFlightId is ' + inboundCost);
@@ -332,14 +315,11 @@
             }
 
             function enableOrDisableNextButton() {
-                const params = new Proxy(new URLSearchParams(window.location.search), {
-                        get: (searchParams, prop) => searchParams.get(prop),
-                    });
-
                 var outboundChecked = isRadioButtonChecked('outboundFlightId');
 
                 var inboundChecked = true;
-                if (isReturnTrip()) {
+                const booking = new Booking();
+                if (booking.isReturnTrip()) {
                     inboundChecked = isRadioButtonChecked('inboundFlightId');
                 }
 
@@ -377,11 +357,8 @@
             function getChosenFlightValue(tagName, flightNamePrefix, spanValuePrefix) {
                 var chosenFlightId = getChosenFlightId(flightNamePrefix);
                 if (chosenFlightId == null) {
-                    console.log('no flight is chosen for ' + flightNamePrefix);
                     return null;
                 }
-
-                console.log('flight ' + chosenFlightId + ' is chosen for ' + flightNamePrefix);
 
                 var spans = document.getElementsByTagName(tagName);
                 for (var i = 0; i < spans.length; ++i) {
@@ -452,11 +429,15 @@
                     pagination.removeChild(pagination.firstChild);
                 }
 
+                const api = new BookingAPI();
+                const booking = new Booking();
                 if (outbound) {
                     fromCityDate.innerText = toLocaleDate(new Date(dateObject), timezone);
+                    booking.setLeaveDate(api.toYYYYMMDD(dateObject));
                 }
                 else {
                     toCityDate.innerText = toLocaleDate(new Date(dateObject), timezone);
+                    booking.setReturnDate(api.toYYYYMMDD(dateObject));
                 }
 
                 var d = new Date();
@@ -473,7 +454,6 @@
 
                 appendDate(pagination, null, toLocaleDate(dateObject, timezone), true, timezone, outbound, hiddenId);
                 var hidden = document.getElementById(hiddenId);
-                const api = new BookingAPI();
                 hidden.value = api.toYYYYMMDD(dateObject);
 
                 d = new Date();
@@ -500,41 +480,18 @@
             }
 
             function previousButtonClicked() {
-                const params = new Proxy(new URLSearchParams(window.location.search), {
-                        get: (searchParams, prop) => searchParams.get(prop),
-                    });
-
-                window.location.href = "/booking/bookAFlight.html" +
-                        "?fromCity=" + params.fromCity +
-                        "&toCity=" + params.toCity +
-                        "&tripType=" + params.tripType +
-                        "&leaveDate=" + leaveDate.value +
-                        "&returnDate=" + returnDate.value +
-                        "&numPassengers=" + params.numPassengers;
+                window.location.href = "/booking/bookAFlight.html?source=session";
             }
 
             function nextButtonClicked() {
-                const params = new Proxy(new URLSearchParams(window.location.search), {
-                        get: (searchParams, prop) => searchParams.get(prop),
-                    });
-
                 var inboundFlightId = getChosenFlightId('inboundFlightId');
-
-                window.location.href = "/booking/passengerDetails.html" +
-                        "?numPassengers=" + params.numPassengers +
-                        "&outboundFlightId=" + getChosenFlightId('outboundFlightId') +
-                        "&inboundFlightId=" + (inboundFlightId == null ? '' : inboundFlightId) +
-                        "&totalCost=" + totalCost.innerText +
-                        "&fromCity=" + params.fromCity +
-                        "&fromCityName=" + params.fromCityName +
-                        "&toCity=" + (params.toCity == null ? '' : params.toCity) +
-                        "&toCityName=" + (params.toCityName == null ? '' : params.toCityName) +
-                        "&tripType=" + params.tripType +
-                        "&leaveDate=" + leaveDate.value +
-                        "&leaveTime=" + fromCityTime.innerText +
-                        "&returnDate=" + (returnDate.value == null ? '' : returnDate.value) +
-                        "&returnTime=" + toCityTime.innerText +
-                        "&timezone=" + params.timezone;
+                const booking = new Booking();
+                booking.setOutboundFlightId(getChosenFlightId('outboundFlightId'));
+                booking.setInboundFlightId(inboundFlightId == null ? '' : inboundFlightId);
+                booking.setTotalCost(totalCost.innerText);
+                booking.setLeaveTime(fromCityTime.innerText);
+                booking.setReturnTime(toCityTime.innerText);
+                window.location.href = "/booking/passengerDetails.html";
             }
         </SCRIPT>
     </HEAD>

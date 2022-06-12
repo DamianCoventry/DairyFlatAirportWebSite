@@ -117,7 +117,7 @@
                             });
 
                             oldTbody.parentNode.replaceChild(newTbody, oldTbody);
-                        }, 1000);
+                        }, 500);
                     },
                     function(code, json) {
                         document.getElementById("number").value = "code: " + code + ", message: " + json.detail;
@@ -244,7 +244,7 @@
                             function(json) {
                                 setTimeout(function() {
                                     document.location.href = "/booking/viewBooking.html?id=" + params.id;
-                                }, 1000);
+                                }, 500);
                             },
                             displayExtrasErrorResponse);
                     },
@@ -320,7 +320,7 @@
                             function(json) {
                                 setTimeout(function() {
                                     document.location.href = "/booking/viewBooking.html?id=" + bookingId;
-                                }, 1000);
+                                }, 500);
                             },
                             function(code, json) {
                                 document.getElementById("title").value = "code: " + code + ", message: " + json.detail;
@@ -456,7 +456,7 @@
                             function(json) {
                                 setTimeout(function() {
                                     document.location.href = "/booking/viewBooking.html?id=" + params.id;
-                                }, 1000);
+                                }, 500);
                             },
                             displayPassengerErrorResponse);
                     },

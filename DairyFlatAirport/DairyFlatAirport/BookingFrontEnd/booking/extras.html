@@ -10,70 +10,167 @@
         <LINK href="/styles/wizard.css" rel="stylesheet"/>
 
         <SCRIPT type="text/javascript" src="/javascript/bookingAPI.js"></SCRIPT>
+        <SCRIPT type="text/javascript" src="/javascript/booking.js"></SCRIPT>
+
         <SCRIPT type="text/javascript">
             window.onload = function() {
+                const booking = new Booking();
+                fromCityName2.innerHTML = booking.getFromCityName();
+                fromCityName3.innerHTML = booking.getFromCityName();
+
+                toCityName2.innerText = booking.getToCityName();
+                toCityName3.innerText = booking.getToCityName();
+
+                totalCost.innerText = booking.getTotalCost();
+                numPassengers.innerText = booking.getNumPassengers();
+
+                fromCityDate.innerText = toLocaleDate(new Date(booking.getLeaveDate()), booking.getTimezone());
+                toCityDate.innerText = toLocaleDate(new Date(booking.getReturnDate()), booking.getTimezone());
+
+                fromCityTime.innerHTML = buildTimeHtml(booking.getLeaveTime());
+                toCityTime.innerHTML = buildTimeHtml(booking.getReturnTime());
+
+                returnFlightItineraryGUI.style.display = booking.isReturnTrip() ? '' : 'none';
+
+                addEmptyOption(travelInsuranceSelect);
+                addEmptyOption(rentalCarSelect);
+
+                nextButton.disabled = true;
+                chooseExtrasSpinner.style.display = "";
+                extrasErrorDiv.style.display = "none";
+
                 const api = new BookingAPI();
-                api.listFlights(function (json) {
-                    var table = document.getElementById("flightsTable");
-                    var oldTbody = table.tBodies[0];
-                    var newTbody = document.createElement("tbody");
+                api.listTravelInsurances(1, processReceivedTravelInsurances, displayExtrasErrorResponse);
+            }
 
-                    json.results.forEach(x => {
-                        var newRow = newTbody.insertRow(-1);
+            function toLocaleDate(dateTime, timezone) {
+                return new Date(dateTime).toLocaleDateString([],
+                                {
+                                    timeZone: timezone,
+                                    weekday: 'short',
+                                    day: 'numeric',
+                                    month: 'short'
+                                });
+            }
 
-                        var link = document.createElement('a');
-                        link.setAttribute('href', "/info/viewFlight.html?id=" + x.id);
-                        link.innerText = x.number;
-                        var newCell = newRow.insertCell(0);
-                        newCell.appendChild(link);
+            function buildTimeHtml(timeString) {
+                const re = /(\d+:\d\d\s(AM|PM))\s(.+)/;
+                const results = re.exec(timeString);
+                if (results != null && results.length > 3) {
+                    return '<span>' + results[1] + '</span> ' +
+                           '<small class="text-muted fst-italic" style="font-size: x-small">' + results[3] + '</small>';
+                }
+                return '';
+            }
 
-                        link = document.createElement('a');
-                        link.setAttribute('href', "/info/viewAeroplane.html?id=" + x.aeroplane.id);
-                        link.innerText = x.aeroplane.make_model;
-                        newCell = newRow.insertCell(1);
-                        newCell.appendChild(link);
+            function addEmptyOption(selectElement) {
+                var option = document.createElement("option");
+                option.innerText = "-";
+                selectElement.appendChild(option);
+            }
 
-                        newCell = newRow.insertCell(2);
-                        // TODO: format departure_time_of_day nicely
-                        // TODO: calculate correct timezone
-                        var departs = x.departure_airport.name + " " + x.departure_time_of_day;
-                        newCell.appendChild(document.createTextNode(departs));
-
-                        newCell = newRow.insertCell(3);
-                        // TODO: calculate arrival time, in correct timezone
-                        newCell.appendChild(document.createTextNode(x.arrival_airport.name));
-
-                        newCell = newRow.insertCell(4);
-                        newCell.appendChild(document.createTextNode(x.flight_time_minutes));
-
-                        newCell = newRow.insertCell(5);
-                        var daysOfWeek = "";
-                        if (x.departs_sun === true) daysOfWeek += "Sun,"
-                        if (x.departs_mon === true) daysOfWeek += "Mon,"
-                        if (x.departs_tue === true) daysOfWeek += "Tue,"
-                        if (x.departs_wed === true) daysOfWeek += "Wed,"
-                        if (x.departs_thu === true) daysOfWeek += "Thu,"
-                        if (x.departs_fri === true) daysOfWeek += "Fri,"
-                        if (x.departs_sat === true) daysOfWeek += "Sat,"
-                        if (daysOfWeek === "Mon,Tue,Wed,Thu,Fri,") {
-                            daysOfWeek = "Mon-Fri,"
-                        }
-                        newCell.appendChild(document.createTextNode(daysOfWeek.slice(0, -1))); // remove trailing ',' character
+            function processReceivedTravelInsurances(json) {
+                json.results.forEach(x => {
+                        var option = document.createElement("option");
+                        option.setAttribute("value", x.id);
+                        option.innerText = x.title; // TODO: use the rest of the information
+                        travelInsuranceSelect.appendChild(option);
                     });
 
-                    oldTbody.parentNode.replaceChild(newTbody, oldTbody);
-                },
-                function(code, json) {
-                    var table = document.getElementById("flightsTable");
-                    var oldTbody = table.tBodies[0];
-                    var newTbody = document.createElement("tbody");
+                const api = new BookingAPI();
+                if (json.next != null) {
+                    const re = /\?page=(.+)$/;
+                    const nextPage = re.exec(json.next);
+                    if (nextPage != null && nextPage.length > 1) {
+                        api.listTravelInsurances(nextPage[1], processReceivedTravelInsurances, displayExtrasErrorResponse);
+                        return;
+                    }
+                }
 
-                    var newRow = newTbody.insertRow(-1);
-                    var newCell = newRow.insertCell(0);
-                    newCell.appendChild(document.createTextNode("code: " + code + ", message: " + json.detail));
+                api.listRentalCars(1, processReceivedRentalCars, displayExtrasErrorResponse);
+            }
 
-                    oldTbody.parentNode.replaceChild(newTbody, oldTbody);
-                });
+            function processReceivedRentalCars(json) {
+                json.results.forEach(x => {
+                        var option = document.createElement("option");
+                        option.setAttribute("value", x.id);
+                        option.innerText = x.type + ", " + x.make + " " + x.model; // TODO: use the rest of the information
+                        rentalCarSelect.appendChild(option);
+                    });
+
+                if (json.next != null) {
+                    const re = /\?page=(.+)$/;
+                    const nextPage = re.exec(json.next);
+                    if (nextPage != null && nextPage.length > 1) {
+                        const api = new BookingAPI();
+                        api.listRentalCars(nextPage[1], processReceivedRentalCars, displayExtrasErrorResponse);
+                        return;
+                    }
+                }
+
+                chooseExtrasSpinner.style.display = "none";
+                travelInsuranceSelect.style.display = "";
+                travelInsuranceLabel.style.display = "";
+                rentalCarSelect.style.display = "";
+                rentalCarLabel.style.display = "";
+                extrasErrorDiv.style.display = "none";
+                nextButton.disabled = false;
+
+                const booking = new Booking();
+                if (booking.hasTravelInsuranceId()) {
+                    travelInsuranceSelect.value = parseInt(booking.getTravelInsuranceId());
+                }
+                if (booking.hasRentalCarId()) {
+                    rentalCarSelect.value = parseInt(booking.getRentalCarId());
+                }
+            }
+
+            function displayExtrasErrorResponse(code, json) {
+                chooseExtrasSpinner.style.display = "none";
+                travelInsuranceSelect.style.display = "none";
+                travelInsuranceLabel.style.display = "none";
+                rentalCarSelect.style.display = "none";
+                rentalCarLabel.style.display = "none";
+                extrasErrorDiv.innerText = "code: " + code + ", message: " + json.detail;
+                extrasErrorDiv.style.display = "";
+            }
+
+            function previousButtonClicked() {
+                window.location.href = "/booking/passengerDetails.html";
+            }
+
+            function nextButtonClicked() {
+                const forms = document.querySelectorAll('.needs-validation');
+                Array.from(forms).forEach(form => {
+                    if (form.checkValidity()) {
+                        saveBooking();
+                    }
+                    else {
+                        event.preventDefault();
+                        event.stopPropagation();
+                        form.classList.add('was-validated');
+                    }
+                }, false);
+            }
+
+            function saveBooking() {
+                const booking = new Booking();
+
+                if (travelInsuranceSelect.options[travelInsuranceSelect.selectedIndex].text == "-") {
+                    booking.setTravelInsuranceId('');
+                }
+                else {
+                    booking.setTravelInsuranceId(travelInsuranceSelect.value);
+                }
+
+                if (rentalCarSelect.options[rentalCarSelect.selectedIndex].text == "-") {
+                    booking.setRentalCarId('');
+                }
+                else {
+                    booking.setRentalCarId(rentalCarSelect.value);
+                }
+
+                document.location.href = "/booking/selectSeats.html";
             }
         </SCRIPT>
     </HEAD>
@@ -130,16 +227,34 @@
                 <div class="col-md-7">
                     <h4 class="mb-3 text-primary">Extras</h4>
 
-                    <span>TODO: put the extras form here</span>
+                    <FORM id="mainForm" class="needs-validation" novalidate>
+                        <div class="text-center" id="chooseExtrasSpinner">
+                            <div class="spinner-border" role="status">
+                                <span class="visually-hidden">Retrieving...</span>
+                            </div>
+                        </div>
+    
+                        <div id="extrasErrorDiv" style="display: none;"></div>
+
+                        <div class="mb-3 col-8">
+                            <LABEL class="form-label" for="travelInsuranceSelect" id="travelInsuranceLabel" style="display: none;">Travel Insurance</LABEL>
+                            <select class="form-control form-select" id="travelInsuranceSelect" aria-label="Travel Insurance" style="display: none;"></select>
+                        </div>
+
+                        <div class="mb-5 col-8">
+                            <LABEL class="form-label" for="rentalCarSelect" id="rentalCarLabel" style="display: none;">Rental Car</LABEL>
+                            <select class="form-control form-select" id="rentalCarSelect" aria-label="Rental Car" style="display: none;"></select>
+                        </div>
+                    </FORM>
 
                     <div class="row justify-content-between">
                         <div class="col col-md-auto">
-                            <a class="btn btn-secondary mb-4" href="/booking/passengerDetails.html"> <!-- TODO: need other parameters -->
+                            <button type="button" class="btn btn-secondary mb-4" onclick="previousButtonClicked();">
                                 <i class="fa-solid fa-circle-arrow-left"></i>&nbsp;Previous
                             </a>
                         </div>
                         <div class="col col-md-auto">
-                            <a class="btn btn-primary mb-4" href="/booking/selectSeats.html"> <!-- TODO: need other parameters -->
+                            <button type="button" class="btn btn-primary mb-4" id="nextButton" onclick="nextButtonClicked();">
                                 Next&nbsp;<i class="fa-solid fa-circle-arrow-right"></i>
                             </a>
                         </div>

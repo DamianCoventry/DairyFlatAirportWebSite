@@ -40,7 +40,7 @@
                             });
 
                             oldTbody.parentNode.replaceChild(newTbody, oldTbody);
-                        }, 1000);
+                        }, 500);
                     },
                     function(code, json) {
                         document.getElementById("tailNumber").value = "code: " + code + ", message: " + json.detail;
