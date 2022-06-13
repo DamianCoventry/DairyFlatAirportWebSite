@@ -49,11 +49,23 @@
 
 .wizard-step.active {
     font-weight: bold;
-    color: #0D6EFD;
+    color: #198754;
 }
 
 
 .wizard-step.active::before, .wizard-step.active::after {
+    background: #198754;
+}
+
+
+.wizard-step.completed {
+    font-weight: bold;
+    color: #0D6EFD;
+    cursor: pointer;
+}
+
+
+.wizard-step.completed::before, .wizard-step.completed::after {
     background: #0D6EFD;
 }
 

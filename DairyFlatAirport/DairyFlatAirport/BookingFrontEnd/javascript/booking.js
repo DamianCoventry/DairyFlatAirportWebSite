@@ -1,4 +1,23 @@
 class Booking {
+    getDisplayName1() {
+        return (this.hasTitle1() ? (this.getTitle1() + ' ') : '') + this.getFirstName1() + ' ' + this.getLastName1();
+    }
+    getDisplayName2() {
+        return (this.hasTitle2() ? (this.getTitle2() + ' ') : '') + this.getFirstName2() + ' ' + this.getLastName2();
+    }
+    getDisplayName3() {
+        return (this.hasTitle3() ? (this.getTitle3() + ' ') : '') + this.getFirstName3() + ' ' + this.getLastName3();
+    }
+    getDisplayName4() {
+        return (this.hasTitle4() ? (this.getTitle4() + ' ') : '') + this.getFirstName4() + ' ' + this.getLastName4();
+    }
+    getDisplayName5() {
+        return (this.hasTitle5() ? (this.getTitle5() + ' ') : '') + this.getFirstName5() + ' ' + this.getLastName5();
+    }
+    getDisplayName6() {
+        return (this.hasTitle6() ? (this.getTitle6() + ' ') : '') + this.getFirstName6() + ' ' + this.getLastName6();
+    }
+
     // values captured from the bookAFlight page
     setFromCityId(value) {
         sessionStorage.setItem('fromCityId', value);
@@ -104,6 +123,16 @@ class Booking {
         return this.getOutboundFlightId().length > 0;
     }
 
+    setOutboundAeroplaneId(value) {
+        sessionStorage.setItem('outboundAeroplaneId', value);
+    }
+    getOutboundAeroplaneId() {
+        return sessionStorage.getItem('outboundAeroplaneId');
+    }
+    hasOutboundAeroplaneId() {
+        return this.getOutboundAeroplaneId().length > 0;
+    }
+
     setInboundFlightId(value) {
         sessionStorage.setItem('inboundFlightId', value);
     }
@@ -112,6 +141,16 @@ class Booking {
     }
     hasInboundFlightId() {
         return this.getInboundFlightId().length > 0;
+    }
+
+    setInboundAeroplaneId(value) {
+        sessionStorage.setItem('inboundAeroplaneId', value);
+    }
+    getInboundAeroplaneId() {
+        return sessionStorage.getItem('inboundAeroplaneId');
+    }
+    hasInboundAeroplaneId() {
+        return this.getInboundAeroplaneId().length > 0;
     }
 
     setTotalCost(value) {
@@ -516,6 +555,16 @@ class Booking {
         return this.getTravelInsuranceId().length > 0;
     }
 
+    setTravelInsuranceName(value) {
+        sessionStorage.setItem('travelInsuranceName', value);
+    }
+    getTravelInsuranceName() {
+        return sessionStorage.getItem('travelInsuranceName');
+    }
+    hasTravelInsuranceName() {
+        return this.getTravelInsuranceName().length > 0;
+    }
+
     setRentalCarId(value) {
         sessionStorage.setItem('rentalCarId', value);
     }
@@ -526,65 +575,255 @@ class Booking {
         return this.getRentalCarId().length > 0;
     }
 
+    setRentalCarName(value) {
+        sessionStorage.setItem('rentalCarName', value);
+    }
+    getRentalCarName() {
+        return sessionStorage.getItem('rentalCarName');
+    }
+    hasRentalCarName() {
+        return this.getRentalCarName().length > 0;
+    }
+
     // values captured from the selectSeats page
-    setSeatId1(value) {
-        sessionStorage.setItem('seatId1', value);
+    setOutboundSeatId1(value) {
+        sessionStorage.setItem('outboundSeatId1', value);
     }
-    getSeatId1() {
-        return sessionStorage.getItem('seatId1');
+    getOutboundSeatId1() {
+        return sessionStorage.getItem('outboundSeatId1');
     }
-    hasSeatId1() {
-        return this.getSeatId1().length > 0;
-    }
-
-    setSeatId2(value) {
-        sessionStorage.setItem('seatId2', value);
-    }
-    getSeatId2() {
-        return sessionStorage.getItem('seatId2');
-    }
-    hasSeatId2() {
-        return this.getSeatId2().length > 0;
+    hasOutboundSeatId1() {
+        return this.getOutboundSeatId1().length > 0;
     }
 
-    setSeatId3(value) {
-        sessionStorage.setItem('seatId3', value);
+    setOutboundSeatName1(value) {
+        sessionStorage.setItem('outboundSeatName1', value);
     }
-    getSeatId3() {
-        return sessionStorage.getItem('seatId3');
+    getOutboundSeatName1() {
+        return sessionStorage.getItem('outboundSeatName1');
     }
-    hasSeatId3() {
-        return this.getSeatId3().length > 0;
-    }
-
-    setSeatId4(value) {
-        sessionStorage.setItem('seatId4', value);
-    }
-    getSeatId4() {
-        return sessionStorage.getItem('seatId4');
-    }
-    hasSeatId4() {
-        return this.getSeatId4().length > 0;
+    hasOutboundSeatName1() {
+        return this.getOutboundSeatName1().length > 0;
     }
 
-    setSeatId5(value) {
-        sessionStorage.setItem('seatId5', value);
+    setOutboundSeatId2(value) {
+        sessionStorage.setItem('outboundSeatId2', value);
     }
-    getSeatId5() {
-        return sessionStorage.getItem('seatId5');
+    getOutboundSeatId2() {
+        return sessionStorage.getItem('outboundSeatId2');
     }
-    hasSeatId5() {
-        return this.getSeatId5().length > 0;
+    hasOutboundSeatId2() {
+        return this.getOutboundSeatId2().length > 0;
     }
 
-    setSeatId6(value) {
-        sessionStorage.setItem('seatId6', value);
+    setOutboundSeatName2(value) {
+        sessionStorage.setItem('outboundSeatName2', value);
     }
-    getSeatId6() {
-        return sessionStorage.getItem('seatId6');
+    getOutboundSeatName2() {
+        return sessionStorage.getItem('outboundSeatName2');
     }
-    hasSeatId6() {
-        return this.getSeatId6().length > 0;
+    hasOutboundSeatName2() {
+        return this.getOutboundSeatName2().length > 0;
+    }
+
+    setOutboundSeatId3(value) {
+        sessionStorage.setItem('outboundSeatId3', value);
+    }
+    getOutboundSeatId3() {
+        return sessionStorage.getItem('outboundSeatId3');
+    }
+    hasOutboundSeatId3() {
+        return this.getOutboundSeatId3().length > 0;
+    }
+
+    setOutboundSeatName3(value) {
+        sessionStorage.setItem('outboundSeatName3', value);
+    }
+    getOutboundSeatName3() {
+        return sessionStorage.getItem('outboundSeatName3');
+    }
+    hasOutboundSeatName3() {
+        return this.getOutboundSeatName3().length > 0;
+    }
+
+    setOutboundSeatId4(value) {
+        sessionStorage.setItem('outboundSeatId4', value);
+    }
+    getOutboundSeatId4() {
+        return sessionStorage.getItem('outboundSeatId4');
+    }
+    hasOutboundSeatId4() {
+        return this.getOutboundSeatId4().length > 0;
+    }
+
+    setOutboundSeatName4(value) {
+        sessionStorage.setItem('outboundSeatName4', value);
+    }
+    getOutboundSeatName4() {
+        return sessionStorage.getItem('outboundSeatName4');
+    }
+    hasOutboundSeatName4() {
+        return this.getOutboundSeatName4().length > 0;
+    }
+
+    setOutboundSeatId5(value) {
+        sessionStorage.setItem('outboundSeatId5', value);
+    }
+    getOutboundSeatId5() {
+        return sessionStorage.getItem('outboundSeatId5');
+    }
+    hasOutboundSeatId5() {
+        return this.getOutboundSeatId5().length > 0;
+    }
+
+    setOutboundSeatName5(value) {
+        sessionStorage.setItem('outboundSeatName5', value);
+    }
+    getOutboundSeatName5() {
+        return sessionStorage.getItem('outboundSeatName5');
+    }
+    hasOutboundSeatName5() {
+        return this.getOutboundSeatName5().length > 0;
+    }
+
+    setOutboundSeatId6(value) {
+        sessionStorage.setItem('outboundSeatId6', value);
+    }
+    getOutboundSeatId6() {
+        return sessionStorage.getItem('outboundSeatId6');
+    }
+    hasOutboundSeatId6() {
+        return this.getOutboundSeatId6().length > 0;
+    }
+
+    setOutboundSeatName6(value) {
+        sessionStorage.setItem('outboundSeatName6', value);
+    }
+    getOutboundSeatName6() {
+        return sessionStorage.getItem('outboundSeatName6');
+    }
+    hasOutboundSeatName6() {
+        return this.getOutboundSeatName6().length > 0;
+    }
+
+    setInboundSeatId1(value) {
+        sessionStorage.setItem('inboundSeatId1', value);
+    }
+    getInboundSeatId1() {
+        return sessionStorage.getItem('inboundSeatId1');
+    }
+    hasInboundSeatId1() {
+        return this.getInboundSeatId1().length > 0;
+    }
+
+    setInboundSeatName1(value) {
+        sessionStorage.setItem('inboundSeatName1', value);
+    }
+    getInboundSeatName1() {
+        return sessionStorage.getItem('inboundSeatName1');
+    }
+    hasInboundSeatName1() {
+        return this.getInboundSeatName1().length > 0;
+    }
+
+    setInboundSeatId2(value) {
+        sessionStorage.setItem('inboundSeatId2', value);
+    }
+    getInboundSeatId2() {
+        return sessionStorage.getItem('inboundSeatId2');
+    }
+    hasInboundSeatId2() {
+        return this.getInboundSeatId2().length > 0;
+    }
+
+    setInboundSeatName2(value) {
+        sessionStorage.setItem('inboundSeatName2', value);
+    }
+    getInboundSeatName2() {
+        return sessionStorage.getItem('inboundSeatName2');
+    }
+    hasInboundSeatName2() {
+        return this.getInboundSeatName2().length > 0;
+    }
+
+    setInboundSeatId3(value) {
+        sessionStorage.setItem('inboundSeatId3', value);
+    }
+    getInboundSeatId3() {
+        return sessionStorage.getItem('inboundSeatId3');
+    }
+    hasInboundSeatId3() {
+        return this.getInboundSeatId3().length > 0;
+    }
+
+    setInboundSeatName3(value) {
+        sessionStorage.setItem('inboundSeatName3', value);
+    }
+    getInboundSeatName3() {
+        return sessionStorage.getItem('inboundSeatName3');
+    }
+    hasInboundSeatName3() {
+        return this.getInboundSeatName3().length > 0;
+    }
+
+    setInboundSeatId4(value) {
+        sessionStorage.setItem('inboundSeatId4', value);
+    }
+    getInboundSeatId4() {
+        return sessionStorage.getItem('inboundSeatId4');
+    }
+    hasInboundSeatId4() {
+        return this.getInboundSeatId4().length > 0;
+    }
+
+    setInboundSeatName4(value) {
+        sessionStorage.setItem('inboundSeatName4', value);
+    }
+    getInboundSeatName4() {
+        return sessionStorage.getItem('inboundSeatName4');
+    }
+    hasInboundSeatName4() {
+        return this.getInboundSeatName4().length > 0;
+    }
+
+    setInboundSeatId5(value) {
+        sessionStorage.setItem('inboundSeatId5', value);
+    }
+    getInboundSeatId5() {
+        return sessionStorage.getItem('inboundSeatId5');
+    }
+    hasInboundSeatId5() {
+        return this.getInboundSeatId5().length > 0;
+    }
+
+    setInboundSeatName5(value) {
+        sessionStorage.setItem('inboundSeatName5', value);
+    }
+    getInboundSeatName5() {
+        return sessionStorage.getItem('inboundSeatName5');
+    }
+    hasInboundSeatName5() {
+        return this.getInboundSeatName5().length > 0;
+    }
+
+    setInboundSeatId6(value) {
+        sessionStorage.setItem('inboundSeatId6', value);
+    }
+    getInboundSeatId6() {
+        return sessionStorage.getItem('inboundSeatId6');
+    }
+    hasInboundSeatId6() {
+        return this.getInboundSeatId6().length > 0;
+    }
+
+    setInboundSeatName6(value) {
+        sessionStorage.setItem('inboundSeatName6', value);
+    }
+    getInboundSeatName6() {
+        return sessionStorage.getItem('inboundSeatName6');
+    }
+    hasInboundSeatName6() {
+        return this.getInboundSeatName6().length > 0;
     }
 
     clear() {
@@ -603,7 +842,9 @@ class Booking {
 
         // values captured from the selectFlights page
         sessionStorage.setItem('outboundFlightId', '');
+        sessionStorage.setItem('outboundAeroplaneId', '');
         sessionStorage.setItem('inboundFlightId', '');
+        sessionStorage.setItem('inboundAeroplaneId', '');
         sessionStorage.setItem('totalCost', '');
         sessionStorage.setItem('leaveTime', '');
         sessionStorage.setItem('returnTime', '');
@@ -648,14 +889,34 @@ class Booking {
 
         // values captured from the extras page
         sessionStorage.setItem('travelInsuranceId', '');
+        sessionStorage.setItem('travelInsuranceName', '');
         sessionStorage.setItem('rentalCarId', '');
+        sessionStorage.setItem('rentalCarName', '');
 
         // values captured from the selectSeats page
-        sessionStorage.setItem('seatId1', '');
-        sessionStorage.setItem('seatId2', '');
-        sessionStorage.setItem('seatId3', '');
-        sessionStorage.setItem('seatId4', '');
-        sessionStorage.setItem('seatId5', '');
-        sessionStorage.setItem('seatId6', '');
+        sessionStorage.setItem('outboundSeatId1', '');
+        sessionStorage.setItem('outboundSeatName1', '');
+        sessionStorage.setItem('outboundSeatId2', '');
+        sessionStorage.setItem('outboundSeatName2', '');
+        sessionStorage.setItem('outboundSeatId3', '');
+        sessionStorage.setItem('outboundSeatName3', '');
+        sessionStorage.setItem('outboundSeatId4', '');
+        sessionStorage.setItem('outboundSeatName4', '');
+        sessionStorage.setItem('outboundSeatId5', '');
+        sessionStorage.setItem('outboundSeatName5', '');
+        sessionStorage.setItem('outboundSeatId6', '');
+        sessionStorage.setItem('outboundSeatName6', '');
+        sessionStorage.setItem('inboundSeatId1', '');
+        sessionStorage.setItem('inboundSeatName1', '');
+        sessionStorage.setItem('inboundSeatId2', '');
+        sessionStorage.setItem('inboundSeatName2', '');
+        sessionStorage.setItem('inboundSeatId3', '');
+        sessionStorage.setItem('inboundSeatName3', '');
+        sessionStorage.setItem('inboundSeatId4', '');
+        sessionStorage.setItem('inboundSeatName4', '');
+        sessionStorage.setItem('inboundSeatId5', '');
+        sessionStorage.setItem('inboundSeatName5', '');
+        sessionStorage.setItem('inboundSeatId6', '');
+        sessionStorage.setItem('inboundSeatName6', '');
     }
 }

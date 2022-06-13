@@ -15,9 +15,11 @@
         <SCRIPT type="text/javascript">
             window.onload = function() {
                 const booking = new Booking();
-                fromCityName2.innerHTML = booking.getFromCityName();
-                fromCityName3.innerHTML = booking.getFromCityName();
+                fromCityName1.innerText = booking.getFromCityName();
+                fromCityName2.innerText = booking.getFromCityName();
+                fromCityName3.innerText = booking.getFromCityName();
 
+                toCityName1.innerText = booking.getToCityName();
                 toCityName2.innerText = booking.getToCityName();
                 toCityName3.innerText = booking.getToCityName();
 
@@ -30,9 +32,140 @@
                 fromCityTime.innerHTML = buildTimeHtml(booking.getLeaveTime());
                 toCityTime.innerHTML = buildTimeHtml(booking.getReturnTime());
 
-                returnFlightItineraryGUI.style.display = booking.isReturnTrip() ? '' : 'none';
+                inboundFlightGUI.style.display = booking.isReturnTrip() ? '' : 'none';
 
-                // TODO: return the seat list for the out/in flights
+                const api = new BookingAPI();
+                setTimeout(function () {
+                    api.listSeatsForAeroplane(
+                        booking.getOutboundAeroplaneId(),
+                        function (json) {
+                            json.results.forEach(x => {
+                                outboundSeatSelect1.appendChild(makeSelectOption(x.id, x.number, x.emergency_exit));
+                                outboundSeatSelect2.appendChild(makeSelectOption(x.id, x.number, x.emergency_exit));
+                                outboundSeatSelect3.appendChild(makeSelectOption(x.id, x.number, x.emergency_exit));
+                                outboundSeatSelect4.appendChild(makeSelectOption(x.id, x.number, x.emergency_exit));
+                                outboundSeatSelect5.appendChild(makeSelectOption(x.id, x.number, x.emergency_exit));
+                                outboundSeatSelect6.appendChild(makeSelectOption(x.id, x.number, x.emergency_exit));
+                            });
+
+                            outboundPassenger1.innerText = booking.getDisplayName1();
+                            outboundPassenger2.innerText = booking.getDisplayName2();
+                            outboundPassenger3.innerText = booking.getDisplayName3();
+                            outboundPassenger4.innerText = booking.getDisplayName4();
+                            outboundPassenger5.innerText = booking.getDisplayName5();
+                            outboundPassenger6.innerText = booking.getDisplayName6();
+                            showRequiredOutboundPassengerGui(booking);
+                        },
+                        function (code, json) {
+                            errorDiv.innerText = "code: " + code + ", message: " + json.detail;
+                            errorDiv.style.display = '';
+                        });
+                    }, 500);
+
+                if (booking.isReturnTrip()) {
+                    setTimeout(function () {
+                        api.listSeatsForAeroplane(
+                            booking.getInboundAeroplaneId(),
+                            function (json) {
+                                json.results.forEach(x => {
+                                    inboundSeatSelect1.appendChild(makeSelectOption(x.id, x.number, x.emergency_exit));
+                                    inboundSeatSelect2.appendChild(makeSelectOption(x.id, x.number, x.emergency_exit));
+                                    inboundSeatSelect3.appendChild(makeSelectOption(x.id, x.number, x.emergency_exit));
+                                    inboundSeatSelect4.appendChild(makeSelectOption(x.id, x.number, x.emergency_exit));
+                                    inboundSeatSelect5.appendChild(makeSelectOption(x.id, x.number, x.emergency_exit));
+                                    inboundSeatSelect6.appendChild(makeSelectOption(x.id, x.number, x.emergency_exit));
+                                });
+
+                                inboundPassenger1.innerText = booking.getDisplayName1();
+                                inboundPassenger2.innerText = booking.getDisplayName2();
+                                inboundPassenger3.innerText = booking.getDisplayName3();
+                                inboundPassenger4.innerText = booking.getDisplayName4();
+                                inboundPassenger5.innerText = booking.getDisplayName5();
+                                inboundPassenger6.innerText = booking.getDisplayName6();
+                                showRequiredInboundPassengerGui(booking);
+                            },
+                            function (code, json) {
+                                errorDiv.innerText = "code: " + code + ", message: " + json.detail;
+                                errorDiv.style.display = '';
+                            });
+                        }, 500);
+                }
+                else {
+                    returnFlightGUI.style.display = 'none';
+                    returnFlightItineraryGUI.style.display = 'none';
+                }
+            }
+
+            function makeSelectOption(id, seatNumber, isEmergency) {
+                var option = document.createElement("option");
+                option.setAttribute("value", id);
+                if (isEmergency) {
+                    option.innerText = seatNumber + ' (Emergency Exit)';
+                }
+                else {
+                    option.innerText = seatNumber;
+                }
+                return option;
+            }
+
+            function showRequiredOutboundPassengerGui(booking) {
+                if (booking.getNumPassengers() >= 6) outboundSeatSelect6.style.display = '';
+                if (booking.getNumPassengers() >= 5) outboundSeatSelect5.style.display = '';
+                if (booking.getNumPassengers() >= 4) outboundSeatSelect4.style.display = '';
+                if (booking.getNumPassengers() >= 3) outboundSeatSelect3.style.display = '';
+                if (booking.getNumPassengers() >= 2) outboundSeatSelect2.style.display = '';
+
+                if (booking.hasOutboundSeatId1()) {
+                    outboundSeatSelect1.value = booking.getOutboundSeatId1();
+                }
+                if (booking.hasOutboundSeatId2()) {
+                    outboundSeatSelect2.value = booking.getOutboundSeatId2();
+                }
+                if (booking.hasOutboundSeatId3()) {
+                    outboundSeatSelect3.value = booking.getOutboundSeatId3();
+                }
+                if (booking.hasOutboundSeatId4()) {
+                    outboundSeatSelect4.value = booking.getOutboundSeatId4();
+                }
+                if (booking.hasOutboundSeatId5()) {
+                    outboundSeatSelect5.value = booking.getOutboundSeatId5();
+                }
+                if (booking.hasOutboundSeatId6()) {
+                    outboundSeatSelect6.value = booking.getOutboundSeatId6();
+                }
+
+                outboundSeatSelect1.style.display = '';
+                outboundSeatSpinner.style.display = 'none';
+            }
+
+            function showRequiredInboundPassengerGui(booking) {
+                if (booking.getNumPassengers() >= 6) inboundSeatSelect6.style.display = '';
+                if (booking.getNumPassengers() >= 5) inboundSeatSelect5.style.display = '';
+                if (booking.getNumPassengers() >= 4) inboundSeatSelect4.style.display = '';
+                if (booking.getNumPassengers() >= 3) inboundSeatSelect3.style.display = '';
+                if (booking.getNumPassengers() >= 2) inboundSeatSelect2.style.display = '';
+
+                if (booking.hasInboundSeatId1()) {
+                    inboundSeatSelect1.value = booking.getInboundSeatId1();
+                }
+                if (booking.hasInboundSeatId2()) {
+                    inboundSeatSelect2.value = booking.getInboundSeatId2();
+                }
+                if (booking.hasInboundSeatId3()) {
+                    inboundSeatSelect3.value = booking.getInboundSeatId3();
+                }
+                if (booking.hasInboundSeatId4()) {
+                    inboundSeatSelect4.value = booking.getInboundSeatId4();
+                }
+                if (booking.hasInboundSeatId5()) {
+                    inboundSeatSelect5.value = booking.getInboundSeatId5();
+                }
+                if (booking.hasInboundSeatId6()) {
+                    inboundSeatSelect6.value = booking.getInboundSeatId6();
+                }
+
+                inboundSeatSelect1.style.display = '';
+                inboundSeatSpinner.style.display = 'none';
             }
 
             function toLocaleDate(dateTime, timezone) {
@@ -53,6 +186,83 @@
                            '<small class="text-muted fst-italic" style="font-size: x-small">' + results[3] + '</small>';
                 }
                 return '';
+            }
+
+            function nextButtonClicked() {
+                const booking = new Booking();
+                if (outboundSeatSelect1.value) {
+                    booking.setOutboundSeatId1(outboundSeatSelect1.value);
+                }
+                if (outboundSeatSelect1.selectedIndex >= 0 && outboundSeatSelect1.options[outboundSeatSelect1.selectedIndex]) {
+                    booking.setOutboundSeatName1(outboundSeatSelect1.options[outboundSeatSelect1.selectedIndex].text);
+                }
+                if (outboundSeatSelect2.value) {
+                    booking.setOutboundSeatId2(outboundSeatSelect2.value);
+                }
+                if (outboundSeatSelect2.selectedIndex >= 0 && outboundSeatSelect2.options[outboundSeatSelect2.selectedIndex]) {
+                    booking.setOutboundSeatName2(outboundSeatSelect2.options[outboundSeatSelect2.selectedIndex].text);
+                }
+                if (outboundSeatSelect3.value) {
+                    booking.setOutboundSeatId3(outboundSeatSelect3.value);
+                }
+                if (outboundSeatSelect3.selectedIndex >= 0 && outboundSeatSelect3.options[outboundSeatSelect3.selectedIndex]) {
+                    booking.setOutboundSeatName3(outboundSeatSelect3.options[outboundSeatSelect3.selectedIndex].text);
+                }
+                if (outboundSeatSelect4.value) {
+                    booking.setOutboundSeatId4(outboundSeatSelect4.value);
+                }
+                if (outboundSeatSelect4.selectedIndex >= 0 && outboundSeatSelect4.options[outboundSeatSelect4.selectedIndex]) {
+                    booking.setOutboundSeatName4(outboundSeatSelect4.options[outboundSeatSelect4.selectedIndex].text);
+                }
+                if (outboundSeatSelect5.value) {
+                    booking.setOutboundSeatId5(outboundSeatSelect5.value);
+                }
+                if (outboundSeatSelect5.selectedIndex >= 0 && outboundSeatSelect5.options[outboundSeatSelect5.selectedIndex]) {
+                    booking.setOutboundSeatName5(outboundSeatSelect5.options[outboundSeatSelect5.selectedIndex].text);
+                }
+                if (outboundSeatSelect6.value) {
+                    booking.setOutboundSeatId6(outboundSeatSelect6.value);
+                }
+                if (outboundSeatSelect6.selectedIndex >= 0 && outboundSeatSelect6.options[outboundSeatSelect6.selectedIndex]) {
+                    booking.setOutboundSeatName6(outboundSeatSelect6.options[outboundSeatSelect6.selectedIndex].text);
+                }
+                if (inboundSeatSelect1.value) {
+                    booking.setInboundSeatId1(inboundSeatSelect1.value);
+                }
+                if (inboundSeatSelect1.selectedIndex >= 0 && inboundSeatSelect1.options[inboundSeatSelect1.selectedIndex]) {
+                    booking.setInboundSeatName1(inboundSeatSelect1.options[inboundSeatSelect1.selectedIndex].text);
+                }
+                if (inboundSeatSelect2.value) {
+                    booking.setInboundSeatId2(inboundSeatSelect2.value);
+                }
+                if (inboundSeatSelect2.selectedIndex >= 0 && inboundSeatSelect2.options[inboundSeatSelect2.selectedIndex]) {
+                    booking.setInboundSeatName2(inboundSeatSelect2.options[inboundSeatSelect2.selectedIndex].text);
+                }
+                if (inboundSeatSelect3.value) {
+                    booking.setInboundSeatId3(inboundSeatSelect3.value);
+                }
+                if (inboundSeatSelect3.selectedIndex >= 0 && inboundSeatSelect3.options[inboundSeatSelect3.selectedIndex]) {
+                    booking.setInboundSeatName3(inboundSeatSelect3.options[inboundSeatSelect3.selectedIndex].text);
+                }
+                if (inboundSeatSelect4.value) {
+                    booking.setInboundSeatId4(inboundSeatSelect4.value);
+                }
+                if (inboundSeatSelect4.selectedIndex >= 0 && inboundSeatSelect4.options[inboundSeatSelect4.selectedIndex]) {
+                    booking.setInboundSeatName4(inboundSeatSelect4.options[inboundSeatSelect4.selectedIndex].text);
+                }
+                if (inboundSeatSelect5.value) {
+                    booking.setInboundSeatId5(inboundSeatSelect5.value);
+                }
+                if (inboundSeatSelect5.selectedIndex >= 0 && inboundSeatSelect5.options[inboundSeatSelect5.selectedIndex]) {
+                    booking.setInboundSeatName5(inboundSeatSelect5.options[inboundSeatSelect5.selectedIndex].text);
+                }
+                if (inboundSeatSelect6.value) {
+                    booking.setInboundSeatId6(inboundSeatSelect6.value);
+                }
+                if (inboundSeatSelect6.selectedIndex >= 0 && inboundSeatSelect6.options[inboundSeatSelect6.selectedIndex]) {
+                    booking.setInboundSeatName6(inboundSeatSelect6.options[inboundSeatSelect6.selectedIndex].text);
+                }
+                window.location.href = "/booking/confirm.html";
             }
         </SCRIPT>
     </HEAD>
@@ -95,32 +305,109 @@
 
             <DIV class="row mb-5">
                 <ul class="wizard-progress">
-                    <li class="wizard-step active" id="searchStep">Search</li>
-                    <li class="wizard-step active" id="searchFlights">Flights</li>
-                    <li class="wizard-step active" id="searchPassengers">Passengers</li>
-                    <li class="wizard-step active" id="searchExtras">Extras</li>
+                    <li class="wizard-step completed" id="searchStep" onclick="window.location.href='/booking/bookAFlight.html?source=session';">Search</li>
+                    <li class="wizard-step completed" id="searchFlights" onclick="window.location.href='/booking/selectFlights.html';">Flights</li>
+                    <li class="wizard-step completed" id="searchPassengers" onclick="window.location.href='/booking/passengerDetails.html';">Passengers</li>
+                    <li class="wizard-step completed" id="searchExtras" onclick="window.location.href='/booking/extras.html';">Extras</li>
                     <li class="wizard-step active" id="searchSeats">Seats</li>
                     <li class="wizard-step" id="searchConfirm">Confirm</li>
                     <li class="wizard-step" id="searchInvoice">Invoice</li>
                 </ul>
             </DIV>
 
-            <div class="row">
+            <div class="row mb-4">
                 <div class="col-md-7">
-                    <h4 class="mb-3 text-primary">Select your seats</h4>
+                    <h4 class="mb-3 text-primary">Seat Selection</h4>
 
-                    <span>TODO: put select seats form here</span>
+                    <FORM id="mainForm" class="needs-validation mb-5" novalidate>
+                        <div id="errorDiv" style="display: none;"></div>
+
+                        <div class="fs-5 mb-4">
+                            Select your seats for the flight to <span class="text-success fw-bold text-decoration-underline" id="toCityName1"></span>
+                        </div>
+    
+                        <div id="extrasErrorDiv" style="display: none;"></div>
+
+                        <div class="text-center" id="outboundSeatSpinner">
+                            <div class="spinner-border" role="status">
+                                <span class="visually-hidden">Retrieving...</span>
+                            </div>
+                        </div>
+                        <div class="mb-3 col">
+                            <div class="row mb-2 align-items-center">
+                                <div class="col-3"><span id="outboundPassenger1"></span></div>
+                                <div class="col-4"><select class="form-control form-select" id="outboundSeatSelect1" aria-label="Outbound Seat" style="display: none;"></select></div>
+                            </div>
+                            <div class="row mb-2 align-items-center">
+                                <div class="col-3"><span id="outboundPassenger2"></span></div>
+                                <div class="col-4"><select class="form-control form-select" id="outboundSeatSelect2" aria-label="Outbound Seat" style="display: none;"></select></div>
+                            </div>
+                            <div class="row mb-2 align-items-center">
+                                <div class="col-3"><span id="outboundPassenger3"></span></div>
+                                <div class="col-4"><select class="form-control form-select" id="outboundSeatSelect3" aria-label="Outbound Seat" style="display: none;"></select></div>
+                            </div>
+                            <div class="row mb-2 align-items-center">
+                                <div class="col-3"><span id="outboundPassenger4"></span></div>
+                                <div class="col-4"><select class="form-control form-select" id="outboundSeatSelect4" aria-label="Outbound Seat" style="display: none;"></select></div>
+                            </div>
+                            <div class="row mb-2 align-items-center">
+                                <div class="col-3"><span id="outboundPassenger5"></span></div>
+                                <div class="col-4"><select class="form-control form-select" id="outboundSeatSelect5" aria-label="Outbound Seat" style="display: none;"></select></div>
+                            </div>
+                            <div class="row mb-2 align-items-center">
+                                <div class="col-3"><span id="outboundPassenger6"></span></div>
+                                <div class="col-4"><select class="form-control form-select" id="outboundSeatSelect6" aria-label="Outbound Seat" style="display: none;"></select></div>
+                            </div>
+                        </div>
+                        <span id="inboundFlightGUI" style="display: none;">
+                            <div class="fs-5 mt-5 mb-4">
+                                Select your seats for the return flight to <span class="text-success fw-bold text-decoration-underline" id="fromCityName1"></span>
+                            </div>
+
+                            <div class="text-center" id="inboundSeatSpinner">
+                                <div class="spinner-border" role="status">
+                                    <span class="visually-hidden">Retrieving...</span>
+                                </div>
+                            </div>
+                            <div class="mb-3">
+                                <div class="row mb-2 align-items-center">
+                                    <div class="col-3"><span id="inboundPassenger1"></span></div>
+                                    <div class="col-4"><select class="form-control form-select" id="inboundSeatSelect1" aria-label="inbound Seat" style="display: none;"></select></div>
+                                </div>
+                                <div class="row mb-2 align-items-center">
+                                    <div class="col-3"><span id="inboundPassenger2"></span></div>
+                                    <div class="col-4"><select class="form-control form-select" id="inboundSeatSelect2" aria-label="inbound Seat" style="display: none;"></select></div>
+                                </div>
+                                <div class="row mb-2 align-items-center">
+                                    <div class="col-3"><span id="inboundPassenger3"></span></div>
+                                    <div class="col-4"><select class="form-control form-select" id="inboundSeatSelect3" aria-label="inbound Seat" style="display: none;"></select></div>
+                                </div>
+                                <div class="row mb-2 align-items-center">
+                                    <div class="col-3"><span id="inboundPassenger4"></span></div>
+                                    <div class="col-4"><select class="form-control form-select" id="inboundSeatSelect4" aria-label="inbound Seat" style="display: none;"></select></div>
+                                </div>
+                                <div class="row mb-2 align-items-center">
+                                    <div class="col-3"><span id="inboundPassenger5"></span></div>
+                                    <div class="col-4"><select class="form-control form-select" id="inboundSeatSelect5" aria-label="inbound Seat" style="display: none;"></select></div>
+                                </div>
+                                <div class="row mb-2 align-items-center">
+                                    <div class="col-3"><span id="inboundPassenger6"></span></div>
+                                    <div class="col-4"><select class="form-control form-select" id="inboundSeatSelect6" aria-label="inbound Seat" style="display: none;"></select></div>
+                                </div>
+                            </div>
+                        </span>
+                    </FORM>
 
                     <div class="row justify-content-between">
                         <div class="col col-md-auto">
-                            <a class="btn btn-secondary mb-4" href="/booking/extras.html"> <!-- TODO: need other parameters -->
+                            <a class="btn btn-secondary mb-4" href="/booking/extras.html">
                                 <i class="fa-solid fa-circle-arrow-left"></i>&nbsp;Previous
                             </a>
                         </div>
                         <div class="col col-md-auto">
-                            <a class="btn btn-primary mb-4" href="/booking/confirm.html"> <!-- TODO: need other parameters -->
+                            <button class="btn btn-primary mb-4" id="nextButton" onclick="nextButtonClicked();">
                                 Next&nbsp;<i class="fa-solid fa-circle-arrow-right"></i>
-                            </a>
+                            </button>
                         </div>
                     </div>
                 </div>
@@ -162,8 +449,8 @@
                         </div>
                     </div>
                 </div>
-                
             </div>
+
             <FOOTER class="container">
                 <P>Built by Damian Coventry, Copyright &copy; 2022, all rights reserved. &middot; <A href="#">Privacy</A> &middot; <A href="#">Terms</A>
                 </P>

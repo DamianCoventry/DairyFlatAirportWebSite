@@ -58,6 +58,13 @@ class SeatViewSet(viewsets.ModelViewSet):
     serializer_class = SeatSerializer
     permission_classes = [permissions.IsAuthenticated, TokenHasReadWriteScope]
 
+    def get_queryset(self):
+        qs = Seat.objects.all()
+        aeroplaneId = self.request.query_params.get('aeroplaneId', 0)
+        if int(aeroplaneId) > 0:
+            qs = qs.filter(aeroplane_id=aeroplaneId)
+        return qs.order_by('number')
+
 
 class BookedSeatViewSet(viewsets.ModelViewSet):
     queryset = BookedSeat.objects.all().order_by('seat')

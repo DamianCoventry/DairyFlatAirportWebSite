@@ -15,8 +15,8 @@
         <SCRIPT type="text/javascript">
             window.onload = function() {
                 const booking = new Booking();
-                fromCityName2.innerHTML = booking.getFromCityName();
-                fromCityName3.innerHTML = booking.getFromCityName();
+                fromCityName2.innerText = booking.getFromCityName();
+                fromCityName3.innerText = booking.getFromCityName();
 
                 toCityName2.innerText = booking.getToCityName();
                 toCityName3.innerText = booking.getToCityName();
@@ -158,16 +158,20 @@
 
                 if (travelInsuranceSelect.options[travelInsuranceSelect.selectedIndex].text == "-") {
                     booking.setTravelInsuranceId('');
+                    booking.setTravelInsuranceName('');
                 }
                 else {
                     booking.setTravelInsuranceId(travelInsuranceSelect.value);
+                    booking.setTravelInsuranceName(travelInsuranceSelect.options[travelInsuranceSelect.selectedIndex].text);
                 }
 
                 if (rentalCarSelect.options[rentalCarSelect.selectedIndex].text == "-") {
                     booking.setRentalCarId('');
+                    booking.setRentalCarName('');
                 }
                 else {
                     booking.setRentalCarId(rentalCarSelect.value);
+                    booking.setRentalCarName(rentalCarSelect.options[rentalCarSelect.selectedIndex].text);
                 }
 
                 document.location.href = "/booking/selectSeats.html";
@@ -213,9 +217,9 @@
 
             <DIV class="row mb-5">
                 <ul class="wizard-progress">
-                    <li class="wizard-step active" id="searchStep">Search</li>
-                    <li class="wizard-step active" id="searchFlights">Flights</li>
-                    <li class="wizard-step active" id="searchPassengers">Passengers</li>
+                    <li class="wizard-step completed" id="searchStep" onclick="window.location.href='/booking/bookAFlight.html?source=session';">Search</li>
+                    <li class="wizard-step completed" id="searchFlights" onclick="window.location.href='/booking/selectFlights.html';">Flights</li>
+                    <li class="wizard-step completed" id="searchPassengers" onclick="window.location.href='/booking/passengerDetails.html';">Passengers</li>
                     <li class="wizard-step active" id="searchExtras">Extras</li>
                     <li class="wizard-step" id="searchSeats">Seats</li>
                     <li class="wizard-step" id="searchConfirm">Confirm</li>

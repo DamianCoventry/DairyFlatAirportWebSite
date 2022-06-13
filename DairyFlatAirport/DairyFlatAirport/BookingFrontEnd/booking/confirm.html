@@ -10,70 +10,217 @@
         <LINK href="/styles/wizard.css" rel="stylesheet"/>
 
         <SCRIPT type="text/javascript" src="/javascript/bookingAPI.js"></SCRIPT>
+        <SCRIPT type="text/javascript" src="/javascript/booking.js"></SCRIPT>
+        
         <SCRIPT type="text/javascript">
             window.onload = function() {
-                const api = new BookingAPI();
-                api.listFlights(function (json) {
-                    var table = document.getElementById("flightsTable");
-                    var oldTbody = table.tBodies[0];
-                    var newTbody = document.createElement("tbody");
+                const booking = new Booking();
+                insertFlights(booking);
+                insertPassengers(booking);
+                insertExtas(booking);
+                insertSeats(booking);
+                totalCost.innerText = booking.getTotalCost();
+            }
 
-                    json.results.forEach(x => {
-                        var newRow = newTbody.insertRow(-1);
+            function insertFlights(booking) {
+                fromCityName1.innerText = booking.getFromCityName();
+                fromCityName2.innerText = booking.getFromCityName();
+                fromCityDate.innerText = toLocaleDate(new Date(booking.getLeaveDate()), booking.getTimezone());
+                fromCityTime.innerHTML = buildTimeHtml(booking.getLeaveTime());
 
-                        var link = document.createElement('a');
-                        link.setAttribute('href', "/info/viewFlight.html?id=" + x.id);
-                        link.innerText = x.number;
-                        var newCell = newRow.insertCell(0);
-                        newCell.appendChild(link);
+                toCityName1.innerText = booking.getToCityName();
+                toCityName2.innerText = booking.getToCityName();
+                toCityDate.innerText = toLocaleDate(new Date(booking.getReturnDate()), booking.getTimezone());
+                toCityTime.innerHTML = buildTimeHtml(booking.getReturnTime());
 
-                        link = document.createElement('a');
-                        link.setAttribute('href', "/info/viewAeroplane.html?id=" + x.aeroplane.id);
-                        link.innerText = x.aeroplane.make_model;
-                        newCell = newRow.insertCell(1);
-                        newCell.appendChild(link);
+                if (!booking.isReturnTrip()) {
+                    returnFlightGUI.style.display = 'none';
+                    returnFlightSeatsGUI.style.display = 'none';
+                }
+            }
 
-                        newCell = newRow.insertCell(2);
-                        // TODO: format departure_time_of_day nicely
-                        // TODO: calculate correct timezone
-                        var departs = x.departure_airport.name + " " + x.departure_time_of_day;
-                        newCell.appendChild(document.createTextNode(departs));
+            function insertPassengers(booking) {
+                makePassengerDiv(booking.getDisplayName1());
+                if (booking.getNumPassengers() > 1) passengers.appendChild(makePassengerDiv(booking.getDisplayName2()));
+                if (booking.getNumPassengers() > 2) passengers.appendChild(makePassengerDiv(booking.getDisplayName3()));
+                if (booking.getNumPassengers() > 3) passengers.appendChild(makePassengerDiv(booking.getDisplayName4()));
+                if (booking.getNumPassengers() > 4) passengers.appendChild(makePassengerDiv(booking.getDisplayName5()));
+                if (booking.getNumPassengers() > 5) passengers.appendChild(makePassengerDiv(booking.getDisplayName6()));
+            }
 
-                        newCell = newRow.insertCell(3);
-                        // TODO: calculate arrival time, in correct timezone
-                        newCell.appendChild(document.createTextNode(x.arrival_airport.name));
+            function makePassengerDiv(name) {
+                var div = document.createElement('div');
+                div.innerHTML = '&nbsp;&nbsp;&nbsp;&nbsp;' + name;
+                return div;
+            }
 
-                        newCell = newRow.insertCell(4);
-                        newCell.appendChild(document.createTextNode(x.flight_time_minutes));
+            function insertExtas(booking) {
+                if (booking.hasTravelInsuranceName()) {
+                    extras.appendChild(makeExtrasDiv(booking.getTravelInsuranceName(), false));
+                }
+                else {
+                    extras.appendChild(makeExtrasDiv("No travel insurance", true));
+                }
 
-                        newCell = newRow.insertCell(5);
-                        var daysOfWeek = "";
-                        if (x.departs_sun === true) daysOfWeek += "Sun,"
-                        if (x.departs_mon === true) daysOfWeek += "Mon,"
-                        if (x.departs_tue === true) daysOfWeek += "Tue,"
-                        if (x.departs_wed === true) daysOfWeek += "Wed,"
-                        if (x.departs_thu === true) daysOfWeek += "Thu,"
-                        if (x.departs_fri === true) daysOfWeek += "Fri,"
-                        if (x.departs_sat === true) daysOfWeek += "Sat,"
-                        if (daysOfWeek === "Mon,Tue,Wed,Thu,Fri,") {
-                            daysOfWeek = "Mon-Fri,"
-                        }
-                        newCell.appendChild(document.createTextNode(daysOfWeek.slice(0, -1))); // remove trailing ',' character
-                    });
+                if (booking.hasRentalCarName()) {
+                    extras.appendChild(makeExtrasDiv(booking.getRentalCarName(), false));
+                }
+                else {
+                    extras.appendChild(makeExtrasDiv("No rental car", true));
+                }
+            }
 
-                    oldTbody.parentNode.replaceChild(newTbody, oldTbody);
-                },
-                function(code, json) {
-                    var table = document.getElementById("flightsTable");
-                    var oldTbody = table.tBodies[0];
-                    var newTbody = document.createElement("tbody");
+            function makeExtrasDiv(name, mutedItalic) {
+                var div = document.createElement('div');
+                if (mutedItalic) {
+                    div.setAttribute('class', 'text-muted fst-italic');
+                }
+                div.innerHTML = '&nbsp;&nbsp;&nbsp;&nbsp;' + name;
+                return div;
+            }
 
-                    var newRow = newTbody.insertRow(-1);
-                    var newCell = newRow.insertCell(0);
-                    newCell.appendChild(document.createTextNode("code: " + code + ", message: " + json.detail));
+            function insertSeats(booking) {
+                insertOutboundSeats(booking);
+                insertInboundSeats(booking);
+            }
 
-                    oldTbody.parentNode.replaceChild(newTbody, oldTbody);
-                });
+            function insertOutboundSeats(booking) {
+                var div = document.createElement('div');
+                div.setAttribute('class', 'row my-1');
+                var a = makeSeatsColumns(booking.getDisplayName1(), booking.getOutboundSeatName1());
+                div.appendChild(a[0]);
+                div.appendChild(a[1]);
+                outboundSeats.appendChild(div);
+
+                if (booking.getNumPassengers() > 1) {
+                    var div = document.createElement('div');
+                    div.setAttribute('class', 'row my-1');
+                    var a = makeSeatsColumns(booking.getDisplayName2(), booking.getOutboundSeatName2());
+                    div.appendChild(a[0]);
+                    div.appendChild(a[1]);
+                    outboundSeats.appendChild(div);
+                }
+
+                if (booking.getNumPassengers() > 2) {
+                    var div = document.createElement('div');
+                    div.setAttribute('class', 'row my-1');
+                    var a = makeSeatsColumns(booking.getDisplayName3(), booking.getOutboundSeatName3());
+                    div.appendChild(a[0]);
+                    div.appendChild(a[1]);
+                    outboundSeats.appendChild(div);
+                }
+
+                if (booking.getNumPassengers() > 3) {
+                    var div = document.createElement('div');
+                    div.setAttribute('class', 'row my-1');
+                    var a = makeSeatsColumns(booking.getDisplayName4(), booking.getOutboundSeatName4());
+                    div.appendChild(a[0]);
+                    div.appendChild(a[1]);
+                    outboundSeats.appendChild(div);
+                }
+
+                if (booking.getNumPassengers() > 4) {
+                    var div = document.createElement('div');
+                    div.setAttribute('class', 'row my-1');
+                    var a = makeSeatsColumns(booking.getDisplayName5(), booking.getOutboundSeatName5());
+                    div.appendChild(a[0]);
+                    div.appendChild(a[1]);
+                    outboundSeats.appendChild(div);
+                }
+
+                if (booking.getNumPassengers() > 5) {
+                    var div = document.createElement('div');
+                    div.setAttribute('class', 'row my-1');
+                    var a = makeSeatsColumns(booking.getDisplayName6(), booking.getOutboundSeatName6());
+                    div.appendChild(a[0]);
+                    div.appendChild(a[1]);
+                    outboundSeats.appendChild(div);
+                }
+            }
+
+            function insertInboundSeats(booking) {
+                var div = document.createElement('div');
+                div.setAttribute('class', 'row my-1');
+                var a = makeSeatsColumns(booking.getDisplayName1(), booking.getInboundSeatName1());
+                div.appendChild(a[0]);
+                div.appendChild(a[1]);
+                inboundSeats.appendChild(div);
+
+                if (booking.getNumPassengers() > 1) {
+                    var div = document.createElement('div');
+                    div.setAttribute('class', 'row my-1');
+                    var a = makeSeatsColumns(booking.getDisplayName2(), booking.getInboundSeatName2());
+                    div.appendChild(a[0]);
+                    div.appendChild(a[1]);
+                    inboundSeats.appendChild(div);
+                }
+
+                if (booking.getNumPassengers() > 2) {
+                    var div = document.createElement('div');
+                    div.setAttribute('class', 'row my-1');
+                    var a = makeSeatsColumns(booking.getDisplayName3(), booking.getInboundSeatName3());
+                    div.appendChild(a[0]);
+                    div.appendChild(a[1]);
+                    inboundSeats.appendChild(div);
+                }
+
+                if (booking.getNumPassengers() > 3) {
+                    var div = document.createElement('div');
+                    div.setAttribute('class', 'row my-1');
+                    var a = makeSeatsColumns(booking.getDisplayName4(), booking.getInboundSeatName4());
+                    div.appendChild(a[0]);
+                    div.appendChild(a[1]);
+                    inboundSeats.appendChild(div);
+                }
+
+                if (booking.getNumPassengers() > 4) {
+                    var div = document.createElement('div');
+                    div.setAttribute('class', 'row my-1');
+                    var a = makeSeatsColumns(booking.getDisplayName5(), booking.getInboundSeatName5());
+                    div.appendChild(a[0]);
+                    div.appendChild(a[1]);
+                    inboundSeats.appendChild(div);
+                }
+
+                if (booking.getNumPassengers() > 5) {
+                    var div = document.createElement('div');
+                    div.setAttribute('class', 'row my-1');
+                    var a = makeSeatsColumns(booking.getDisplayName6(), booking.getInboundSeatName6());
+                    div.appendChild(a[0]);
+                    div.appendChild(a[1]);
+                    inboundSeats.appendChild(div);
+                }
+            }
+
+            function makeSeatsColumns(columnA, columnB) {
+                var divA = document.createElement('div');
+                divA.setAttribute('class', 'col');
+                divA.innerHTML = '&nbsp;&nbsp;&nbsp;&nbsp;' + columnA;
+
+                var divB = document.createElement('div');
+                divB.setAttribute('class', 'col');
+                divB.innerText = columnB;
+                return [divA, divB];
+            }
+
+            function toLocaleDate(dateTime, timezone) {
+                return new Date(dateTime).toLocaleDateString([],
+                                {
+                                    timeZone: timezone,
+                                    weekday: 'short',
+                                    day: 'numeric',
+                                    month: 'short'
+                                });
+            }
+
+            function buildTimeHtml(timeString) {
+                const re = /(\d+:\d\d\s(AM|PM))\s(.+)/;
+                const results = re.exec(timeString);
+                if (results != null && results.length > 3) {
+                    return '<span>' + results[1] + '</span> ' +
+                           '<small class="text-muted fst-italic" style="font-size: x-small">' + results[3] + '</small>';
+                }
+                return '';
             }
         </SCRIPT>
     </HEAD>
@@ -116,30 +263,81 @@
 
             <DIV class="row mb-5">
                 <ul class="wizard-progress">
-                    <li class="wizard-step active" id="searchStep">Search</li>
-                    <li class="wizard-step active" id="searchFlights">Flights</li>
-                    <li class="wizard-step active" id="searchPassengers">Passengers</li>
-                    <li class="wizard-step active" id="searchExtras">Extras</li>
-                    <li class="wizard-step active" id="searchSeats">Seats</li>
+                    <li class="wizard-step completed" id="searchStep" onclick="window.location.href='/booking/bookAFlight.html?source=session';">Search</li>
+                    <li class="wizard-step completed" id="searchFlights" onclick="window.location.href='/booking/selectFlights.html';">Flights</li>
+                    <li class="wizard-step completed" id="searchPassengers" onclick="window.location.href='/booking/passengerDetails.html';">Passengers</li>
+                    <li class="wizard-step completed" id="searchExtras" onclick="window.location.href='/booking/extras.html';">Extras</li>
+                    <li class="wizard-step completed" id="searchSeats" onclick="window.location.href='/booking/selectSeats.html';">Seats</li>
                     <li class="wizard-step active" id="searchConfirm">Confirm</li>
                     <li class="wizard-step" id="searchInvoice">Invoice</li>
                 </ul>
             </DIV>
 
-            <div class="row">
-                <div class="col-md-7">
-                    <h4 class="mb-3 text-primary">Confirmation</h4>
+            <div class="row mb-4 justify-content-center">
+                <div class="col-md-6">
+                    <h4 class="mb-3 text-primary">Booking Confirmation</h4>
 
-                    <span>TODO: put confirmation form here</span>
+                    <div class="row card mb-4">
+                        <div class="card-header">
+                            <h5 class="text-primary">Your Booking</h5>
+                        </div>
+                        <div class="card-body">
+                            <p class="card-text">
+                                <h5 class="card-title">Flights</h5>
+                                <h6 class="card-title">Outbound trip</h6>
+                                <p class="card-text my-0">
+                                    &nbsp;&nbsp;&nbsp;&nbsp;<span class="text-success fw-bold" id="fromCityName1"></span> to <span class="text-success fw-bold" id="toCityName1"></span>
+                                </p>
+                                <p class="card-text">
+                                    &nbsp;&nbsp;&nbsp;&nbsp;<span id="fromCityDate"></span>&nbsp;<span id="fromCityTime"></span>
+                                </p>
+                                <span id="returnFlightGUI">
+                                    <h6 class="card-title">Return trip</h6>
+                                    <p class="card-text my-0">
+                                        &nbsp;&nbsp;&nbsp;&nbsp;<span class="text-success fw-bold" id="toCityName2"></span> to <span class="text-success fw-bold" id="fromCityName2"></span>
+                                    </p>
+                                    <p class="card-text">
+                                        &nbsp;&nbsp;&nbsp;&nbsp;<span id="toCityDate"></span>&nbsp;<span id="toCityTime"></span>
+                                    </p>
+                                </span>
+                            </p>
+                            <HR />
+                            <p class="card-text">
+                                <h5 class="card-title">Passengers</h5>
+                                <p class="card-text my-0" id="passengers"></p>
+                            </p>
+                            <HR />
+                            <p class="card-text">
+                                <h5 class="card-title">Extras</h5>
+                                <p class="card-text my-0" id="extras"></p>
+                            </p>
+                            <HR />
+                            <p class="card-text">
+                                <h5 class="card-title">Seats</h5>
+                                <h6 class="card-title">Outbound seats</h6>
+                                <span id="outboundSeats"></span>
+                                <span id="returnFlightSeatsGUI">
+                                    <h6 class="card-title mt-3">Return seats</h6>
+                                    <span id="inboundSeats"></span>
+                                </span>
+                            </p>
+                        </div>
+                        <div class="card-footer">
+                            <div class="row">
+                                <span class="col">Total (NZD)</span>
+                                <strong class="col text-end">$<span id="totalCost">0</span></strong>
+                            </div>
+                        </div>
+                    </div>
 
                     <div class="row justify-content-between">
                         <div class="col col-md-auto">
-                            <a class="btn btn-secondary mb-4" href="/booking/selectSeats.html"> <!-- TODO: need other parameters -->
+                            <a class="btn btn-secondary mb-4" href="/booking/selectSeats.html">
                                 <i class="fa-solid fa-circle-arrow-left"></i>&nbsp;Previous
                             </a>
                         </div>
                         <div class="col col-md-auto">
-                            <a class="btn btn-success mb-4" href="/booking/invoice.html"> <!-- TODO: need other parameters -->
+                            <a class="btn btn-success mb-4" href="/booking/invoice.html">
                                 <i class="fa-solid fa-circle-check"></i>&nbsp;Confirm
                             </a>
                         </div>

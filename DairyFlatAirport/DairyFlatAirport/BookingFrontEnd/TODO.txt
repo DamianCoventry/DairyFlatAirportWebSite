@@ -22,8 +22,8 @@ DONE        - "It is expected that you use actual dates and not just days of the
 DONE        - format departure_time_of_day nicely
 DONE        - calculate correct timezone
 DONE        - calculate arrival time, in correct timezone
-WIP     Passenger details
-        Extras
+DONE    Passenger details
+DONE    Extras
         Select your seats
         Review
             - "Presentaion of a summary/invoice page when making the booking."
@@ -45,10 +45,16 @@ DONE    Make the buttons on the home page 'do the right thing'
         Should not be showing other people's data. Need to compare against 'created_by' column/variable.
         Use that horrible looking mapping program for the web dev assignment
         Do not allow bookings if aeroplane is full
+        Do not allow num passengers to be 6 if the aeroplane doesn't have 6 seats
         the 'right chevron' on the paginator has the wrong page value
 DONE    Use the other parts of the 'book a flight' form
 DONE    Print the user's timezone on the GUI where dates are entered
         How to implement multistop?
+        The select flights page needs a better way of showing flights. A calendar? 3 days prior+post?
+        Indicate to the when there are no flights from the chosen source to destination
+        Don't allow a seat to be booked twice
+        Add the travel insurance cost to the total
+        Add the rental car cost to the total
 
 
 
