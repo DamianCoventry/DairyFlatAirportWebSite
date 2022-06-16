@@ -33,10 +33,20 @@
                 toCityDate.innerText = toLocaleDate(new Date(booking.getReturnDate()), booking.getTimezone());
                 toCityTime.innerHTML = buildTimeHtml(booking.getReturnTime());
 
+                outboundTripCost.innerText = booking.getNumPassengers() + ' \u00D7 $' + booking.getOutboundFlightCost();
+                returnTripCost.innerText = booking.getNumPassengers() + ' \u00D7 $' + booking.getInboundFlightCost();
+
                 if (!booking.isReturnTrip()) {
                     returnFlightGUI.style.display = 'none';
                     returnFlightSeatsGUI.style.display = 'none';
                 }
+            }
+
+            function calcNumDays(booking) {
+                const oneDay = 24 * 60 * 60 * 1000; // hours*minutes*seconds*milliseconds
+                const firstDate = new Date(booking.getLeaveDate());
+                const secondDate = new Date(booking.getReturnDate());
+                return Math.round(Math.abs((firstDate - secondDate) / oneDay));
             }
 
             function insertPassengers(booking) {
@@ -56,26 +66,51 @@
 
             function insertExtas(booking) {
                 if (booking.hasTravelInsuranceName()) {
-                    extras.appendChild(makeExtrasDiv(booking.getTravelInsuranceName(), false));
+                    let value1 = '$' + booking.getTravelInsuranceCost() + ' per person';
+                    let value2 = booking.getNumPassengers() + ' \u00D7 $' + booking.getTravelInsuranceCost();
+                    extras.appendChild(makeExtrasDiv(booking, booking.getTravelInsuranceName(), value1, value2, false));
                 }
                 else {
-                    extras.appendChild(makeExtrasDiv("No travel insurance", true));
+                    extras.appendChild(makeExtrasDiv(booking, "No travel insurance", null, null, true));
                 }
 
                 if (booking.hasRentalCarName()) {
-                    extras.appendChild(makeExtrasDiv(booking.getRentalCarName(), false));
+                    let value1 = '$' + booking.getRentalCarCost() + ' per day';
+                    let value2 = calcNumDays(booking) + ' \u00D7 $' + booking.getRentalCarCost();
+                    extras.appendChild(makeExtrasDiv(booking, booking.getRentalCarName(), value1, value2, false));
                 }
                 else {
-                    extras.appendChild(makeExtrasDiv("No rental car", true));
+                    extras.appendChild(makeExtrasDiv(booking, "No rental car", null, null, true));
                 }
             }
 
-            function makeExtrasDiv(name, mutedItalic) {
+            function makeExtrasDiv(booking, name, value1, value2, mutedItalic) {
                 var div = document.createElement('div');
                 if (mutedItalic) {
                     div.setAttribute('class', 'text-muted fst-italic');
+                    div.innerHTML = '&nbsp;&nbsp;&nbsp;&nbsp;' + name;
                 }
-                div.innerHTML = '&nbsp;&nbsp;&nbsp;&nbsp;' + name;
+                else {
+                    var row = document.createElement('div');
+                    row.setAttribute('class', 'row');
+                    var col = document.createElement('div');
+                    col.setAttribute('class', 'col');
+                    col.innerHTML = '&nbsp;&nbsp;&nbsp;&nbsp;' + name;
+                    row.appendChild(col);
+                    div.appendChild(row);
+
+                    var row = document.createElement('div');
+                    row.setAttribute('class', 'row');
+                    var col = document.createElement('div');
+                    col.setAttribute('class', 'col');
+                    col.innerHTML = '&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;' + value1;
+                    row.appendChild(col);
+                    col = document.createElement('div');
+                    col.setAttribute('class', 'col-md-auto');
+                    col.innerText = value2;
+                    row.appendChild(col);
+                    div.appendChild(row);
+                }
                 return div;
             }
 
@@ -284,7 +319,10 @@
                         <div class="card-body">
                             <p class="card-text">
                                 <h5 class="card-title">Flights</h5>
-                                <h6 class="card-title">Outbound trip</h6>
+                                <div class="row">
+                                    <div class="col"><h6 class="card-title">Outbound trip</h6></div>
+                                    <div class="col-md-auto"><span id="outboundTripCost"></span></div>
+                                </div>
                                 <p class="card-text my-0">
                                     &nbsp;&nbsp;&nbsp;&nbsp;<span class="text-success fw-bold" id="fromCityName1"></span> to <span class="text-success fw-bold" id="toCityName1"></span>
                                 </p>
@@ -292,7 +330,10 @@
                                     &nbsp;&nbsp;&nbsp;&nbsp;<span id="fromCityDate"></span>&nbsp;<span id="fromCityTime"></span>
                                 </p>
                                 <span id="returnFlightGUI">
-                                    <h6 class="card-title">Return trip</h6>
+                                    <div class="row">
+                                        <div class="col"><h6 class="card-title">Return trip</h6></div>
+                                        <div class="col-md-auto"><span id="returnTripCost"></span></div>
+                                    </div>
                                     <p class="card-text my-0">
                                         &nbsp;&nbsp;&nbsp;&nbsp;<span class="text-success fw-bold" id="toCityName2"></span> to <span class="text-success fw-bold" id="fromCityName2"></span>
                                     </p>
