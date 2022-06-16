@@ -40,7 +40,7 @@
             }
 
             function insertPassengers(booking) {
-                makePassengerDiv(booking.getDisplayName1());
+                passengers.appendChild(makePassengerDiv(booking.getDisplayName1()));
                 if (booking.getNumPassengers() > 1) passengers.appendChild(makePassengerDiv(booking.getDisplayName2()));
                 if (booking.getNumPassengers() > 2) passengers.appendChild(makePassengerDiv(booking.getDisplayName3()));
                 if (booking.getNumPassengers() > 3) passengers.appendChild(makePassengerDiv(booking.getDisplayName4()));
@@ -275,7 +275,7 @@
 
             <div class="row mb-4 justify-content-center">
                 <div class="col-md-6">
-                    <h4 class="mb-3 text-primary">Booking Confirmation</h4>
+                    <h4 class="mb-3 text-primary">Confirmation</h4>
 
                     <div class="row card mb-4">
                         <div class="card-header">
@@ -343,8 +343,8 @@
                         </div>
                     </div>
                 </div>
-
             </div>
+
             <FOOTER class="container">
                 <P>Built by Damian Coventry, Copyright &copy; 2022, all rights reserved. &middot; <A href="#">Privacy</A> &middot; <A href="#">Terms</A>
                 </P>

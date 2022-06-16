@@ -133,6 +133,16 @@ class Booking {
         return this.getOutboundAeroplaneId().length > 0;
     }
 
+    setOutboundFlightCost(value) {
+        sessionStorage.setItem('outboundFlightCost', value);
+    }
+    getOutboundFlightCost() {
+        return sessionStorage.getItem('outboundFlightCost');
+    }
+    hasOutboundFlightCost() {
+        return this.getOutboundFlightCost().length > 0;
+    }
+
     setInboundFlightId(value) {
         sessionStorage.setItem('inboundFlightId', value);
     }
@@ -151,6 +161,16 @@ class Booking {
     }
     hasInboundAeroplaneId() {
         return this.getInboundAeroplaneId().length > 0;
+    }
+
+    setInboundFlightCost(value) {
+        sessionStorage.setItem('inboundFlightCost', value);
+    }
+    getInboundFlightCost() {
+        return sessionStorage.getItem('inboundFlightCost');
+    }
+    hasInboundFlightCost() {
+        return this.getInboundFlightCost().length > 0;
     }
 
     setTotalCost(value) {
@@ -565,6 +585,16 @@ class Booking {
         return this.getTravelInsuranceName().length > 0;
     }
 
+    setTravelInsuranceCost(value) {
+        sessionStorage.setItem('travelInsuranceCost', value);
+    }
+    getTravelInsuranceCost() {
+        return sessionStorage.getItem('travelInsuranceCost');
+    }
+    hasTravelInsuranceCost() {
+        return this.getTravelInsuranceCost().length > 0;
+    }
+
     setRentalCarId(value) {
         sessionStorage.setItem('rentalCarId', value);
     }
@@ -583,6 +613,26 @@ class Booking {
     }
     hasRentalCarName() {
         return this.getRentalCarName().length > 0;
+    }
+
+    setRentalCarType(value) {
+        sessionStorage.setItem('rentalCarType', value);
+    }
+    getRentalCarType() {
+        return sessionStorage.getItem('rentalCarType');
+    }
+    hasRentalCarType() {
+        return this.getRentalCarType().length > 0;
+    }
+
+    setRentalCarCost(value) {
+        sessionStorage.setItem('rentalCarCost', value);
+    }
+    getRentalCarCost() {
+        return sessionStorage.getItem('rentalCarCost');
+    }
+    hasRentalCarCost() {
+        return this.getRentalCarCost().length > 0;
     }
 
     // values captured from the selectSeats page
@@ -843,8 +893,10 @@ class Booking {
         // values captured from the selectFlights page
         sessionStorage.setItem('outboundFlightId', '');
         sessionStorage.setItem('outboundAeroplaneId', '');
+        sessionStorage.setItem('outboundFlightCost', '');
         sessionStorage.setItem('inboundFlightId', '');
         sessionStorage.setItem('inboundAeroplaneId', '');
+        sessionStorage.setItem('inboundFlightCost', '');
         sessionStorage.setItem('totalCost', '');
         sessionStorage.setItem('leaveTime', '');
         sessionStorage.setItem('returnTime', '');
@@ -890,8 +942,11 @@ class Booking {
         // values captured from the extras page
         sessionStorage.setItem('travelInsuranceId', '');
         sessionStorage.setItem('travelInsuranceName', '');
+        sessionStorage.setItem('travelInsuranceCost', '');
         sessionStorage.setItem('rentalCarId', '');
         sessionStorage.setItem('rentalCarName', '');
+        sessionStorage.setItem('rentalCarType', '');
+        sessionStorage.setItem('rentalCarCost', '');
 
         // values captured from the selectSeats page
         sessionStorage.setItem('outboundSeatId1', '');

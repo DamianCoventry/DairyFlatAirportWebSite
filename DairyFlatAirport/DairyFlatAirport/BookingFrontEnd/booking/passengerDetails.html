@@ -31,7 +31,33 @@
                 fromCityTime.innerHTML = buildTimeHtml(booking.getLeaveTime());
                 toCityTime.innerHTML = buildTimeHtml(booking.getReturnTime());
 
-                returnFlightItineraryGUI.style.display = booking.isReturnTrip() ? '' : 'none';
+                returnFlightBookingGUI.style.display = booking.isReturnTrip() ? '' : 'none';
+
+                outboundTripCost.innerText = booking.getNumPassengers() + ' \u00D7 $' + booking.getOutboundFlightCost();
+                returnTripCost.innerText = booking.getNumPassengers() + ' \u00D7 $' + booking.getInboundFlightCost();
+
+                if (booking.hasRentalCarName()) {
+                    rentalCarBookingGUI.innerHTML = booking.getRentalCarName() + ' <small class="text-muted fst-italic">($' + booking.getRentalCarCost() + ' per day)</small>';
+                    rentalCarCostBookingGUI.innerText = calcNumDays(booking) + ' \u00D7 $' + booking.getRentalCarCost();
+                }
+                else {
+                    rentalCarBookingGUI.innerHTML = '<span class="text-muted fst-italic">No rental car</span>'
+                }
+
+                if (booking.hasTravelInsuranceName()) {
+                    travelInsuranceBookingGUI.innerHTML = booking.getTravelInsuranceName() + ' <small class="text-muted fst-italic">($' + booking.getTravelInsuranceCost() + ' per person)</small>';
+                    travelInsuranceCostBookingGUI.innerText = booking.getNumPassengers() + ' \u00D7 $' + booking.getTravelInsuranceCost();
+                }
+                else {
+                    travelInsuranceBookingGUI.innerHTML = '<span class="text-muted fst-italic">No travel insurance</span>'
+                }
+            }
+
+            function calcNumDays(booking) {
+                const oneDay = 24 * 60 * 60 * 1000; // hours*minutes*seconds*milliseconds
+                const firstDate = new Date(booking.getLeaveDate());
+                const secondDate = new Date(booking.getReturnDate());
+                return Math.round(Math.abs((firstDate - secondDate) / oneDay));
             }
 
             function hideUnnecessaryPassengerGUIs(numPassengers) {
@@ -535,34 +561,48 @@
                     </div>
                 </div>
 
-                <div class="col-md-4 col-lg-3 order-md-last">
+                <div class="col-4 order-md-last">
                     <div class="card">
                         <div class="card-header">
-                            <h4 class="text-primary">Your Itinerary</h4>
+                            <h4 class="text-primary">Your Booking</h4>
                         </div>
                         <div class="card-body">
-                            <h5 class="card-title mt-4">Outbound trip</h5>
-                            <p class="card-text my-0">
-                                <span class="text-success fw-bold" id="fromCityName2"></span> to <span class="text-success fw-bold" id="toCityName2"></span>
-                            </p>
-                            <p class="card-text mt-0">
+                            <div class="row">
+                                <span class="col">Num Passengers</span>
+                                <span class="col text-end" id="numPassengers">1</span>
+                            </div>
+                            <hr>
+                            <div class="row">
+                                <div class="col"><h5 class="card-title">Outbound trip</h5></div>
+                                <div class="col-md-auto text-end"><span id="outboundTripCost"></span></div>
+                            </div>
+                            <span class="text-success fw-bold" id="fromCityName2"></span> to <span class="text-success fw-bold" id="toCityName2"></span>
+                            <p class="card-text">
                                 <span id="fromCityDate"></span>&nbsp;<span id="fromCityTime"></span>
                             </p>
-                            <span id="returnFlightItineraryGUI">
-                                <h5 class="card-title mt-5">Return trip</h5>
-                                <p class="card-text my-0">
-                                    <span class="text-success fw-bold" id="toCityName3"></span> to <span class="text-success fw-bold" id="fromCityName3"></span>
-                                </p>
-                                <p class="card-text mt-0 mb-4">
+                            <span id="returnFlightBookingGUI">
+                                <hr>
+                                <div class="row">
+                                    <div class="col"><h5 class="card-title">Return trip</h5></div>
+                                    <div class="col-md-auto text-end"><span id="returnTripCost"></span></div>
+                                </div>
+                                <span class="text-success fw-bold" id="toCityName3"></span> to <span class="text-success fw-bold" id="fromCityName3"></span>
+                                <p class="card-text">
                                     <span id="toCityDate"></span>&nbsp;<span id="toCityTime"></span>
                                 </p>
                             </span>
-                            <p class="card-text mb-1">
+                            <span id="extrasBookingGUI">
+                                <hr>
+                                <h5 class="card-title">Extras</h5>
                                 <div class="row">
-                                    <span class="col">Num Passengers </span>
-                                    <strong class="col text-end" id="numPassengers">1</strong>
+                                    <span class="col" id="rentalCarBookingGUI"></span>
+                                    <span class="col-md-auto text-end" id="rentalCarCostBookingGUI"></span>
                                 </div>
-                            </p>
+                                <div class="row">
+                                    <span class="col" id="travelInsuranceBookingGUI"></span>
+                                    <span class="col-md-auto text-end" id="travelInsuranceCostBookingGUI"></span>
+                                </div>
+                            </span>
                         </div>
                         <div class="card-footer">
                             <div class="row">

@@ -25,11 +25,11 @@ Token flow:
 
 
 {
-    "access_token": "qmfcDJtlr2GaPfknzWCKfOx8txxUf6",
+    "access_token": "PPc7zJrgdAWNeNUrVMP1IUfPR15Vwx",
     "expires_in": 36000,
     "token_type": "Bearer",
     "scope": "read write groups",
-    "refresh_token": "4TAWh7BIgQa74adRsb52zbtf1inrd8"
+    "refresh_token": "d04YroD8ZiEp4tuWLDkEUg70ZJe15U"
 }
 
 

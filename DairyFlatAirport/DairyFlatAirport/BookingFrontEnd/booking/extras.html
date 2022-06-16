@@ -21,23 +21,38 @@
                 toCityName2.innerText = booking.getToCityName();
                 toCityName3.innerText = booking.getToCityName();
 
-                totalCost.innerText = booking.getTotalCost();
-                numPassengers.innerText = booking.getNumPassengers();
-
                 fromCityDate.innerText = toLocaleDate(new Date(booking.getLeaveDate()), booking.getTimezone());
                 toCityDate.innerText = toLocaleDate(new Date(booking.getReturnDate()), booking.getTimezone());
 
                 fromCityTime.innerHTML = buildTimeHtml(booking.getLeaveTime());
                 toCityTime.innerHTML = buildTimeHtml(booking.getReturnTime());
 
-                returnFlightItineraryGUI.style.display = booking.isReturnTrip() ? '' : 'none';
+                returnFlightBookingGUI.style.display = booking.isReturnTrip() ? '' : 'none';
 
-                addEmptyOption(travelInsuranceSelect);
-                addEmptyOption(rentalCarSelect);
+                numPassengers.innerText = booking.getNumPassengers();
 
                 nextButton.disabled = true;
                 chooseExtrasSpinner.style.display = "";
                 extrasErrorDiv.style.display = "none";
+
+                outboundTripCost.innerText = booking.getNumPassengers() + ' \u00D7 $' + booking.getOutboundFlightCost();
+                returnTripCost.innerText = booking.getNumPassengers() + ' \u00D7 $' + booking.getInboundFlightCost();
+
+                if (booking.hasRentalCarName()) {
+                    rentalCarBookingGUI.innerHTML = booking.getRentalCarName() + ' <small class="text-muted fst-italic">($' + booking.getRentalCarCost() + ' per day)</small>';
+                    rentalCarCostBookingGUI.innerText = calcNumDays(booking) + ' \u00D7 $' + booking.getRentalCarCost();
+                }
+                else {
+                    rentalCarBookingGUI.innerHTML = '<span class="text-muted fst-italic">No rental car</span>'
+                }
+
+                if (booking.hasTravelInsuranceName()) {
+                    travelInsuranceBookingGUI.innerHTML = booking.getTravelInsuranceName() + ' <small class="text-muted fst-italic">($' + booking.getTravelInsuranceCost() + ' per person)</small>';
+                    travelInsuranceCostBookingGUI.innerText = booking.getNumPassengers() + ' \u00D7 $' + booking.getTravelInsuranceCost();
+                }
+                else {
+                    travelInsuranceBookingGUI.innerHTML = '<span class="text-muted fst-italic">No travel insurance</span>'
+                }
 
                 const api = new BookingAPI();
                 api.listTravelInsurances(1, processReceivedTravelInsurances, displayExtrasErrorResponse);
@@ -71,10 +86,10 @@
 
             function processReceivedTravelInsurances(json) {
                 json.results.forEach(x => {
-                        var option = document.createElement("option");
-                        option.setAttribute("value", x.id);
-                        option.innerText = x.title; // TODO: use the rest of the information
-                        travelInsuranceSelect.appendChild(option);
+                        var li = document.createElement("li");
+                        li.setAttribute("class", "list-group-item");
+                        li.appendChild(createTravelInsuranceListItem(x));
+                        travelInsuranceRows.appendChild(li);
                     });
 
                 const api = new BookingAPI();
@@ -90,12 +105,52 @@
                 api.listRentalCars(1, processReceivedRentalCars, displayExtrasErrorResponse);
             }
 
+            function createTravelInsuranceListItem(x) {
+                var div = document.createElement('div');
+                div.innerHTML =
+                    '<div class="row">' +
+                    '    <div class="col-md-auto">' +
+                    '        <input type="radio" id="travelInsurance' + x.id + '" name="travelInsurance' + x.id + '" onclick="radioButtonClicked(\'travelInsurance\', ' + x.id + ');"/>' +
+                    '    </div>' +
+                    '    <div class="col">' +
+                    '        <div class="row align-items-center">' +
+                    '            <div class="col">' +
+                    '                <div class="row"><div class="col"><h5 id="travelInsuranceName' + x.id + '">' + x.title + '</h5></div></div>' +
+                    '                <div class="row my-2"><div class="col">' + x.description + '</div></div>' +
+                    '                <div class="row my-2"><div class="col"><a href="' + x.web_link + '">' + x.web_link + '</a></div></div>' +
+                    '            </div>' +
+                    '            <div class="col-2 text-center"><h2 id="travelInsuranceCostpp' + x.id + '">$' + x.cost_per_person + '</h2><h6>per person</h6></div>' +
+                    '            <div class="col-4 text-center"><img src="' + x.image_link + '"/></div>' +
+                    '        </div>' +
+                    '    </div>' +
+                    '</div>';
+                return div;
+            }
+
+            function radioButtonClicked(namePrefix, id) {
+                var radioButtons = document.getElementsByTagName('input');
+                for (var i = 0; i < radioButtons.length; ++i) {
+                    var x = radioButtons[i];
+                    if (x.getAttribute('type') == 'radio' && x.name.substring(0, namePrefix.length) == namePrefix) {
+                        x.checked = (id == parseInt(x.name.substring(namePrefix.length)));
+                    }
+                }
+
+                updateBookingTotalCost();
+            }
+
             function processReceivedRentalCars(json) {
+                const booking = new Booking();
+
                 json.results.forEach(x => {
-                        var option = document.createElement("option");
-                        option.setAttribute("value", x.id);
-                        option.innerText = x.type + ", " + x.make + " " + x.model; // TODO: use the rest of the information
-                        rentalCarSelect.appendChild(option);
+                        var li = document.createElement("li");
+                        li.setAttribute("class", "list-group-item");
+                        li.setAttribute("id", "rentalCarType" + x.id + "_" + x.type);
+                        if (!booking.hasRentalCarType() || booking.getRentalCarType() != x.type) {
+                            li.setAttribute("style", "display: none;");
+                        }
+                        li.appendChild(createRentalCarListItem(x));
+                        rentalCarRows.appendChild(li);
                     });
 
                 if (json.next != null) {
@@ -109,30 +164,145 @@
                 }
 
                 chooseExtrasSpinner.style.display = "none";
-                travelInsuranceSelect.style.display = "";
-                travelInsuranceLabel.style.display = "";
-                rentalCarSelect.style.display = "";
-                rentalCarLabel.style.display = "";
+                travelInsuranceRows.style.display = "";
+                rentalCarRows.style.display = "";
                 extrasErrorDiv.style.display = "none";
                 nextButton.disabled = false;
 
-                const booking = new Booking();
                 if (booking.hasTravelInsuranceId()) {
-                    travelInsuranceSelect.value = parseInt(booking.getTravelInsuranceId());
+                    checkRadioButton('travelInsurance', parseInt(booking.getTravelInsuranceId()));
                 }
+                else {
+                    checkRadioButton('travelInsurance', 0);
+                }
+
+                if (booking.hasRentalCarType()) {
+                    rentalCarType.value = booking.getRentalCarType();
+                }
+                else {
+                    rentalCarType.selectedIndex = 0;
+                }
+                showCarsOfCurrentType();
+
                 if (booking.hasRentalCarId()) {
-                    rentalCarSelect.value = parseInt(booking.getRentalCarId());
+                    checkRadioButton('rentalCar', parseInt(booking.getRentalCarId()));
+                }
+                else {
+                    checkRadioButton('rentalCar', 0);
+                }
+
+                updateBookingTotalCost();
+            }
+
+            function createRentalCarListItem(x) {
+                var div = document.createElement('div');
+                div.innerHTML =
+                    '<div class="row">' +
+                    '    <div class="col-md-auto">' +
+                    '        <input type="radio" id="rentalCar' + x.id + '" name="rentalCar' + x.id + '" onclick="radioButtonClicked(\'rentalCar\', ' + x.id + ');"/>' +
+                    '    </div>' +
+                    '    <div class="col">' +
+                    '        <div class="row align-items-center">' +
+                    '            <div class="col">' +
+                    '                <div class="row"><div class="col"><h5 id="rentalCarName' + x.id + '">' + x.make + ' ' + x.model + '</h5></div></div>' +
+                    '                <div class="row my-2"><div class="col">' + x.type + '<BR><BR><BR></div></div>' +
+                    '                <div class="row my-2"><div class="col"><a href="' + x.web_link + '">' + x.web_link + '</a></div></div>' +
+                    '            </div>' +
+                    '            <div class="col-2 text-center"><h2 id="rentalCarCostpd' + x.id + '">$' + x.cost_per_day + '</h2><h6>per day</h6></div>' +
+                    '            <div class="col-4 text-center"><img src="' + x.image_link + '"/></div>' +
+                    '        </div>' +
+                    '    </div>' +
+                    '</div>';
+                return div;
+            }
+
+            function getCurrentCarType() {
+                return rentalCarType.options[rentalCarType.selectedIndex].text;
+            }
+
+            function currentCarTypeChanged() {
+                showCarsOfCurrentType();
+
+                // change state to nothing selected
+                radioButtonClicked('rentalCar', 0);
+                const booking = new Booking();
+                booking.setRentalCarId('');
+                booking.setRentalCarName('');
+                booking.setRentalCarCost('');
+            }
+
+            function showCarsOfCurrentType() {
+                const currentCarType = getCurrentCarType();
+                const propertyName = 'rentalCarType';
+                const listItems = document.getElementsByTagName('li');
+                for (var i = 0; i < listItems.length; ++i) {
+                    if (listItems[i].id.substring(0, propertyName.length) == propertyName) {
+                        var pos = listItems[i].id.indexOf('_');
+                        if (listItems[i].id.substring(pos+1) == currentCarType) {
+                            listItems[i].style.display = '';
+                        }
+                        else {
+                            listItems[i].style.display = 'none';
+                        }
+                    }
+                }
+            }
+
+            function checkRadioButton(namePrefix, id) {
+                var radioButtons = document.getElementsByTagName('input');
+                for (var i = 0; i < radioButtons.length; ++i) {
+                    var x = radioButtons[i];
+                    if (x.getAttribute('type') == 'radio' && x.name.substring(0, namePrefix.length) == namePrefix) {
+                        if (id == parseInt(x.name.substring(namePrefix.length))) {
+                            x.checked = true;
+                            return;
+                        }
+                    }
                 }
             }
 
             function displayExtrasErrorResponse(code, json) {
                 chooseExtrasSpinner.style.display = "none";
-                travelInsuranceSelect.style.display = "none";
-                travelInsuranceLabel.style.display = "none";
-                rentalCarSelect.style.display = "none";
-                rentalCarLabel.style.display = "none";
+                travelInsuranceRows.style.display = "none";
+                rentalCarRows.style.display = "none";
                 extrasErrorDiv.innerText = "code: " + code + ", message: " + json.detail;
                 extrasErrorDiv.style.display = "";
+            }
+
+            function updateBookingTotalCost() {
+                const booking = new Booking();
+                var cost = 0;
+
+                if (booking.hasOutboundFlightCost()) {
+                    cost += parseInt(booking.getOutboundFlightCost());
+                }
+
+                if (booking.isReturnTrip() && booking.hasInboundFlightCost()) {
+                    cost += parseInt(booking.getInboundFlightCost());
+                }
+
+                cost = parseInt(booking.getNumPassengers()) * cost;
+
+                let id = getRadioButtonId('rentalCar');
+                if (id.length > 0) {
+                    let rcCost = parseInt(getTagInnerText('h2', 'rentalCarCostpd', id).substring(1)); // cut the $ character off
+                    cost += calcNumDays(booking) * rcCost;
+                }
+
+                id = getRadioButtonId('travelInsurance');
+                if (id.length > 0) {
+                    let tiCost = parseInt(getTagInnerText('h2', 'travelInsuranceCostpp', id).substring(1)); // cut the $ character off
+                    cost += parseInt(booking.getNumPassengers()) * tiCost;
+                }
+
+                totalCost.innerText = cost;
+            }
+
+            function calcNumDays(booking) {
+                const oneDay = 24 * 60 * 60 * 1000; // hours*minutes*seconds*milliseconds
+                const firstDate = new Date(booking.getLeaveDate());
+                const secondDate = new Date(booking.getReturnDate());
+                return Math.round(Math.abs((firstDate - secondDate) / oneDay));
             }
 
             function previousButtonClicked() {
@@ -140,41 +310,59 @@
             }
 
             function nextButtonClicked() {
-                const forms = document.querySelectorAll('.needs-validation');
-                Array.from(forms).forEach(form => {
-                    if (form.checkValidity()) {
-                        saveBooking();
-                    }
-                    else {
-                        event.preventDefault();
-                        event.stopPropagation();
-                        form.classList.add('was-validated');
-                    }
-                }, false);
-            }
-
-            function saveBooking() {
                 const booking = new Booking();
 
-                if (travelInsuranceSelect.options[travelInsuranceSelect.selectedIndex].text == "-") {
+                let id = getRadioButtonId('travelInsurance');
+                if (id.length > 0) {
+                    booking.setTravelInsuranceId(id);
+                    booking.setTravelInsuranceName(getTagInnerText('h5', 'travelInsuranceName', id));
+                    booking.setTravelInsuranceCost(getTagInnerText('h2', 'travelInsuranceCostpp', id).substring(1)); // cut the $ character off
+                }
+                else {
                     booking.setTravelInsuranceId('');
                     booking.setTravelInsuranceName('');
-                }
-                else {
-                    booking.setTravelInsuranceId(travelInsuranceSelect.value);
-                    booking.setTravelInsuranceName(travelInsuranceSelect.options[travelInsuranceSelect.selectedIndex].text);
+                    booking.setTravelInsuranceCost('');
                 }
 
-                if (rentalCarSelect.options[rentalCarSelect.selectedIndex].text == "-") {
+                id = getRadioButtonId('rentalCar');
+                if (id.length > 0) {
+                    booking.setRentalCarId(id);
+                    booking.setRentalCarName(getTagInnerText('h5', 'rentalCarName', id));
+                    booking.setRentalCarCost(getTagInnerText('h2', 'rentalCarCostpd', id).substring(1)); // cut the $ character off
+                }
+                else {
                     booking.setRentalCarId('');
                     booking.setRentalCarName('');
-                }
-                else {
-                    booking.setRentalCarId(rentalCarSelect.value);
-                    booking.setRentalCarName(rentalCarSelect.options[rentalCarSelect.selectedIndex].text);
+                    booking.setRentalCarCost('');
                 }
 
+                booking.setRentalCarType(rentalCarType.value);
+                booking.setTotalCost(totalCost.innerText);
+
                 document.location.href = "/booking/selectSeats.html";
+            }
+
+            function getRadioButtonId(namePrefix) {
+                var radioButtons = document.getElementsByTagName('input');
+                for (var i = 0; i < radioButtons.length; ++i) {
+                    var x = radioButtons[i];
+                    if (x.getAttribute('type') == 'radio' && x.name.substring(0, namePrefix.length) == namePrefix && x.checked) {
+                        let id = x.name.substring(namePrefix.length);
+                        return id > 0 ? id : '';
+                    }
+                }
+                return '';
+            }
+
+            function getTagInnerText(tagType, idPrefix, matchId) {
+                var elements = document.getElementsByTagName(tagType);
+                for (var i = 0; i < elements.length; ++i) {
+                    var x = elements[i];
+                    if (x.id.substring(0, idPrefix.length) == idPrefix && x.id.substring(idPrefix.length) == matchId) {                        
+                        return x.innerText;
+                    }
+                }
+                return '';
             }
         </SCRIPT>
     </HEAD>
@@ -231,25 +419,68 @@
                 <div class="col-md-7">
                     <h4 class="mb-3 text-primary">Extras</h4>
 
-                    <FORM id="mainForm" class="needs-validation" novalidate>
-                        <div class="text-center" id="chooseExtrasSpinner">
-                            <div class="spinner-border" role="status">
-                                <span class="visually-hidden">Retrieving...</span>
-                            </div>
+                    <div class="text-center" id="chooseExtrasSpinner">
+                        <div class="spinner-border" role="status">
+                            <span class="visually-hidden">Retrieving...</span>
                         </div>
-    
-                        <div id="extrasErrorDiv" style="display: none;"></div>
+                    </div>
 
-                        <div class="mb-3 col-8">
-                            <LABEL class="form-label" for="travelInsuranceSelect" id="travelInsuranceLabel" style="display: none;">Travel Insurance</LABEL>
-                            <select class="form-control form-select" id="travelInsuranceSelect" aria-label="Travel Insurance" style="display: none;"></select>
-                        </div>
+                    <div id="extrasErrorDiv" style="display: none;"></div>
 
-                        <div class="mb-5 col-8">
-                            <LABEL class="form-label" for="rentalCarSelect" id="rentalCarLabel" style="display: none;">Rental Car</LABEL>
-                            <select class="form-control form-select" id="rentalCarSelect" aria-label="Rental Car" style="display: none;"></select>
+                    <div class="row align-items-center">
+                        <div class="col">
+                            <h4 class="mb-3 text-success">Rental Car</h4>
                         </div>
-                    </FORM>
+                        <div class="col-md-auto">
+                            <label for="rentalCarType" class="form-label">Car Type</label>
+                        </div>
+                        <div class="col-md-auto">
+                            <select id="rentalCarType" class=" form-select" onchange="currentCarTypeChanged();">
+                                <option>Compact Hatch</option>
+                                <option>Compact SUV</option>
+                                <option>Economy</option>
+                                <option>EV Sedan</option>
+                                <option>Hybrid Hatch</option>
+                                <option>Intermediate Sedan</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="row mb-5">
+                        <div class="col">
+                            <ul class="list-group" id="rentalCarRows" style="display: none;">
+                                <li class="list-group-item">
+                                    <div class="row">
+                                        <div class="col-md-auto">
+                                            <input type="radio" id="rentalCar0" name="rentalCar0" onclick="radioButtonClicked('rentalCar', 0);"/>
+                                        </div>
+                                        <div class="col">
+                                            <h5>No rental car</h5>
+                                        </div>
+                                    </div>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col"><h4 class="mb-3 text-success">Travel Insurance</h4></div>
+                    </div>
+                    <div class="row mb-5">
+                        <div class="col">
+                            <ul class="list-group" id="travelInsuranceRows" style="display: none;">
+                                <li class="list-group-item">
+                                    <div class="row">
+                                        <div class="col-md-auto">
+                                            <input type="radio" id="travelInsurance0" name="travelInsurance0" onclick="radioButtonClicked('travelInsurance', 0);"/>
+                                        </div>
+                                        <div class="col">
+                                            <h5>No travel insurance</h5>
+                                        </div>
+                                    </div>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
 
                     <div class="row justify-content-between">
                         <div class="col col-md-auto">
@@ -265,34 +496,48 @@
                     </div>
                 </div>
 
-                <div class="col-md-4 col-lg-3 order-md-last">
+                <div class="col-4 order-md-last">
                     <div class="card">
                         <div class="card-header">
-                            <h4 class="text-primary">Your Itinerary</h4>
+                            <h4 class="text-primary">Your Booking</h4>
                         </div>
                         <div class="card-body">
-                            <h5 class="card-title mt-4">Outbound trip</h5>
-                            <p class="card-text my-0">
-                                <span class="text-success fw-bold" id="fromCityName2"></span> to <span class="text-success fw-bold" id="toCityName2"></span>
-                            </p>
-                            <p class="card-text mt-0">
+                            <div class="row">
+                                <span class="col">Num Passengers</span>
+                                <span class="col text-end" id="numPassengers">1</span>
+                            </div>
+                            <hr>
+                            <div class="row">
+                                <div class="col"><h5 class="card-title">Outbound trip</h5></div>
+                                <div class="col-md-auto text-end"><span id="outboundTripCost"></span></div>
+                            </div>
+                            <span class="text-success fw-bold" id="fromCityName2"></span> to <span class="text-success fw-bold" id="toCityName2"></span>
+                            <p class="card-text">
                                 <span id="fromCityDate"></span>&nbsp;<span id="fromCityTime"></span>
                             </p>
-                            <span id="returnFlightItineraryGUI">
-                                <h5 class="card-title mt-5">Return trip</h5>
-                                <p class="card-text my-0">
-                                    <span class="text-success fw-bold" id="toCityName3"></span> to <span class="text-success fw-bold" id="fromCityName3"></span>
-                                </p>
-                                <p class="card-text mt-0 mb-4">
+                            <span id="returnFlightBookingGUI">
+                                <hr>
+                                <div class="row">
+                                    <div class="col"><h5 class="card-title">Return trip</h5></div>
+                                    <div class="col-md-auto text-end"><span id="returnTripCost"></span></div>
+                                </div>
+                                <span class="text-success fw-bold" id="toCityName3"></span> to <span class="text-success fw-bold" id="fromCityName3"></span>
+                                <p class="card-text">
                                     <span id="toCityDate"></span>&nbsp;<span id="toCityTime"></span>
                                 </p>
                             </span>
-                            <p class="card-text mb-1">
+                            <span id="extrasBookingGUI">
+                                <hr>
+                                <h5 class="card-title">Extras</h5>
                                 <div class="row">
-                                    <span class="col">Num Passengers </span>
-                                    <strong class="col text-end" id="numPassengers">1</strong>
+                                    <span class="col" id="rentalCarBookingGUI"></span>
+                                    <span class="col-md-auto text-end" id="rentalCarCostBookingGUI"></span>
                                 </div>
-                            </p>
+                                <div class="row">
+                                    <span class="col" id="travelInsuranceBookingGUI"></span>
+                                    <span class="col-md-auto text-end" id="travelInsuranceCostBookingGUI"></span>
+                                </div>
+                            </span>
                         </div>
                         <div class="card-footer">
                             <div class="row">
@@ -302,7 +547,7 @@
                         </div>
                     </div>
                 </div>
-                
+
             </div>
             <FOOTER class="container">
                 <P>Built by Damian Coventry, Copyright &copy; 2022, all rights reserved. &middot; <A href="#">Privacy</A> &middot; <A href="#">Terms</A>

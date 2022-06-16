@@ -10,70 +10,89 @@
         <LINK href="/styles/wizard.css" rel="stylesheet"/>
 
         <SCRIPT type="text/javascript" src="/javascript/bookingAPI.js"></SCRIPT>
+        <SCRIPT type="text/javascript" src="/javascript/booking.js"></SCRIPT>
+
         <SCRIPT type="text/javascript">
             window.onload = function() {
-                const api = new BookingAPI();
-                api.listFlights(function (json) {
-                    var table = document.getElementById("flightsTable");
-                    var oldTbody = table.tBodies[0];
-                    var newTbody = document.createElement("tbody");
+                const booking = new Booking();
+                insertFlights(booking);
+                insertExtras(booking);
 
-                    json.results.forEach(x => {
-                        var newRow = newTbody.insertRow(-1);
+                bookingNumber.innerText = 'ABCD1234'; // TODO
+                totalCost.innerText = booking.getTotalCost();
 
-                        var link = document.createElement('a');
-                        link.setAttribute('href', "/info/viewFlight.html?id=" + x.id);
-                        link.innerText = x.number;
-                        var newCell = newRow.insertCell(0);
-                        newCell.appendChild(link);
+                if (!booking.isReturnTrip()) {
+                    returnFlightGUI.style.display = 'none';
+                    returnFlightSeatsGUI.style.display = 'none';
+                }
+            }
 
-                        link = document.createElement('a');
-                        link.setAttribute('href', "/info/viewAeroplane.html?id=" + x.aeroplane.id);
-                        link.innerText = x.aeroplane.make_model;
-                        newCell = newRow.insertCell(1);
-                        newCell.appendChild(link);
+            function insertFlights(booking) {
+                fromCityName1.innerText = booking.getFromCityName();
+                fromCityName2.innerText = booking.getFromCityName();
+                fromCityDate.innerText = toLocaleDate(new Date(booking.getLeaveDate()), booking.getTimezone());
+                fromCityTime.innerHTML = buildTimeHtml(booking.getLeaveTime());
+                outboundFlightCostpp.innerHTML = '&nbsp;&nbsp;&nbsp;&nbsp;$' + booking.getOutboundFlightCost() + ' per person';
+                outboundFlightTotalCost.innerText = booking.getNumPassengers() + " \u00D7 $" + booking.getOutboundFlightCost();
 
-                        newCell = newRow.insertCell(2);
-                        // TODO: format departure_time_of_day nicely
-                        // TODO: calculate correct timezone
-                        var departs = x.departure_airport.name + " " + x.departure_time_of_day;
-                        newCell.appendChild(document.createTextNode(departs));
+                toCityName1.innerText = booking.getToCityName();
+                toCityName2.innerText = booking.getToCityName();
+                toCityDate.innerText = toLocaleDate(new Date(booking.getReturnDate()), booking.getTimezone());
+                toCityTime.innerHTML = buildTimeHtml(booking.getReturnTime());
+                inboundFlightCostpp.innerHTML = '&nbsp;&nbsp;&nbsp;&nbsp;$' + booking.getInboundFlightCost() + ' per person';
+                inboundFlightTotalCost.innerText = booking.getNumPassengers() + " \u00D7 $" + booking.getInboundFlightCost();
+            }
 
-                        newCell = newRow.insertCell(3);
-                        // TODO: calculate arrival time, in correct timezone
-                        newCell.appendChild(document.createTextNode(x.arrival_airport.name));
+            function insertExtras(booking) {
+                if (!booking.hasTravelInsuranceName() && !booking.hasRentalCarName()) {
+                    extrasGUI.style.display = 'none';
+                    return;
+                }
 
-                        newCell = newRow.insertCell(4);
-                        newCell.appendChild(document.createTextNode(x.flight_time_minutes));
+                if (booking.hasTravelInsuranceName()) {
+                    travelInsuranceName.innerText = booking.getTravelInsuranceName();
+                    travelInsuranceCostpp.innerText = '$' + booking.getTravelInsuranceCost() + ' per person';
+                    travelInsuranceTotalCost.innerText = booking.getNumPassengers() + ' \u00D7 $' + booking.getTravelInsuranceCost();
+                }
+                else {
+                    travelInsuranceGUI.style.display = 'none';
+                }
 
-                        newCell = newRow.insertCell(5);
-                        var daysOfWeek = "";
-                        if (x.departs_sun === true) daysOfWeek += "Sun,"
-                        if (x.departs_mon === true) daysOfWeek += "Mon,"
-                        if (x.departs_tue === true) daysOfWeek += "Tue,"
-                        if (x.departs_wed === true) daysOfWeek += "Wed,"
-                        if (x.departs_thu === true) daysOfWeek += "Thu,"
-                        if (x.departs_fri === true) daysOfWeek += "Fri,"
-                        if (x.departs_sat === true) daysOfWeek += "Sat,"
-                        if (daysOfWeek === "Mon,Tue,Wed,Thu,Fri,") {
-                            daysOfWeek = "Mon-Fri,"
-                        }
-                        newCell.appendChild(document.createTextNode(daysOfWeek.slice(0, -1))); // remove trailing ',' character
-                    });
+                if (booking.hasRentalCarName()) {
+                    rentalCarName.innerText = booking.getRentalCarName();
+                    rentalCarCostpd.innerText = '$' + booking.getRentalCarCost() + ' per day';
+                    rentalCarTotalCost.innerText = calcNumDays(booking) + ' \u00D7 $' + booking.getRentalCarCost();
+                }
+                else {
+                    rentalCarGUI.style.display = 'none';
+                }
+            }
 
-                    oldTbody.parentNode.replaceChild(newTbody, oldTbody);
-                },
-                function(code, json) {
-                    var table = document.getElementById("flightsTable");
-                    var oldTbody = table.tBodies[0];
-                    var newTbody = document.createElement("tbody");
+            function calcNumDays(booking) {
+                const oneDay = 24 * 60 * 60 * 1000; // hours*minutes*seconds*milliseconds
+                const firstDate = new Date(booking.getLeaveDate());
+                const secondDate = new Date(booking.getReturnDate());
+                return Math.round(Math.abs((firstDate - secondDate) / oneDay));
+            }
 
-                    var newRow = newTbody.insertRow(-1);
-                    var newCell = newRow.insertCell(0);
-                    newCell.appendChild(document.createTextNode("code: " + code + ", message: " + json.detail));
+            function toLocaleDate(dateTime, timezone) {
+                return new Date(dateTime).toLocaleDateString([],
+                                {
+                                    timeZone: timezone,
+                                    weekday: 'short',
+                                    day: 'numeric',
+                                    month: 'short'
+                                });
+            }
 
-                    oldTbody.parentNode.replaceChild(newTbody, oldTbody);
-                });
+            function buildTimeHtml(timeString) {
+                const re = /(\d+:\d\d\s(AM|PM))\s(.+)/;
+                const results = re.exec(timeString);
+                if (results != null && results.length > 3) {
+                    return '<span>' + results[1] + '</span> ' +
+                           '<small class="text-muted fst-italic" style="font-size: x-small">' + results[3] + '</small>';
+                }
+                return '';
             }
         </SCRIPT>
     </HEAD>
@@ -127,16 +146,95 @@
                 </ul>
             </DIV>
 
-            <div class="row">
-                <h4 class="mb-3 text-primary">Invoice</h4>
-
-                <span>TODO: put invoice here</span>
-
-                <form class="row g-3">
-                    <div class="col-auto">
-                        <a class="btn btn-primary mb-3" href="/booking/listBookings.html">Return to Bookings</a>
+            <div class="row mb-4 justify-content-center">
+                <div class="col-md-7">
+                    <h4 class="mb-3 text-primary">Booking Completed</h4>
+                    <div class="row">
+                        <div class="col"><label class="form-label"><strong>Thank you</strong> for choosing to fly with Dairy Flat Airport.</label></div>
                     </div>
-                </form>
+                    <div class="row mt-2 mb-4">
+                        <div class="col">
+                            <span class="fs-5">Booking Number is <span id="bookingNumber" class="fw-bold">ASDF1234</span>.</span>
+                        </div>
+                    </div>
+                    <div class="row card mb-4">
+                        <div class="card-header">
+                            <h5 class="text-primary">Invoice</h5>
+                        </div>
+
+                        <div class="card-body my-0">
+                            <h6 class="card-title">Flights</h6>
+                            <div class="row card-text my-0">
+                                <div class="col">
+                                    <span class="text-success fw-bold" id="fromCityName1"></span> to
+                                    <span class="text-success fw-bold" id="toCityName1"></span>
+                                    &nbsp;&nbsp;
+                                    <span id="fromCityDate"></span>&nbsp;<span id="fromCityTime"></span>
+                                </div>
+                            </div>
+                            <div class="row card-text my-0">
+                                <div class="col">
+                                    <span id="outboundFlightCostpp"></span>
+                                </div>
+                                <div class="col text-end">
+                                    <span id="outboundFlightTotalCost"></span>
+                                </div>
+                            </div>
+                            <span id="returnFlightGUI">
+                                <div class="row card-text mt-2 mb-0">
+                                    <div class="col">
+                                        <span class="text-success fw-bold" id="toCityName2"></span> to
+                                        <span class="text-success fw-bold" id="fromCityName2"></span>
+                                        &nbsp;&nbsp;
+                                        <span id="toCityDate"></span>&nbsp;<span id="toCityTime"></span>
+                                    </div>
+                                </div>
+                                <div class="row card-text my-0">
+                                    <div class="col">
+                                        <span id="inboundFlightCostpp"></span>
+                                    </div>
+                                    <div class="col text-end">
+                                        <span id="inboundFlightTotalCost"></span>
+                                    </div>
+                                </div>
+                            </span>
+                            <span id="extrasGUI">
+                                <h6 class="card-title mt-4">Extras</h6>
+                                <span id="travelInsuranceGUI">
+                                    <div class="row card-text mt-2 mb-0">
+                                        <div class="col"><span id="travelInsuranceName"></span></div>
+                                    </div>
+                                    <div class="row card-text my-0">
+                                        <div class="col">&nbsp;&nbsp;&nbsp;&nbsp;<span id="travelInsuranceCostpp"></span></div>
+                                        <div class="col-2 text-end"><span id="travelInsuranceTotalCost">0</span></div>
+                                    </div>
+                                </span>
+                                <span id="rentalCarGUI">
+                                    <div class="row card-text mt-2 mb-0">
+                                        <div class="col"><span id="rentalCarName"></span></div>
+                                    </div>
+                                    <div class="row card-text my-0">
+                                        <div class="col">&nbsp;&nbsp;&nbsp;&nbsp;<span id="rentalCarCostpd"></span></div>
+                                        <div class="col-2 text-end"><span id="rentalCarTotalCost">0</span></div>
+                                    </div>
+                                </span>
+                            </span>
+                        </div>
+
+                        <div class="card-footer">
+                            <div class="row">
+                                <span class="col">Total (NZD)</span>
+                                <strong class="col text-end">$<span id="totalCost">0</span></strong>
+                            </div>
+                        </div>
+                    </div>
+
+                    <form class="row g-3 justify-content-end">
+                        <div class="col-auto">
+                            <a class="btn btn-primary mb-3" href="/booking/listBookings.html">View Bookings</a>
+                        </div>
+                    </form>
+                </div>
             </div>
 
             <FOOTER class="container">

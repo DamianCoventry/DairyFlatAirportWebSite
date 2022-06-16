@@ -4,7 +4,7 @@ DONE            Make radio buttons mutually exclusive
 DONE            Enable/disable the Next buttons
 DONE            When using the previous button, generate the correct URL params
 DONE            When using the next button, generate the correct URL params
-DONE            Update the itinerary on the right side
+DONE            Update the booking on the right side
 DONE            Handle 'no flights happening between those dates" nicely
 DONE    Landing
 DONE    Search for flights
@@ -28,7 +28,7 @@ DONE    Extras
         Review
             - "Presentaion of a summary/invoice page when making the booking."
         Invoice and booking code
-        Need to actually create the booking
+        Need to actually create the booking and produce a booking number
 DONE    List bookings
 DONE        - insert pager
 DONE    Delete booking needs to actually delete the booking
@@ -55,6 +55,9 @@ DONE    Print the user's timezone on the GUI where dates are entered
         Don't allow a seat to be booked twice
         Add the travel insurance cost to the total
         Add the rental car cost to the total
+        Make sure that the return date is AFTER the leave date
+        Search for, and implement, all the TODO comments
+
 
 
 

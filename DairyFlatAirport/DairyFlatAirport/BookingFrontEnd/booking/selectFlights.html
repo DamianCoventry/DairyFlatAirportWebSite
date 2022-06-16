@@ -32,6 +32,24 @@
                 fromCityDate.innerText = toLocaleDate(new Date(booking.getLeaveDate()), booking.getTimezone());
                 toCityDate.innerText = toLocaleDate(new Date(booking.getReturnDate()), booking.getTimezone());
 
+                updateBookingTripCosts(booking);
+
+                if (booking.hasRentalCarName()) {
+                    rentalCarBookingGUI.innerHTML = booking.getRentalCarName() + ' <small class="text-muted fst-italic">($' + booking.getRentalCarCost() + ' per day)</small>';
+                    rentalCarCostBookingGUI.innerText = calcNumDays(booking) + ' \u00D7 $' + booking.getRentalCarCost();
+                }
+                else {
+                    rentalCarBookingGUI.innerHTML = '<span class="text-muted fst-italic">No rental car</span>'
+                }
+
+                if (booking.hasTravelInsuranceName()) {
+                    travelInsuranceBookingGUI.innerHTML = booking.getTravelInsuranceName() + ' <small class="text-muted fst-italic">($' + booking.getTravelInsuranceCost() + ' per person)</small>';
+                    travelInsuranceCostBookingGUI.innerText = booking.getNumPassengers() + ' \u00D7 $' + booking.getTravelInsuranceCost();
+                }
+                else {
+                    travelInsuranceBookingGUI.innerHTML = '<span class="text-muted fst-italic">No travel insurance</span>'
+                }
+
                 createFlightPagination(booking.getLeaveDate(), booking.getTimezone(), true, 'leaveDate');
                 searchFlights(
                     1, // TODO: how to handle pagination?
@@ -51,7 +69,31 @@
                 }
                 else {
                     returnFlightGUI.style.display = 'none';
-                    returnFlightItineraryGUI.style.display = 'none';
+                    returnFlightBookingGUI.style.display = 'none';
+                }
+            }
+
+            function updateBookingTripCosts(booking) {
+                var outboundFlightCost = getChosenFlightCost('outboundFlightId', 'outboundCost');
+                if (outboundFlightCost) {
+                    outboundTripCost.innerText = booking.getNumPassengers() + ' \u00D7 $' + outboundFlightCost;
+                }
+                else if (booking.hasOutboundFlightCost()) {
+                    outboundTripCost.innerText = booking.getNumPassengers() + ' \u00D7 $' + booking.getOutboundFlightCost();
+                }
+                else {
+                    outboundTripCost.innerText = '';
+                }
+
+                var inboundFlightCost = getChosenFlightCost('inboundFlightId', 'inboundCost');
+                if (inboundFlightCost) {
+                    returnTripCost.innerText = booking.getNumPassengers() + ' \u00D7 $' + inboundFlightCost;
+                }
+                else if (booking.hasInboundFlightCost()) {
+                    returnTripCost.innerText = booking.getNumPassengers() + ' \u00D7 $' + booking.getInboundFlightCost();
+                }
+                else {
+                    returnTripCost.innerText = '';
                 }
             }
 
@@ -174,6 +216,7 @@
 
                             span = document.createElement('span');
                             span.setAttribute('id', (outbound ? 'outboundCost' : 'inboundCost') + x.id);
+                            span.setAttribute('name', (outbound ? 'outboundCost' : 'inboundCost') + x.id);
                             span.appendChild(document.createTextNode(x.cost_dollars));
                             newCell.appendChild(span);
                         });
@@ -222,13 +265,13 @@
                         oldTbody.parentNode.replaceChild(newTbody, oldTbody);
 
                         enableOrDisableNextButton();
-                        updateItineraryTotalCost();
+                        updateBookingTotalCost();
 
                         if (outbound) {
-                            updateItineraryDateTime(fromCityTime, true);
+                            updateBookingDateTime(fromCityTime, true);
                         }
                         else {
-                            updateItineraryDateTime(toCityTime, false);
+                            updateBookingDateTime(toCityTime, false);
                         }
                     }, 500);
                 },
@@ -248,15 +291,19 @@
             function outboundRadioButtonClicked(event) {
                 uncheckOtherRadioButtons('outboundFlightId', event);
                 enableOrDisableNextButton();
-                updateItineraryDateTime(fromCityTime, true);
-                updateItineraryTotalCost();
+                updateBookingDateTime(fromCityTime, true);
+                const booking = new Booking();
+                updateBookingTripCosts(booking);
+                updateBookingTotalCost();
             }
 
             function inboundRadioButtonClicked(event) {
                 uncheckOtherRadioButtons('inboundFlightId', event);
                 enableOrDisableNextButton();
-                updateItineraryDateTime(toCityTime, false);
-                updateItineraryTotalCost();
+                updateBookingDateTime(toCityTime, false);
+                const booking = new Booking();
+                updateBookingTripCosts(booking);
+                updateBookingTotalCost();
             }
 
             function uncheckOtherRadioButtons(namePrefix, event) {
@@ -272,7 +319,7 @@
                 }
             }
 
-            function updateItineraryDateTime(updateThisSpan, outbound) {
+            function updateBookingDateTime(updateThisSpan, outbound) {
                 var flightPrefix = '', timePrefix = '', timezonePrefix = '';
                 if (outbound) {
                     flightPrefix = 'outboundFlightId';
@@ -298,7 +345,7 @@
                 }
             }
 
-            function updateItineraryTotalCost() {
+            function updateBookingTotalCost() {
                 var cost = 0;
 
                 var outboundCost = getChosenFlightValue('span', 'outboundFlightId', 'outboundCost');
@@ -314,7 +361,24 @@
                     }
                 }
 
-                totalCost.innerText = parseInt(numPassengers.innerText) * cost;
+                cost = parseInt(numPassengers.innerText) * cost;
+
+                if (booking.hasRentalCarCost()) {
+                    cost += calcNumDays(booking) * parseInt(booking.getRentalCarCost());
+                }
+
+                if (booking.hasTravelInsuranceCost()) {
+                    cost += parseInt(booking.getNumPassengers()) * parseInt(booking.getTravelInsuranceCost());
+                }
+
+                totalCost.innerText = cost;
+            }
+
+            function calcNumDays(booking) {
+                const oneDay = 24 * 60 * 60 * 1000; // hours*minutes*seconds*milliseconds
+                const firstDate = new Date(booking.getLeaveDate());
+                const secondDate = new Date(booking.getReturnDate());
+                return Math.round(Math.abs((firstDate - secondDate) / oneDay));
             }
 
             function enableOrDisableNextButton() {
@@ -357,10 +421,10 @@
                 return null;
             }
 
-            function getChosenAeroplaneId(namePrefix) {
+            function getChosenAeroplaneId(namePrefix, flightId) {
                 var anchors = document.getElementsByTagName('a');
                 for (var i = 0; i < anchors.length; ++i) {
-                    if (anchors[i].name.substring(0, namePrefix.length) == namePrefix) {
+                    if (anchors[i].name.substring(0, namePrefix.length) == namePrefix && anchors[i].name.substring(namePrefix.length) == flightId) {
                         const re = /\?id=(.+)$/;
                         const id = re.exec(anchors[i].href);
                         if (id != null && id.length > 1) {
@@ -369,6 +433,10 @@
                     }
                 }
                 return null;
+            }
+
+            function getChosenFlightCost(flightNamePrefix, spanValuePrefix) {
+                return getChosenFlightValue('span', flightNamePrefix, spanValuePrefix);
             }
 
             function getChosenFlightValue(tagName, flightNamePrefix, spanValuePrefix) {
@@ -425,15 +493,15 @@
 
                 if (outbound) {
                     fetchNewFlightData('departsFlightTable', dateObject, timezone, true);
-                    updateItineraryDateTime(fromCityTime, true);
+                    updateBookingDateTime(fromCityTime, true);
                 }
                 else {
                     fetchNewFlightData('arrivesFlightTable', dateObject, timezone, false);
-                    updateItineraryDateTime(toCityTime, false);
+                    updateBookingDateTime(toCityTime, false);
                 }
 
                 nextButton.disabled = true;
-                updateItineraryTotalCost();
+                updateBookingTotalCost();
             }
 
             function createFlightPagination(dateString, timezone, outbound, hiddenId) {
@@ -501,16 +569,28 @@
             }
 
             function nextButtonClicked() {
+                var outboundFlightId = getChosenFlightId('outboundFlightId');
+                var outboundAeroplaneId = getChosenAeroplaneId('outboundAeroplaneId', outboundFlightId);
+                var outboundFlightCost = getChosenFlightCost('outboundFlightId', 'outboundCost');
+
                 var inboundFlightId = getChosenFlightId('inboundFlightId');
-                var inboundAeroplaneId = getChosenAeroplaneId('inboundAeroplaneId');
+                var inboundAeroplaneId = getChosenAeroplaneId('inboundAeroplaneId', inboundFlightId);
+                var inboundFlightCost = getChosenFlightCost('inboundFlightId', 'inboundCost');
+
                 const booking = new Booking();
-                booking.setOutboundFlightId(getChosenFlightId('outboundFlightId'));
-                booking.setOutboundAeroplaneId(getChosenAeroplaneId('outboundAeroplaneId'));
+
+                booking.setOutboundFlightId(outboundFlightId);
+                booking.setOutboundAeroplaneId(outboundAeroplaneId);
+                booking.setOutboundFlightCost(outboundFlightCost);
+
                 booking.setInboundFlightId(inboundFlightId == null ? '' : inboundFlightId);
                 booking.setInboundAeroplaneId(inboundAeroplaneId == null ? '' : inboundAeroplaneId);
+                booking.setInboundFlightCost(inboundFlightCost == null ? '' : inboundFlightCost);
+
                 booking.setTotalCost(totalCost.innerText);
                 booking.setLeaveTime(fromCityTime.innerText);
                 booking.setReturnTime(toCityTime.innerText);
+
                 window.location.href = "/booking/passengerDetails.html";
             }
         </SCRIPT>
@@ -565,7 +645,7 @@
             </DIV>
 
             <div class="row">
-                <div class="col-md-9">
+                <div class="col-md-8">
                     <h4 class="mb-2 text-primary">Available Flights</h4>
 
                     <div class="fs-5 mb-4">
@@ -684,34 +764,48 @@
                     </div>
                 </div>
 
-                <div class="col-md-4 col-lg-3 order-md-last">
+                <div class="col-4 order-md-last">
                     <div class="card">
                         <div class="card-header">
-                            <h4 class="text-primary">Your Itinerary</h4>
+                            <h4 class="text-primary">Your Booking</h4>
                         </div>
                         <div class="card-body">
-                            <h5 class="card-title mt-4">Outbound trip</h5>
-                            <p class="card-text my-0">
-                                <span class="text-success fw-bold" id="fromCityName2"></span> to <span class="text-success fw-bold" id="toCityName2"></span>
-                            </p>
-                            <p class="card-text mt-0">
+                            <div class="row">
+                                <span class="col">Num Passengers</span>
+                                <span class="col text-end" id="numPassengers">1</span>
+                            </div>
+                            <hr>
+                            <div class="row">
+                                <div class="col"><h5 class="card-title">Outbound trip</h5></div>
+                                <div class="col-md-auto text-end"><span id="outboundTripCost"></span></div>
+                            </div>
+                            <span class="text-success fw-bold" id="fromCityName2"></span> to <span class="text-success fw-bold" id="toCityName2"></span>
+                            <p class="card-text">
                                 <span id="fromCityDate"></span>&nbsp;<span id="fromCityTime"></span>
                             </p>
-                            <span id="returnFlightItineraryGUI">
-                                <h5 class="card-title mt-5">Return trip</h5>
-                                <p class="card-text my-0">
-                                    <span class="text-success fw-bold" id="toCityName3"></span> to <span class="text-success fw-bold" id="fromCityName3"></span>
-                                </p>
-                                <p class="card-text mt-0 mb-4">
+                            <span id="returnFlightBookingGUI">
+                                <hr>
+                                <div class="row">
+                                    <div class="col"><h5 class="card-title">Return trip</h5></div>
+                                    <div class="col-md-auto text-end"><span id="returnTripCost"></span></div>
+                                </div>
+                                <span class="text-success fw-bold" id="toCityName3"></span> to <span class="text-success fw-bold" id="fromCityName3"></span>
+                                <p class="card-text">
                                     <span id="toCityDate"></span>&nbsp;<span id="toCityTime"></span>
                                 </p>
                             </span>
-                            <p class="card-text mb-1">
+                            <span id="extrasBookingGUI">
+                                <hr>
+                                <h5 class="card-title">Extras</h5>
                                 <div class="row">
-                                    <span class="col">Num Passengers </span>
-                                    <strong class="col text-end" id="numPassengers">1</strong>
+                                    <span class="col" id="rentalCarBookingGUI"></span>
+                                    <span class="col-md-auto text-end" id="rentalCarCostBookingGUI"></span>
                                 </div>
-                            </p>
+                                <div class="row">
+                                    <span class="col" id="travelInsuranceBookingGUI"></span>
+                                    <span class="col-md-auto text-end" id="travelInsuranceCostBookingGUI"></span>
+                                </div>
+                            </span>
                         </div>
                         <div class="card-footer">
                             <div class="row">
