@@ -75,10 +75,7 @@
                             outboundPassenger6.innerText = booking.getDisplayName6();
                             showRequiredOutboundPassengerGui(booking);
                         },
-                        function (code, json) {
-                            errorDiv.innerText = "code: " + code + ", message: " + json.detail;
-                            errorDiv.style.display = '';
-                        });
+                        showHttpError);
                     }, 500);
 
                 if (booking.isReturnTrip()) {
@@ -103,16 +100,33 @@
                                 inboundPassenger6.innerText = booking.getDisplayName6();
                                 showRequiredInboundPassengerGui(booking);
                             },
-                            function (code, json) {
-                                errorDiv.innerText = "code: " + code + ", message: " + json.detail;
-                                errorDiv.style.display = '';
-                            });
+                            showError);
                         }, 500);
                 }
                 else {
                     returnFlightGUI.style.display = 'none';
                     returnFlightBookingGUI.style.display = 'none';
                 }
+            }
+
+            function showHttpError(code, json) {
+                errorMessageTitle.innerText = 'Error Received';
+                errorMessageBody.innerHTML = 'The server returned HTTP code ' + code + '.<BR><BR>' + javascriptObjectToDivs(json);
+                showError();
+            }
+
+            function javascriptObjectToDivs(object) {
+                let html = '';
+                for (var key of Object.keys(object)) {
+                    html = '<div class="row"><div class="col">' + key + ': ' + object[key] + '</div></div>\r\n';
+                }
+                return html;
+            }
+
+            function showError() {
+                const toastLiveExample = document.getElementById('responseCodePopup');
+                const toast = new bootstrap.Toast(toastLiveExample);
+                toast.show();
             }
 
             function calcNumDays(booking) {
@@ -346,8 +360,6 @@
                     <h4 class="mb-3 text-primary">Seat Selection</h4>
 
                     <FORM id="mainForm" class="needs-validation mb-5" novalidate>
-                        <div id="errorDiv" style="display: none;"></div>
-
                         <div class="fs-5 mb-4">
                             Select your seats for the flight to <span class="text-success fw-bold text-decoration-underline" id="toCityName1"></span>
                         </div>
@@ -498,6 +510,17 @@
                 </P>
             </FOOTER>
         </MAIN>
+
+        <div class="toast-container position-fixed bottom-0 end-0 p-3">
+            <div id="responseCodePopup" class="toast fade" role="alert" aria-live="assertive" aria-atomic="true">
+                <div class="toast-header bg-danger">
+                    <strong class="me-auto text-white" id="errorMessageTitle"></strong>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="toast" aria-label="Close"></button>
+                </div>
+                <div class="toast-body" id="errorMessageBody"></div>
+            </div>
+        </div>
+
         <SCRIPT src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-ka7Sk0Gln4gmtz2MlQnikT1wXgYsOg+OMhuP+IlRH9sENBO0LRn5q+8nbTov4+1p" crossorigin="anonymous">
         </SCRIPT>
     </BODY>

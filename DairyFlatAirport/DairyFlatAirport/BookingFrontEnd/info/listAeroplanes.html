@@ -81,17 +81,27 @@
                         }
                     }, 500);
                 },
-                function(code, json) {
-                    var table = document.getElementById("aeroplanesTable");
-                    var oldTbody = table.tBodies[0];
-                    var newTbody = document.createElement("tbody");
+                showHttpError);
+            }
 
-                    var newRow = newTbody.insertRow(-1);
-                    var newCell = newRow.insertCell(0);
-                    newCell.appendChild(document.createTextNode("code: " + code + ", message: " + json.detail));
+            function showHttpError(code, json) {
+                errorMessageTitle.innerText = 'Error Received';
+                errorMessageBody.innerHTML = 'The server returned HTTP code ' + code + '.<BR><BR>' + javascriptObjectToDivs(json);
+                showError();
+            }
 
-                    oldTbody.parentNode.replaceChild(newTbody, oldTbody);
-                });
+            function javascriptObjectToDivs(object) {
+                let html = '';
+                for (var key of Object.keys(object)) {
+                    html = '<div class="row"><div class="col">' + key + ': ' + object[key] + '</div></div>\r\n';
+                }
+                return html;
+            }
+
+            function showError() {
+                const toastLiveExample = document.getElementById('responseCodePopup');
+                const toast = new bootstrap.Toast(toastLiveExample);
+                toast.show();
             }
 
             function createAndAppendItem(list, pageIndex, text, active) {
@@ -196,5 +206,16 @@
                 </P>
             </FOOTER>
         </MAIN>
+
+        <div class="toast-container position-fixed bottom-0 end-0 p-3">
+            <div id="responseCodePopup" class="toast fade" role="alert" aria-live="assertive" aria-atomic="true">
+                <div class="toast-header bg-danger">
+                    <strong class="me-auto text-white" id="errorMessageTitle"></strong>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="toast" aria-label="Close"></button>
+                </div>
+                <div class="toast-body" id="errorMessageBody"></div>
+            </div>
+        </div>
+
     </BODY>
 </HTML>

@@ -42,9 +42,7 @@
                             document.getElementById("phoneNumber").value = json.phone_number;
                             document.getElementById("specialAssistance").value = json.special_assistance;
                         },
-                        function(code, json) {
-                            document.getElementById("title").value = "code: " + code + ", message: " + json.detail;
-                        });
+                        showHttpError);
                 }
             }
 
@@ -67,13 +65,10 @@
                         }, 500);
                     },
                     function(code, json) {
-                        document.getElementById("deleteConfirmationTitle").innerText = "Error";
-                        document.getElementById("deleteText").innerHTML =
-                            "Unable to delete the passenger.<br/><br/>ERROR: " + code + ", Message: " + json.detail;
-                        document.getElementById("deleteText").style.display = "";
                         document.getElementById("cancelButton").disabled = false;
                         document.getElementById("deleteButton").disabled = false;
                         document.getElementById("deleteSpinner").style.display = "none";
+                        showHttpError(code, json);
                     });
             }
 
@@ -97,10 +92,10 @@
                             addPassengerToBooking(api, params.bookingId, json.id);
                         },
                         function(code, json) {
-                            document.getElementById("title").value = "code: " + code + ", message: " + json.detail;
                             formFieldset.disabled = false;
                             saveButton.disabled = false;
                             saveSpinner.style.display = "none";
+                            showHttpError(code, json);
                         });
                 }
                 else {
@@ -115,10 +110,10 @@
                             document.location.href = "/booking/viewBooking.html?id=" + params.bookingId;
                         },
                         function(code, json) {
-                            document.getElementById("title").value = "code: " + code + ", message: " + json.detail;
                             formFieldset.disabled = false;
                             saveButton.disabled = false;
                             saveSpinner.style.display = "none";
+                            showHttpError(code, json);
                         });
                 }
             }
@@ -138,18 +133,38 @@
                                 }, 500);
                             },
                             function(code, json) {
-                                document.getElementById("title").value = "code: " + code + ", message: " + json.detail;
                                 formFieldset.disabled = false;
                                 saveButton.disabled = false;
                                 saveSpinner.style.display = "none";
+                                showHttpError(code, json);
                             });
                     },
                     function(code, json) {
-                        document.getElementById("title").value = "code: " + code + ", message: " + json.detail;
                         formFieldset.disabled = false;
                         saveButton.disabled = false;
                         saveSpinner.style.display = "none";
+                        showHttpError(code, json);
                     });
+            }
+
+            function showHttpError(code, json) {
+                errorMessageTitle.innerText = 'Error Received';
+                errorMessageBody.innerHTML = 'The server returned HTTP code ' + code + '.<BR><BR>' + javascriptObjectToDivs(json);
+                showError();
+            }
+
+            function javascriptObjectToDivs(object) {
+                let html = '';
+                for (var key of Object.keys(object)) {
+                    html = '<div class="row"><div class="col">' + key + ': ' + object[key] + '</div></div>\r\n';
+                }
+                return html;
+            }
+
+            function showError() {
+                const toastLiveExample = document.getElementById('responseCodePopup');
+                const toast = new bootstrap.Toast(toastLiveExample);
+                toast.show();
             }
 
             function saveButtonClicked() {
@@ -305,5 +320,16 @@
 
             <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0-beta1/dist/js/bootstrap.bundle.min.js"></script>
         </MAIN>
+
+        <div class="toast-container position-fixed bottom-0 end-0 p-3">
+            <div id="responseCodePopup" class="toast fade" role="alert" aria-live="assertive" aria-atomic="true">
+                <div class="toast-header bg-danger">
+                    <strong class="me-auto text-white" id="errorMessageTitle"></strong>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="toast" aria-label="Close"></button>
+                </div>
+                <div class="toast-body" id="errorMessageBody"></div>
+            </div>
+        </div>
+
     </BODY>
 </HTML>

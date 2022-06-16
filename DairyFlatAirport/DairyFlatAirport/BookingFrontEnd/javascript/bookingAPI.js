@@ -380,6 +380,29 @@ class BookingAPI {
         return [year, month, day].join('-');
     }
 
+    areThereAnyFlightsFromXToY(departureCityId, arrivalCityId, okFn, errorFn) {
+        const xhr = new XMLHttpRequest();
+        xhr.onreadystatechange = function() {
+            if (xhr.readyState == XMLHttpRequest.DONE) {
+                if (xhr.status >= 200 && xhr.status < 300) {
+                    okFn(JSON.parse(this.responseText).count > 0);
+                }
+                else {
+                    errorFn(xhr.status, JSON.parse(this.responseText));
+                }
+            }
+        }
+
+        var queryParams =
+            '?page=1' +
+            '&departureCity=' + departureCityId +
+            '&arrivalCity=' + arrivalCityId;
+
+        xhr.open("GET", "http://localhost:8000/searchFlights/" + queryParams);
+        xhr.setRequestHeader("Authorization", "Bearer PPc7zJrgdAWNeNUrVMP1IUfPR15Vwx");
+        xhr.send();
+    }
+
     listAirports(currentPage, okFn, errorFn) {
         const xhr = new XMLHttpRequest();
         xhr.onreadystatechange = function() {

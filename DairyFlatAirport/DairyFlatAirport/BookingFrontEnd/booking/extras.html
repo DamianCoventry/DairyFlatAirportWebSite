@@ -33,26 +33,11 @@
 
                 nextButton.disabled = true;
                 chooseExtrasSpinner.style.display = "";
-                extrasErrorDiv.style.display = "none";
 
                 outboundTripCost.innerText = booking.getNumPassengers() + ' \u00D7 $' + booking.getOutboundFlightCost();
                 returnTripCost.innerText = booking.getNumPassengers() + ' \u00D7 $' + booking.getInboundFlightCost();
 
-                if (booking.hasRentalCarName()) {
-                    rentalCarBookingGUI.innerHTML = booking.getRentalCarName() + ' <small class="text-muted fst-italic">($' + booking.getRentalCarCost() + ' per day)</small>';
-                    rentalCarCostBookingGUI.innerText = calcNumDays(booking) + ' \u00D7 $' + booking.getRentalCarCost();
-                }
-                else {
-                    rentalCarBookingGUI.innerHTML = '<span class="text-muted fst-italic">No rental car</span>'
-                }
-
-                if (booking.hasTravelInsuranceName()) {
-                    travelInsuranceBookingGUI.innerHTML = booking.getTravelInsuranceName() + ' <small class="text-muted fst-italic">($' + booking.getTravelInsuranceCost() + ' per person)</small>';
-                    travelInsuranceCostBookingGUI.innerText = booking.getNumPassengers() + ' \u00D7 $' + booking.getTravelInsuranceCost();
-                }
-                else {
-                    travelInsuranceBookingGUI.innerHTML = '<span class="text-muted fst-italic">No travel insurance</span>'
-                }
+                updateBookingExtras();
 
                 const api = new BookingAPI();
                 api.listTravelInsurances(1, processReceivedTravelInsurances, displayExtrasErrorResponse);
@@ -136,6 +121,7 @@
                     }
                 }
 
+                updateBookingExtras();
                 updateBookingTotalCost();
             }
 
@@ -166,7 +152,6 @@
                 chooseExtrasSpinner.style.display = "none";
                 travelInsuranceRows.style.display = "";
                 rentalCarRows.style.display = "";
-                extrasErrorDiv.style.display = "none";
                 nextButton.disabled = false;
 
                 if (booking.hasTravelInsuranceId()) {
@@ -265,8 +250,43 @@
                 chooseExtrasSpinner.style.display = "none";
                 travelInsuranceRows.style.display = "none";
                 rentalCarRows.style.display = "none";
-                extrasErrorDiv.innerText = "code: " + code + ", message: " + json.detail;
-                extrasErrorDiv.style.display = "";
+                showHttpError(code, json);
+            }
+
+            function updateBookingExtras() {
+                const booking = new Booking();
+
+                let id = getRadioButtonId('rentalCar');
+                if (id.length > 0) {
+                    let name = getTagInnerText('h5', 'rentalCarName', id);
+                    let cost = getTagInnerText('h2', 'rentalCarCostpd', id).substring(1);
+                    rentalCarBookingGUI.innerHTML = name + ' <small class="text-muted fst-italic">($' + cost + ' per day)</small>';
+                    rentalCarCostBookingGUI.innerText = calcNumDays(booking) + ' \u00D7 $' + cost;
+                }
+                else if (booking.hasRentalCarName()) {
+                    rentalCarBookingGUI.innerHTML = booking.getRentalCarName() + ' <small class="text-muted fst-italic">($' + booking.getRentalCarCost() + ' per day)</small>';
+                    rentalCarCostBookingGUI.innerText = calcNumDays(booking) + ' \u00D7 $' + booking.getRentalCarCost();
+                }
+                else {
+                    rentalCarBookingGUI.innerHTML = '<span class="text-muted fst-italic">No rental car</span>'
+                    rentalCarCostBookingGUI.innerText = '';
+                }
+
+                id = getRadioButtonId('travelInsurance');
+                if (id.length > 0) {
+                    let name = getTagInnerText('h5', 'travelInsuranceName', id);
+                    let cost = getTagInnerText('h2', 'travelInsuranceCostpp', id).substring(1);
+                    travelInsuranceBookingGUI.innerHTML = name + ' <small class="text-muted fst-italic">($' + cost + ' per person)</small>';
+                    travelInsuranceCostBookingGUI.innerText = booking.getNumPassengers() + ' \u00D7 $' + cost;
+                }
+                else if (booking.hasTravelInsuranceName()) {
+                    travelInsuranceBookingGUI.innerHTML = booking.getTravelInsuranceName() + ' <small class="text-muted fst-italic">($' + booking.getTravelInsuranceCost() + ' per person)</small>';
+                    travelInsuranceCostBookingGUI.innerText = booking.getNumPassengers() + ' \u00D7 $' + booking.getTravelInsuranceCost();
+                }
+                else {
+                    travelInsuranceBookingGUI.innerHTML = '<span class="text-muted fst-italic">No travel insurance</span>'
+                    travelInsuranceCostBookingGUI.innerText = '';
+                }
             }
 
             function updateBookingTotalCost() {
@@ -424,8 +444,6 @@
                             <span class="visually-hidden">Retrieving...</span>
                         </div>
                     </div>
-
-                    <div id="extrasErrorDiv" style="display: none;"></div>
 
                     <div class="row align-items-center">
                         <div class="col">

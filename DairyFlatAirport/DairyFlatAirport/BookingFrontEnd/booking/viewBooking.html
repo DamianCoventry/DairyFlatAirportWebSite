@@ -119,9 +119,7 @@
                             oldTbody.parentNode.replaceChild(newTbody, oldTbody);
                         }, 500);
                     },
-                    function(code, json) {
-                        document.getElementById("number").value = "code: " + code + ", message: " + json.detail;
-                    });
+                    showHttpError);
             }
 
             function addEmptyOption(selectElement) {
@@ -145,7 +143,6 @@
 
                         acceptExtrasButton.disabled = true;
                         chooseExtrasSpinner.style.display = "";
-                        extrasErrorDiv.style.display = "none";
 
                         const api = new BookingAPI();
                         api.listTravelInsurances(1, processReceivedTravelInsurances, displayExtrasErrorResponse);
@@ -199,7 +196,6 @@
                 travelInsuranceLabel.style.display = "";
                 rentalCarSelect.style.display = "";
                 rentalCarLabel.style.display = "";
-                extrasErrorDiv.style.display = "none";
                 acceptExtrasButton.disabled = false;
                 if (currentTravelInsuranceId.innerText != null && currentTravelInsuranceId.innerText.length > 0) {
                     travelInsuranceSelect.value = parseInt(currentTravelInsuranceId.innerText);
@@ -215,8 +211,7 @@
                 travelInsuranceLabel.style.display = "none";
                 rentalCarSelect.style.display = "none";
                 rentalCarLabel.style.display = "none";
-                extrasErrorDiv.innerText = "code: " + code + ", message: " + json.detail;
-                extrasErrorDiv.style.display = "";
+                showHttpError(code, json);
             }
 
             function modifyExtrasWithinBooking() {
@@ -230,7 +225,6 @@
                 travelInsuranceLabel.style.display = "none";
                 rentalCarSelect.style.display = "none";
                 rentalCarLabel.style.display = "none";
-                extrasErrorDiv.style.display = "none";
 
                 const api = new BookingAPI();
                 api.getCompactBooking(params.id,
@@ -323,12 +317,12 @@
                                 }, 500);
                             },
                             function(code, json) {
-                                document.getElementById("title").value = "code: " + code + ", message: " + json.detail;
+                                showHttpError(code, json);
                                 removePassengerButton.disabled = false;
                             });
                     },
                     function(code, json) {
-                        document.getElementById("title").value = "code: " + code + ", message: " + json.detail;
+                        showHttpError(code, json);
                         removePassengerButton.disabled = false;
                     });
             }
@@ -366,7 +360,6 @@
 
                         selectPassengerButton.disabled = true;
                         selectPassengersSpinner.style.display = "";
-                        passengersErrorDiv.style.display = "none";
 
                         const api = new BookingAPI();
                         api.listPassengers(1, processReceivedPassengerPage, displayPassengerErrorResponse);
@@ -416,22 +409,45 @@
 
                 selectPassengersSpinner.style.display = "none";
                 existingPassengers.style.display = "";
-                passengersErrorDiv.style.display = "none";
                 selectPassengerButton.disabled = false;
             }
 
             function displayNoPassengers() {
                 selectPassengersSpinner.style.display = "none";
                 existingPassengers.style.display = "none";
-                passengersErrorDiv.innerText = "No passengers have been added to the system yet. Please close this dialog box, then use the Add New passenger option.";
-                passengersErrorDiv.style.display = "";
+                showGeneralError("No passengers have been added to the system yet.");
             }
 
             function displayPassengerErrorResponse(code, json) {
                 selectPassengersSpinner.style.display = "none";
                 existingPassengers.style.display = "none";
-                passengersErrorDiv.innerText = "code: " + code + ", message: " + json.detail;
-                passengersErrorDiv.style.display = "";
+                showHttpError(code, json);
+            }
+
+            function showGeneralError(message) {
+                errorMessageTitle.innerText = 'Error';
+                errorMessageBody.innerHTML = message;
+                showError();
+            }
+
+            function showHttpError(code, json) {
+                errorMessageTitle.innerText = 'Error Received';
+                errorMessageBody.innerHTML = 'The server returned HTTP code ' + code + '.<BR><BR>' + javascriptObjectToDivs(json);
+                showError();
+            }
+
+            function javascriptObjectToDivs(object) {
+                let html = '';
+                for (var key of Object.keys(object)) {
+                    html = '<div class="row"><div class="col">' + key + ': ' + object[key] + '</div></div>\r\n';
+                }
+                return html;
+            }
+
+            function showError() {
+                const toastLiveExample = document.getElementById('responseCodePopup');
+                const toast = new bootstrap.Toast(toastLiveExample);
+                toast.show();
             }
 
             function addPassengerToBooking() {
@@ -442,7 +458,6 @@
                 selectPassengerButton.disabled = true;
                 selectPassengersSpinner.style.display = "";
                 existingPassengers.style.display = "none";
-                passengersErrorDiv.style.display = "none";
 
                 const api = new BookingAPI();
                 api.getCompactBooking(params.id,
@@ -666,7 +681,6 @@
                                     <span class="visually-hidden">Retrieving...</span>
                                 </div>
                             </div>
-                            <div id="passengersErrorDiv" style="display: none;"></div>
                             <select class="form-select" id="existingPassengers" aria-label="Existing passengers" style="display: none;"></select>
                         </div>
                         <div class="modal-footer">
@@ -693,7 +707,6 @@
                                 </div>
                             </div>
                             <form>
-                                <div id="extrasErrorDiv" style="display: none;"></div>
                                 <div class="mb-3">
                                     <SPAN class="visually-hidden" id="currentTravelInsuranceId"></SPAN>
                                     <LABEL class="form-label" for="travelInsuranceSelect" id="travelInsuranceLabel" style="display: none;">Travel Insurance</LABEL>
@@ -718,5 +731,16 @@
 
             <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0-beta1/dist/js/bootstrap.bundle.min.js"></script>
         </MAIN>
+
+        <div class="toast-container position-fixed bottom-0 end-0 p-3">
+            <div id="responseCodePopup" class="toast fade" role="alert" aria-live="assertive" aria-atomic="true">
+                <div class="toast-header bg-danger">
+                    <strong class="me-auto text-white" id="errorMessageTitle"></strong>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="toast" aria-label="Close"></button>
+                </div>
+                <div class="toast-body" id="errorMessageBody"></div>
+            </div>
+        </div>
+
     </BODY>
 </HTML>

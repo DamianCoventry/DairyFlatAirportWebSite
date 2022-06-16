@@ -15,8 +15,7 @@ DONE        - calculate correct timezone
 DONE        - calculate arrival time, in correct timezone
 DONE    List/filter aeroplanes
 DONE        - insert pager
-        View aeroplane needs an image
-        Insurance types need an image each
+DONE    Insurance types need an image each
 DONE    Select your flights
 DONE        - "It is expected that you use actual dates and not just days of the week."
 DONE        - format departure_time_of_day nicely
@@ -24,56 +23,59 @@ DONE        - calculate correct timezone
 DONE        - calculate arrival time, in correct timezone
 DONE    Passenger details
 DONE    Extras
-        Select your seats
-        Review
-            - "Presentaion of a summary/invoice page when making the booking."
-        Invoice and booking code
-        Need to actually create the booking and produce a booking number
+DONE    Review "Presentaion of a summary/invoice page when making the booking."
 DONE    List bookings
 DONE        - insert pager
 DONE    Delete booking needs to actually delete the booking
 DONE    Edit passenger details
 DONE    Edit extras
+DONE    Put a minimum time on spinners
+DONE    Make the buttons on the home page 'do the right thing'
+DONE    Use the other parts of the 'book a flight' form
+DONE    Print the user's timezone on the GUI where dates are entered
+DONE    Add the travel insurance cost to the total
+DONE    Add the rental car cost to the total
+DONE    the extras page needs to update the booking visually when a car and/or insurance is selected
+DONE    Make sure that the return date is AFTER the leave date
+DONE    format the JSON nicely within the toast messages
+DONE    Indicate to the user when there are no flights from the chosen source to destination
+DONE    Invoice
+        View aeroplane needs an image
+        Select your seats needs an image
         Change your seats
         Get the localhost URI out of the bookingAPI.js file
-        Get authentication code dynamically
         Reorganize toolbar left hand links
-DONE    Put a minimum time on spinners
         on the viewAeroplane page: Change text within text boxes to links for the viewFlight page
-DONE    Make the buttons on the home page 'do the right thing'
-        If 401 received, then route to a 'please login' screen.
         Should not be showing other people's data. Need to compare against 'created_by' column/variable.
         Use that horrible looking mapping program for the web dev assignment
         Do not allow bookings if aeroplane is full
         Do not allow num passengers to be 6 if the aeroplane doesn't have 6 seats
         the 'right chevron' on the paginator has the wrong page value
-DONE    Use the other parts of the 'book a flight' form
-DONE    Print the user's timezone on the GUI where dates are entered
         How to implement multistop?
-        The select flights page needs a better way of showing flights. A calendar? 3 days prior+post?
-        Indicate to the when there are no flights from the chosen source to destination
         Don't allow a seat to be booked twice
-        Add the travel insurance cost to the total
-        Add the rental car cost to the total
-        Make sure that the return date is AFTER the leave date
         Search for, and implement, all the TODO comments
-
+        User login
+        Create user?
+        View/edit user?
+        Delete user?
+        create docker file
+        make sure the site works through docker image
+WIP     The select flights page needs a better way of showing flights. A calendar? 3 days prior+post?
+WIP     Need to actually create the booking and produce a booking number
+WIP     If no user token, then route to a 'please login' screen.
+WIP     If 401 received, then use refresh token
 
 
 
 
 Questions
 ~~~~~~~~~
-        Toast pop ups for success/failure?
         Email confirmation?
-        User login
         Forgot password?
-        Create user?
-        View/edit user?
-        Delete user?
-        Use refresh token?
 DONE    Get rid of search box in toolbar? Or redirect to search results page?
         CTA buttons for empty lists?
+        refactor bookingApi.js
+        refactor javascript that's currently within HTML into its .js files
 
 
 

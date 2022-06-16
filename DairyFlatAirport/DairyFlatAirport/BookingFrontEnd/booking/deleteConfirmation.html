@@ -58,10 +58,7 @@
                             }
                         }, 500);
                     },
-                    function (code, json) {
-                        document.getElementById("errorMessage").innerText = "ERROR: " + code + ", Message: " + json.detail;
-                        document.getElementById("errorMessage").style.display = "";
-                    }
+                    showHttpError
                 );
             }
 
@@ -84,14 +81,31 @@
                         }, 500);
                     },
                     function(code, json) {
-                        document.getElementById("deleteConfirmationTitle").innerText = "Error";
-                        document.getElementById("deleteText").innerHTML =
-                            "Unable to delete the booking.<br/><br/>ERROR: " + code + ", Message: " + json.detail;
-                        document.getElementById("deleteText").style.display = "";
                         document.getElementById("cancelButton").disabled = false;
                         document.getElementById("deleteButton").disabled = false;
                         document.getElementById("deleteSpinner").style.display = "none";
+                        showHttpError(code, json);
                     });
+            }
+
+            function showHttpError(code, json) {
+                errorMessageTitle.innerText = 'Error Received';
+                errorMessageBody.innerHTML = 'The server returned HTTP code ' + code + '.<BR><BR>' + javascriptObjectToDivs(json);
+                showError();
+            }
+
+            function javascriptObjectToDivs(object) {
+                let html = '';
+                for (var key of Object.keys(object)) {
+                    html = '<div class="row"><div class="col">' + key + ': ' + object[key] + '</div></div>\r\n';
+                }
+                return html;
+            }
+
+            function showError() {
+                const toastLiveExample = document.getElementById('responseCodePopup');
+                const toast = new bootstrap.Toast(toastLiveExample);
+                toast.show();
             }
         </SCRIPT>
 
@@ -135,10 +149,6 @@
                 <div class="col-3 text-center">
                     <h2 class="fw-bold my-5">Delete Booking</h2>
                 </div>
-            </div>
-
-            <div class="row justify-content-center mb-5" style="display: none;">
-                <div class="col text-center" id="errorMessage"></div>
             </div>
 
             <div class="row justify-content-center">
@@ -211,6 +221,16 @@
             </div>
             
         </MAIN>
+
+        <div class="toast-container position-fixed bottom-0 end-0 p-3">
+            <div id="responseCodePopup" class="toast fade" role="alert" aria-live="assertive" aria-atomic="true">
+                <div class="toast-header bg-danger">
+                    <strong class="me-auto text-white" id="errorMessageTitle"></strong>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="toast" aria-label="Close"></button>
+                </div>
+                <div class="toast-body" id="errorMessageBody"></div>
+            </div>
+        </div>
 
         <FOOTER class="container mt-5 text-center">
             <P>Built by Damian Coventry, Copyright &copy; 2022, all rights reserved. &middot; <A href="#">Privacy</A> &middot; <A href="#">Terms</A>
