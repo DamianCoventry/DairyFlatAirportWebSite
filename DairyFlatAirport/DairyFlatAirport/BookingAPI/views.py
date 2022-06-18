@@ -1,8 +1,12 @@
 from datetime import datetime, timedelta
+
+import pytz
+from django.db.models import Count
+from django.db.models.functions import TruncDate
 from oauth2_provider.contrib.rest_framework import TokenHasReadWriteScope
 from rest_framework import permissions, mixins, viewsets
+
 from DairyFlatAirport.BookingAPI.serializers import *
-import pytz
 
 
 class UserViewSet(viewsets.ModelViewSet):
@@ -121,3 +125,47 @@ class SearchFlightsViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
             qs = qs.filter(departure_date_time_utc__lte=endOfDay)
 
         return qs.order_by('id')
+
+
+class FlightCountsViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
+    serializer_class = FlightCountsSerializer
+    permission_classes = [permissions.IsAuthenticated, TokenHasReadWriteScope]
+
+    def get_queryset(self):
+        fromAirport = self.request.query_params.get('fromAirport', 0)
+        toAirport = self.request.query_params.get('toAirport', 0)
+        beginDate = self.request.query_params.get('beginDate', '')  # expecting YYYY-MM-DD
+        endDate = self.request.query_params.get('endDate', '')  # expecting YYYY-MM-DD
+        timezone = self.request.query_params.get('timezone', '')  # expecting an IANA name
+
+        tzInfo = pytz.timezone(timezone)
+
+        beginDate_naive = datetime.strptime(beginDate, "%Y-%m-%d")
+        beginDate_startOfDay = tzInfo.localize(beginDate_naive, is_dst=None)
+
+        endDate_naive = datetime.strptime(endDate, "%Y-%m-%d")
+        endDate_startOfDay = tzInfo.localize(endDate_naive, is_dst=None)
+        endDate_endOfDay = endDate_startOfDay + timedelta(hours=23, minutes=59, seconds=59)
+
+        # SELECT
+        #   ("BookingAPI_flightleg"."departure_date_time_utc" AT TIME ZONE 'Pacific/Auckland')::date AS "departureDate",
+        #   COUNT("BookingAPI_flightleg"."id") AS "numFlights"
+        # FROM "BookingAPI_flightleg"
+        # WHERE ("BookingAPI_flightleg"."departure_airport_id" = 1
+        # AND "BookingAPI_flightleg"."arrival_airport_id" = 2
+        # AND "BookingAPI_flightleg"."departure_date_time_utc" >= '2022-06-12 00:00:00+12:00'
+        # AND "BookingAPI_flightleg"."departure_date_time_utc" <= '2022-07-16 23:59:59+12:00')
+        # GROUP BY ("BookingAPI_flightleg"."departure_date_time_utc" AT TIME ZONE 'Pacific/Auckland')::date
+        # ORDER BY "departureDate" ASC
+
+        qs = FlightLeg.objects \
+                .filter(departure_airport_id=fromAirport) \
+                .filter(arrival_airport_id=toAirport) \
+                .filter(departure_date_time_utc__gte=beginDate_startOfDay) \
+                .filter(departure_date_time_utc__lte=endDate_endOfDay) \
+                .annotate(departureDate=TruncDate('departure_date_time_utc', tzinfo=tzInfo)) \
+                .values('departureDate') \
+                .annotate(numFlights=Count('id')) \
+                .order_by('departureDate')
+        print(qs.query)
+        return qs

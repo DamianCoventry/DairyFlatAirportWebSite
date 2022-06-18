@@ -14,7 +14,7 @@ class BookingAPI {
             }
         }
         xhr.open("GET", "http://localhost:8000/aeroplane/?page=" + currentPage);
-        xhr.setRequestHeader("Authorization", "Bearer PPc7zJrgdAWNeNUrVMP1IUfPR15Vwx");
+        xhr.setRequestHeader("Authorization", "Bearer DIqX1kZr1TuHrLSaiDVEjMtNp0DkCv");
         xhr.send();
     }
 
@@ -31,7 +31,7 @@ class BookingAPI {
             }
         }
         xhr.open("GET", "http://localhost:8000/aeroplane/" + id + "/");
-        xhr.setRequestHeader("Authorization", "Bearer PPc7zJrgdAWNeNUrVMP1IUfPR15Vwx");
+        xhr.setRequestHeader("Authorization", "Bearer DIqX1kZr1TuHrLSaiDVEjMtNp0DkCv");
         xhr.send();
     }
 
@@ -48,7 +48,7 @@ class BookingAPI {
             }
         }
         xhr.open("GET", "http://localhost:8000/flightLeg/?page=" + currentPage);
-        xhr.setRequestHeader("Authorization", "Bearer PPc7zJrgdAWNeNUrVMP1IUfPR15Vwx");
+        xhr.setRequestHeader("Authorization", "Bearer DIqX1kZr1TuHrLSaiDVEjMtNp0DkCv");
         xhr.send();
     }
 
@@ -65,7 +65,7 @@ class BookingAPI {
             }
         }
         xhr.open("GET", "http://localhost:8000/flightLeg/" + id + "/");
-        xhr.setRequestHeader("Authorization", "Bearer PPc7zJrgdAWNeNUrVMP1IUfPR15Vwx");
+        xhr.setRequestHeader("Authorization", "Bearer DIqX1kZr1TuHrLSaiDVEjMtNp0DkCv");
         xhr.send();
     }
 
@@ -82,7 +82,7 @@ class BookingAPI {
             }
         }
         xhr.open("GET", "http://localhost:8000/booking/?page=" + currentPage);
-        xhr.setRequestHeader("Authorization", "Bearer PPc7zJrgdAWNeNUrVMP1IUfPR15Vwx");
+        xhr.setRequestHeader("Authorization", "Bearer DIqX1kZr1TuHrLSaiDVEjMtNp0DkCv");
         xhr.send();
     }
 
@@ -99,7 +99,7 @@ class BookingAPI {
             }
         }
         xhr.open("GET", "http://localhost:8000/bookingCompact/?page=" + currentPage);
-        xhr.setRequestHeader("Authorization", "Bearer PPc7zJrgdAWNeNUrVMP1IUfPR15Vwx");
+        xhr.setRequestHeader("Authorization", "Bearer DIqX1kZr1TuHrLSaiDVEjMtNp0DkCv");
         xhr.send();
     }
 
@@ -116,7 +116,7 @@ class BookingAPI {
             }
         }
         xhr.open("GET", "http://localhost:8000/booking/" + id + "/");
-        xhr.setRequestHeader("Authorization", "Bearer PPc7zJrgdAWNeNUrVMP1IUfPR15Vwx");
+        xhr.setRequestHeader("Authorization", "Bearer DIqX1kZr1TuHrLSaiDVEjMtNp0DkCv");
         xhr.send();
     }
 
@@ -133,7 +133,7 @@ class BookingAPI {
             }
         }
         xhr.open("GET", "http://localhost:8000/bookingCompact/" + id + "/");
-        xhr.setRequestHeader("Authorization", "Bearer PPc7zJrgdAWNeNUrVMP1IUfPR15Vwx");
+        xhr.setRequestHeader("Authorization", "Bearer DIqX1kZr1TuHrLSaiDVEjMtNp0DkCv");
         xhr.send();
     }
 
@@ -150,7 +150,7 @@ class BookingAPI {
             }
         }
         xhr.open("POST", "http://localhost:8000/bookingCompact/");
-        xhr.setRequestHeader("Authorization", "Bearer PPc7zJrgdAWNeNUrVMP1IUfPR15Vwx");
+        xhr.setRequestHeader("Authorization", "Bearer DIqX1kZr1TuHrLSaiDVEjMtNp0DkCv");
         xhr.setRequestHeader('Content-type', 'application/json;charset=UTF-8');
         xhr.send(JSON.stringify({
             "number": number,
@@ -175,7 +175,7 @@ class BookingAPI {
             }
         }
         xhr.open("PUT", "http://localhost:8000/bookingCompact/" + id + "/");
-        xhr.setRequestHeader("Authorization", "Bearer PPc7zJrgdAWNeNUrVMP1IUfPR15Vwx");
+        xhr.setRequestHeader("Authorization", "Bearer DIqX1kZr1TuHrLSaiDVEjMtNp0DkCv");
         xhr.setRequestHeader('Content-type', 'application/json;charset=UTF-8');
         xhr.send(JSON.stringify({
             "number": number,
@@ -200,7 +200,7 @@ class BookingAPI {
             }
         }
         xhr.open("DELETE", "http://localhost:8000/booking/" + id + "/");
-        xhr.setRequestHeader("Authorization", "Bearer PPc7zJrgdAWNeNUrVMP1IUfPR15Vwx");
+        xhr.setRequestHeader("Authorization", "Bearer DIqX1kZr1TuHrLSaiDVEjMtNp0DkCv");
         xhr.send();
     }
 
@@ -217,7 +217,7 @@ class BookingAPI {
             }
         }
         xhr.open("GET", "http://localhost:8000/passenger/?page=" + currentPage);
-        xhr.setRequestHeader("Authorization", "Bearer PPc7zJrgdAWNeNUrVMP1IUfPR15Vwx");
+        xhr.setRequestHeader("Authorization", "Bearer DIqX1kZr1TuHrLSaiDVEjMtNp0DkCv");
         xhr.send();
     }
 
@@ -234,7 +234,7 @@ class BookingAPI {
             }
         }
         xhr.open("GET", "http://localhost:8000/passenger/" + id + "/");
-        xhr.setRequestHeader("Authorization", "Bearer PPc7zJrgdAWNeNUrVMP1IUfPR15Vwx");
+        xhr.setRequestHeader("Authorization", "Bearer DIqX1kZr1TuHrLSaiDVEjMtNp0DkCv");
         xhr.send();
     }
 
@@ -251,7 +251,7 @@ class BookingAPI {
             }
         }
         xhr.open("POST", "http://localhost:8000/passenger/");
-        xhr.setRequestHeader("Authorization", "Bearer PPc7zJrgdAWNeNUrVMP1IUfPR15Vwx");
+        xhr.setRequestHeader("Authorization", "Bearer DIqX1kZr1TuHrLSaiDVEjMtNp0DkCv");
         xhr.setRequestHeader('Content-type', 'application/json;charset=UTF-8');
         xhr.send(JSON.stringify({
             "title": title != null && title.length > 0 ? title : null,
@@ -277,7 +277,7 @@ class BookingAPI {
             }
         }
         xhr.open("PUT", "http://localhost:8000/passenger/" + id + "/");
-        xhr.setRequestHeader("Authorization", "Bearer PPc7zJrgdAWNeNUrVMP1IUfPR15Vwx");
+        xhr.setRequestHeader("Authorization", "Bearer DIqX1kZr1TuHrLSaiDVEjMtNp0DkCv");
         xhr.setRequestHeader('Content-type', 'application/json;charset=UTF-8');
         xhr.send(JSON.stringify({
             "title": title != null && title.length > 0 ? title : null,
@@ -303,7 +303,7 @@ class BookingAPI {
             }
         }
         xhr.open("DELETE", "http://localhost:8000/passenger/" + id + "/");
-        xhr.setRequestHeader("Authorization", "Bearer PPc7zJrgdAWNeNUrVMP1IUfPR15Vwx");
+        xhr.setRequestHeader("Authorization", "Bearer DIqX1kZr1TuHrLSaiDVEjMtNp0DkCv");
         xhr.send();
     }
 
@@ -320,7 +320,7 @@ class BookingAPI {
             }
         }
         xhr.open("GET", "http://localhost:8000/travelInsurance/?page=" + currentPage);
-        xhr.setRequestHeader("Authorization", "Bearer PPc7zJrgdAWNeNUrVMP1IUfPR15Vwx");
+        xhr.setRequestHeader("Authorization", "Bearer DIqX1kZr1TuHrLSaiDVEjMtNp0DkCv");
         xhr.send();
     }
 
@@ -337,7 +337,7 @@ class BookingAPI {
             }
         }
         xhr.open("GET", "http://localhost:8000/rentalCar/?page=" + currentPage);
-        xhr.setRequestHeader("Authorization", "Bearer PPc7zJrgdAWNeNUrVMP1IUfPR15Vwx");
+        xhr.setRequestHeader("Authorization", "Bearer DIqX1kZr1TuHrLSaiDVEjMtNp0DkCv");
         xhr.send();
     }
 
@@ -362,7 +362,7 @@ class BookingAPI {
             '&timezone=' + options.timezone
 
         xhr.open("GET", "http://localhost:8000/searchFlights/" + queryParams);
-        xhr.setRequestHeader("Authorization", "Bearer PPc7zJrgdAWNeNUrVMP1IUfPR15Vwx");
+        xhr.setRequestHeader("Authorization", "Bearer DIqX1kZr1TuHrLSaiDVEjMtNp0DkCv");
         xhr.send();
     }
 
@@ -380,7 +380,7 @@ class BookingAPI {
         return [year, month, day].join('-');
     }
 
-    areThereAnyFlightsFromXToY(departureCityId, arrivalCityId, okFn, errorFn) {
+    flightsExistBetweenXAndY(departureCityId, arrivalCityId, okFn, errorFn) {
         const xhr = new XMLHttpRequest();
         xhr.onreadystatechange = function() {
             if (xhr.readyState == XMLHttpRequest.DONE) {
@@ -399,7 +399,33 @@ class BookingAPI {
             '&arrivalCity=' + arrivalCityId;
 
         xhr.open("GET", "http://localhost:8000/searchFlights/" + queryParams);
-        xhr.setRequestHeader("Authorization", "Bearer PPc7zJrgdAWNeNUrVMP1IUfPR15Vwx");
+        xhr.setRequestHeader("Authorization", "Bearer DIqX1kZr1TuHrLSaiDVEjMtNp0DkCv");
+        xhr.send();
+    }
+
+    getFlightCounts(page, fromAirport, toAirport, beginDate, endDate, timezone, okFn, errorFn) {
+        const xhr = new XMLHttpRequest();
+        xhr.onreadystatechange = function() {
+            if (xhr.readyState == XMLHttpRequest.DONE) {
+                if (xhr.status >= 200 && xhr.status < 300) {
+                    okFn(JSON.parse(this.responseText));
+                }
+                else {
+                    errorFn(xhr.status, JSON.parse(this.responseText));
+                }
+            }
+        }
+
+        var queryParams =
+            '?page=' + page +
+            '&fromAirport=' + fromAirport +
+            '&toAirport=' + toAirport +
+            '&beginDate=' + beginDate +
+            '&endDate=' + endDate +
+            '&timezone=' + timezone;
+
+        xhr.open("GET", "http://localhost:8000/flightCounts/" + queryParams);
+        xhr.setRequestHeader("Authorization", "Bearer DIqX1kZr1TuHrLSaiDVEjMtNp0DkCv");
         xhr.send();
     }
 
@@ -416,7 +442,7 @@ class BookingAPI {
             }
         }
         xhr.open("GET", "http://localhost:8000/airport/?page=" + currentPage);
-        xhr.setRequestHeader("Authorization", "Bearer PPc7zJrgdAWNeNUrVMP1IUfPR15Vwx");
+        xhr.setRequestHeader("Authorization", "Bearer DIqX1kZr1TuHrLSaiDVEjMtNp0DkCv");
         xhr.send();
     }
 
@@ -433,7 +459,7 @@ class BookingAPI {
             }
         }
         xhr.open("GET", "http://localhost:8000/seat/?aeroplaneId=" + aeroplaneId);
-        xhr.setRequestHeader("Authorization", "Bearer PPc7zJrgdAWNeNUrVMP1IUfPR15Vwx");
+        xhr.setRequestHeader("Authorization", "Bearer DIqX1kZr1TuHrLSaiDVEjMtNp0DkCv");
         xhr.send();
     }
 };

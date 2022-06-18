@@ -25,7 +25,13 @@
 
                 setTimeout(function () {
                         const api = new BookingAPI();
-                        api.listAirports(1, processReceivedAirportPage, showHttpError);
+                        api.listAirports(1,
+                            processReceivedAirportPage,
+                            function (code, json) {
+                                showHttpError(code, json);
+                                retrievingCitiesSpinner.style.display = 'none';
+                            }
+                        );
                     }, 500);
             }
 
@@ -48,7 +54,12 @@
                         const nextPage = re.exec(json.next);
                         if (nextPage != null && nextPage.length > 1) {
                             const api = new BookingAPI();
-                            api.listAirports(nextPage[1], processReceivedAirportPage, showHttpError);
+                            api.listAirports(nextPage[1],
+                                processReceivedAirportPage,
+                                function (code, json) {
+                                    showHttpError(code, json);
+                                    retrievingCitiesSpinner.style.display = 'none';
+                                });
                             return;
                         }
                     }
@@ -167,7 +178,7 @@
                 }
 
                 const api = new BookingAPI();
-                api.areThereAnyFlightsFromXToY(
+                api.flightsExistBetweenXAndY(
                     fromCity.value, toCity.value,
                     function (flightsExist) {
                         if (!flightsExist) {
@@ -177,7 +188,10 @@
                             submitFormIfValid();
                         }
                     },
-                    showHttpError
+                    function (code, json) {
+                        showHttpError(code, json);
+                        retrievingCitiesSpinner.style.display = 'none';
+                    }
                 );
             }
 

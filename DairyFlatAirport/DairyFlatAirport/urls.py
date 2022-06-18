@@ -22,6 +22,7 @@ router.register(r'booking', views.BookingViewSet)
 
 # need the 3rd parameter because the internal 'queryset' member is built at run-time
 router.register(r'searchFlights', views.SearchFlightsViewSet, 'searchFlights')
+router.register(r'flightCounts', views.FlightCountsViewSet, 'flightCounts')
 
 # Wire up our API using automatic URL routing.
 # Additionally, we include login URLs for the browsable API.
