@@ -13,6 +13,9 @@
         <SCRIPT type="text/javascript" src="/javascript/booking.js"></SCRIPT>
         
         <SCRIPT type="text/javascript">
+            var newPassengerDetails = [];
+            var newPassengerIds = [];
+
             window.onload = function() {
                 const booking = new Booking();
                 insertFlights(booking);
@@ -273,10 +276,108 @@
 
             function confirmBooking() {
                 enableConfirmGui(false);
+                newPassengerDetails = [];
+                newPassengerIds = [];
+                buildNewPassengerDetailsArray();
+                addNextPassenger();
+            }
 
+            function buildNewPassengerDetailsArray() {
                 const booking = new Booking();
+                if (booking.hasFirstName1()) {
+                    newPassengerDetails.push({
+                        "title": booking.getTitle1(),
+                        "first_name": booking.getFirstName1(),
+                        "second_name": booking.getLastName1(),
+                        "email_address": booking.getEmailAddress1(),
+                        "phone_number": booking.getPhoneNumber1(),
+                        "special_assistance": booking.getSpecialAssistance1(),
+                    });
+                }
+                if (booking.hasFirstName2()) {
+                    newPassengerDetails.push({
+                        "title": booking.getTitle2(),
+                        "first_name": booking.getFirstName2(),
+                        "second_name": booking.getLastName2(),
+                        "email_address": booking.getEmailAddress2(),
+                        "phone_number": booking.getPhoneNumber2(),
+                        "special_assistance": booking.getSpecialAssistance2(),
+                    });
+                }
+                if (booking.hasFirstName3()) {
+                    newPassengerDetails.push({
+                        "title": booking.getTitle3(),
+                        "first_name": booking.getFirstName3(),
+                        "second_name": booking.getLastName3(),
+                        "email_address": booking.getEmailAddress3(),
+                        "phone_number": booking.getPhoneNumber3(),
+                        "special_assistance": booking.getSpecialAssistance3(),
+                    });
+                }
+                if (booking.hasFirstName4()) {
+                    newPassengerDetails.push({
+                        "title": booking.getTitle4(),
+                        "first_name": booking.getFirstName4(),
+                        "second_name": booking.getLastName4(),
+                        "email_address": booking.getEmailAddress4(),
+                        "phone_number": booking.getPhoneNumber4(),
+                        "special_assistance": booking.getSpecialAssistance4(),
+                    });
+                }
+                if (booking.hasFirstName5()) {
+                    newPassengerDetails.push({
+                        "title": booking.getTitle5(),
+                        "first_name": booking.getFirstName5(),
+                        "second_name": booking.getLastName5(),
+                        "email_address": booking.getEmailAddress5(),
+                        "phone_number": booking.getPhoneNumber5(),
+                        "special_assistance": booking.getSpecialAssistance5(),
+                    });
+                }
+                if (booking.hasFirstName6()) {
+                    newPassengerDetails.push({
+                        "title": booking.getTitle6(),
+                        "first_name": booking.getFirstName6(),
+                        "second_name": booking.getLastName6(),
+                        "email_address": booking.getEmailAddress6(),
+                        "phone_number": booking.getPhoneNumber6(),
+                        "special_assistance": booking.getSpecialAssistance6(),
+                    });
+                }
+            }
 
-                let number = ''; // TODO: invent the booking number
+            function addNextPassenger() {
+                const api = new BookingAPI();
+                if (newPassengerDetails.length > 0) {
+                    setTimeout(function() {
+                        const passenger = newPassengerDetails.shift();
+                        api.addPassenger(
+                            passenger.title, passenger.first_name, passenger.second_name,
+                            passenger.email_address, passenger.phone_number, passenger.special_assistance,
+                            function(json) {
+                                newPassengerIds.push(json.id);
+                                addNextPassenger();
+                            },
+                            function (code, json) {
+                                showHttpError(code, json);
+                                enableConfirmGui(true);
+                            });
+                        }, 500);
+                }
+                else {
+                    setTimeout(function() {
+                        api.getNextBookingNumber(
+                            nextBookingNumberReceived,
+                            function (code, json) {
+                                showHttpError(code, json);
+                                enableConfirmGui(true);
+                            });
+                        }, 500);
+                }
+            }
+
+            function nextBookingNumberReceived(bookingNumber) {
+                const booking = new Booking();
 
                 let flightLegIdsArray = [];
                 if (booking.hasOutboundFlightId()) {
@@ -286,25 +387,23 @@
                     flightLegIdsArray.push(booking.getInboundFlightId());
                 }
 
-                let passengerIdsArray = []; // TODO: create the passengers, save their IDs here
-
                 const api = new BookingAPI();
                 setTimeout(function() {
                     api.addBooking(
-                        number,
+                        bookingNumber,
                         booking.hasTravelInsuranceId() ? booking.getTravelInsuranceId() : null,
                         booking.hasRentalCarId() ? booking.getRentalCarId() : null,
                         flightLegIdsArray,
-                        passengerIdsArray,
+                        newPassengerIds,
                         function (json) {
-                            // TODO: save the booking number?
+                            booking.setBookingNumber(bookingNumber);
                             window.location.href = '/booking/invoice.html';
                         },
                         function (code, json) {
                             showHttpError(code, json);
                             enableConfirmGui(true);
                         });
-                    }, 1000);
+                    }, 500);
             }
 
             function showHttpError(code, json) {

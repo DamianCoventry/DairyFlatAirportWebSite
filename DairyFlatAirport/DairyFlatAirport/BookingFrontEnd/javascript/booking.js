@@ -876,6 +876,16 @@ class Booking {
         return this.getInboundSeatName6().length > 0;
     }
 
+    setBookingNumber(value) {
+        sessionStorage.setItem('bookingNumber', value);
+    }
+    getBookingNumber() {
+        return sessionStorage.getItem('bookingNumber');
+    }
+    hasBookingNumber() {
+        return this.getBookingNumber().length > 0;
+    }
+
     clear() {
         sessionStorage.clear();
 
@@ -973,5 +983,8 @@ class Booking {
         sessionStorage.setItem('inboundSeatName5', '');
         sessionStorage.setItem('inboundSeatId6', '');
         sessionStorage.setItem('inboundSeatName6', '');
+
+        // values captured from the confirm page
+        sessionStorage.setItem('bookingNumber', '')
     }
 }

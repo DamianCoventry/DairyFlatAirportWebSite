@@ -842,11 +842,14 @@
             }
 
             function nextButtonClicked() {
-                const leavesWhen = new Date(leaveDate.value);
-                const returnsWhen = new Date(returnDate.value);
-                if (returnsWhen <= leavesWhen) {
-                    showGeneralError('The return date must be after the leave date.')
-                    return false;
+                const booking = new Booking();
+                if (booking.isReturnTrip()) {
+                    const leavesWhen = new Date(leaveDate.value);
+                    const returnsWhen = new Date(returnDate.value);
+                    if (returnsWhen <= leavesWhen) {
+                        showGeneralError('The return date must be after the leave date.')
+                        return false;
+                    }
                 }
 
                 var outboundFlightId = getChosenFlightId('outboundFlightId');
@@ -856,8 +859,6 @@
                 var inboundFlightId = getChosenFlightId('inboundFlightId');
                 var inboundAeroplaneId = getChosenAeroplaneId('inboundAeroplaneId', inboundFlightId);
                 var inboundFlightCost = getChosenFlightCost('inboundFlightId', 'inboundCost');
-
-                const booking = new Booking();
 
                 booking.setOutboundFlightId(outboundFlightId);
                 booking.setOutboundAeroplaneId(outboundAeroplaneId);

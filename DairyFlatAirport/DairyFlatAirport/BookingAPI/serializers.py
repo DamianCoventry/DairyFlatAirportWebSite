@@ -102,3 +102,9 @@ class BookingSerializer(serializers.ModelSerializer):
         model = Booking
         fields = ['id', 'number', 'created_by', 'travelInsurance', 'rentalCar', 'flightLegs', 'passengers']
         depth = 2
+
+
+class BookingNumberSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = BookingNumber
+        fields = ['id', 'counter']

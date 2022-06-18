@@ -5,6 +5,7 @@ from django.db.models import Count
 from django.db.models.functions import TruncDate
 from oauth2_provider.contrib.rest_framework import TokenHasReadWriteScope
 from rest_framework import permissions, mixins, viewsets
+from rest_framework.response import Response
 
 from DairyFlatAirport.BookingAPI.serializers import *
 
@@ -167,5 +168,22 @@ class FlightCountsViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
                 .values('departureDate') \
                 .annotate(numFlights=Count('id')) \
                 .order_by('departureDate')
-        print(qs.query)
+        # print(qs.query)
         return qs
+
+
+class BookingNumberViewSet(mixins.RetrieveModelMixin, viewsets.GenericViewSet):
+    queryset = BookingNumber.objects.all().order_by('id')
+    serializer_class = BookingNumberSerializer
+    permission_classes = [permissions.IsAuthenticated, TokenHasReadWriteScope]
+
+    def retrieve(self, request, *args, **kwargs):
+        instance = self.get_object()
+        s = self.get_serializer(instance)
+        resp = Response(s.data)
+
+        update = self.get_serializer(instance, data={'id': 1, 'counter': s.data['counter'] + 1}, partial=False)
+        update.is_valid(raise_exception=True)
+        update.save()
+
+        return resp

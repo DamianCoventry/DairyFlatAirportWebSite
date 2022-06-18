@@ -18,7 +18,7 @@
                 insertFlights(booking);
                 insertExtras(booking);
 
-                bookingNumber.innerText = 'ABCD1234'; // TODO
+                bookingNumber.innerText = booking.getBookingNumber();
                 totalCost.innerText = booking.getTotalCost();
 
                 if (!booking.isReturnTrip()) {
@@ -154,7 +154,7 @@
                     </div>
                     <div class="row mt-2 mb-4">
                         <div class="col">
-                            <span class="fs-5">Booking Number is <span id="bookingNumber" class="fw-bold">ASDF1234</span>.</span>
+                            <span class="fs-5">Booking Number is <span id="bookingNumber" class="fw-bold"></span>.</span>
                         </div>
                     </div>
                     <div class="row card mb-4">

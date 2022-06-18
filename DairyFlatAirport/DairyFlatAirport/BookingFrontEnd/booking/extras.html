@@ -37,7 +37,7 @@
                 outboundTripCost.innerText = booking.getNumPassengers() + ' \u00D7 $' + booking.getOutboundFlightCost();
                 returnTripCost.innerText = booking.getNumPassengers() + ' \u00D7 $' + booking.getInboundFlightCost();
 
-                updateBookingExtras();
+                updateBookingExtras(true);
 
                 const api = new BookingAPI();
                 api.listTravelInsurances(1, processReceivedTravelInsurances, displayExtrasErrorResponse);
@@ -121,7 +121,7 @@
                     }
                 }
 
-                updateBookingExtras();
+                updateBookingExtras(false);
                 updateBookingTotalCost();
             }
 
@@ -253,7 +253,7 @@
                 showHttpError(code, json);
             }
 
-            function updateBookingExtras() {
+            function updateBookingExtras(allowBooking) {
                 const booking = new Booking();
 
                 let id = getRadioButtonId('rentalCar');
@@ -263,7 +263,7 @@
                     rentalCarBookingGUI.innerHTML = name + ' <small class="text-muted fst-italic">($' + cost + ' per day)</small>';
                     rentalCarCostBookingGUI.innerText = calcNumDays(booking) + ' \u00D7 $' + cost;
                 }
-                else if (booking.hasRentalCarName()) {
+                else if (allowBooking && booking.hasRentalCarName()) {
                     rentalCarBookingGUI.innerHTML = booking.getRentalCarName() + ' <small class="text-muted fst-italic">($' + booking.getRentalCarCost() + ' per day)</small>';
                     rentalCarCostBookingGUI.innerText = calcNumDays(booking) + ' \u00D7 $' + booking.getRentalCarCost();
                 }
@@ -279,7 +279,7 @@
                     travelInsuranceBookingGUI.innerHTML = name + ' <small class="text-muted fst-italic">($' + cost + ' per person)</small>';
                     travelInsuranceCostBookingGUI.innerText = booking.getNumPassengers() + ' \u00D7 $' + cost;
                 }
-                else if (booking.hasTravelInsuranceName()) {
+                else if (allowBooking && booking.hasTravelInsuranceName()) {
                     travelInsuranceBookingGUI.innerHTML = booking.getTravelInsuranceName() + ' <small class="text-muted fst-italic">($' + booking.getTravelInsuranceCost() + ' per person)</small>';
                     travelInsuranceCostBookingGUI.innerText = booking.getNumPassengers() + ' \u00D7 $' + booking.getTravelInsuranceCost();
                 }

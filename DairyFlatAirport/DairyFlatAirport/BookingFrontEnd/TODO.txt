@@ -33,6 +33,7 @@ DONE    Put a minimum time on spinners
 DONE    Make the buttons on the home page 'do the right thing'
 DONE    Use the other parts of the 'book a flight' form
 DONE    Print the user's timezone on the GUI where dates are entered
+DONE    Get rid of search box in toolbar? Or redirect to search results page?
 DONE    Add the travel insurance cost to the total
 DONE    Add the rental car cost to the total
 DONE    the extras page needs to update the booking visually when a car and/or insurance is selected
@@ -41,51 +42,65 @@ DONE    format the JSON nicely within the toast messages
 DONE    Indicate to the user when there are no flights from the chosen source to destination
 DONE    Invoice
 DONE    The select flights page needs a better way of showing flights. A calendar? 3 days prior+post?
+DONE    Need to actually create the booking and produce a booking number
+DONE    If 401 received, then use refresh token
+
+
+
+Look + Feel
+~~~~~~~~~~~
         View aeroplane needs an image
         Select your seats needs an image
-        Change your seats
-        Get the localhost URI out of the bookingAPI.js file
         Reorganize toolbar left hand links
         on the viewAeroplane page: Change text within text boxes to links for the viewFlight page
-        Should not be showing other people's data. Need to compare against 'created_by' column/variable.
+        add new css/html for the invoice page that makes the wizard icons not anchors
+        the viewBooking page has a shit display format for the date/time
+
+
+
+Bugs
+~~~~
+        the 'right chevron' on the paginator has the wrong page value. test with the viewBookings page.
+
+
+
+Functionality
+~~~~~~~~~~~~~
+        How to implement multistop?
+        Search for, and implement, all the TODO comments
         Use that horrible looking mapping program for the web dev assignment
         Do not allow bookings if aeroplane is full
         Do not allow num passengers to be 6 if the aeroplane doesn't have 6 seats
-        the 'right chevron' on the paginator has the wrong page value
-        How to implement multistop?
+        If it's a one-way trip, how does a rental car work? Considering it's priced 'per day'...
+        if an existing booking is modified, should we generate a new invoice page?
+        CTA buttons for empty lists?
+        Change your seats for an existing booking
+        Get the localhost URI out of the bookingAPI.js file?
         Don't allow a seat to be booked twice
-        Search for, and implement, all the TODO comments
-        add new css/html for the invoice page that makes the wizard icons not anchors
+
+
+
+Users
+~~~~~
+WIP     If no user token, then route to a 'please login' screen.
+        Should not be showing other people's data. Need to compare against 'created_by' column/variable.
         User login
         Create user?
         View/edit user?
         Delete user?
-        create docker file
-        make sure the site works through docker image
-        If it's a one-way trip, how does a rental car work? Considering it's priced 'per day'...
-WIP     Need to actually create the booking and produce a booking number
-WIP     If no user token, then route to a 'please login' screen.
-WIP     If 401 received, then use refresh token
-
-
-
-
-Questions
-~~~~~~~~~
         Email confirmation?
         Forgot password?
-DONE    Get rid of search box in toolbar? Or redirect to search results page?
-        CTA buttons for empty lists?
+
+
+
+Refactoring
+~~~~~~~~~~~
         refactor bookingApi.js
         refactor javascript that's currently within HTML into its .js files
 
 
 
-
-Anything Else
-~~~~~~~~~~~~~
-This is left open ended so that those who like to use some intiative are rewarded over those who just do the absolute minimum.
-
-
-Submit a Docker image.
-Make sure that you can run your application as a Docker container.
+Deployment
+~~~~~~~~~~
+        create docker file
+        make sure the site works through docker image

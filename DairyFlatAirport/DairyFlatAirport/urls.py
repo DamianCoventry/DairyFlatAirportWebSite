@@ -19,8 +19,7 @@ router.register(r'travelInsurance', views.TravelInsuranceViewSet)
 router.register(r'rentalCar', views.RentalCarViewSet)
 router.register(r'bookingCompact', views.BookingCompactViewSet)
 router.register(r'booking', views.BookingViewSet)
-
-# need the 3rd parameter because the internal 'queryset' member is built at run-time
+router.register(r'bookingNumber', views.BookingNumberViewSet)
 router.register(r'searchFlights', views.SearchFlightsViewSet, 'searchFlights')
 router.register(r'flightCounts', views.FlightCountsViewSet, 'flightCounts')
 

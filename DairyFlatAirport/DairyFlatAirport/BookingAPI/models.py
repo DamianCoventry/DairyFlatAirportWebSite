@@ -122,3 +122,8 @@ class Booking(models.Model):
     rentalCar = models.ForeignKey(RentalCar, null=True, on_delete=models.CASCADE)
     flightLegs = models.ManyToManyField(FlightLeg)
     passengers = models.ManyToManyField(Passenger)
+
+
+class BookingNumber(models.Model):
+    counter = models.IntegerField(default=12345, null=False,
+                                  validators=[MinValueValidator(10000), MaxValueValidator(99999)])
