@@ -24,12 +24,23 @@ Token flow:
     code_verifier=S8IWRU57WPT04PUT8KCHPP1FW7RB4D4LPR81EY7V9UKFK6RBSP
 
 
+admin:
 {
     "access_token": "DIqX1kZr1TuHrLSaiDVEjMtNp0DkCv",
     "expires_in": 36000,
     "token_type": "Bearer",
     "scope": "read write groups",
     "refresh_token": "Ef4VnhJIPYQtprbUGVGJUNv8iZPHh4"
+}
+
+
+CollinOchoa:
+{
+    "access_token": "8kreKnA7VOAXuhWIItkbGgpHiUh7fB",
+    "expires_in": 36000,
+    "token_type": "Bearer",
+    "scope": "read write groups",
+    "refresh_token": "IeBjbERoMHwqgn4dOkqOk1bSNQq9up"
 }
 
 
