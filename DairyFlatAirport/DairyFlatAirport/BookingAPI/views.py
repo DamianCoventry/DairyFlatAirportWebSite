@@ -187,3 +187,12 @@ class BookingNumberViewSet(mixins.RetrieveModelMixin, viewsets.GenericViewSet):
         update.save()
 
         return resp
+
+
+class UserIdViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
+    serializer_class = UserIdSerializer
+    permission_classes = [permissions.IsAuthenticated, TokenHasReadWriteScope]
+
+    def get_queryset(self):
+        accessToken = self.request.query_params.get('accessToken', '')
+        return AccessToken.objects.filter(token=accessToken).order_by('id')

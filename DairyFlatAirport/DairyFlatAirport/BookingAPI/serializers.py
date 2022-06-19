@@ -1,4 +1,5 @@
 from django.contrib.auth.models import Group
+from oauth2_provider.models import AccessToken
 
 from DairyFlatAirport.BookingAPI.models import *
 from rest_framework import serializers
@@ -108,3 +109,9 @@ class BookingNumberSerializer(serializers.ModelSerializer):
     class Meta:
         model = BookingNumber
         fields = ['id', 'counter']
+
+
+class UserIdSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = AccessToken
+        fields = ['user_id']

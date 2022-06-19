@@ -22,6 +22,7 @@ router.register(r'booking', views.BookingViewSet)
 router.register(r'bookingNumber', views.BookingNumberViewSet)
 router.register(r'searchFlights', views.SearchFlightsViewSet, 'searchFlights')
 router.register(r'flightCounts', views.FlightCountsViewSet, 'flightCounts')
+router.register(r'userId', views.UserIdViewSet, 'userId')
 
 # Wire up our API using automatic URL routing.
 # Additionally, we include login URLs for the browsable API.

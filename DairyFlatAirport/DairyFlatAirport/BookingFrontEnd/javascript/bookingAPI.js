@@ -2,15 +2,103 @@ class BookingAPI {
     accessToken = '';
     refreshToken = '';
     tokenType = 'Bearer';
+    userId = 0;
 
-    constructor() {
-        // localStorage.setItem('access_token', 'DIqX1kZr1TuHrLSaiDVEjMtNp0DkCv');
-        // localStorage.setItem('refresh_token', 'Ef4VnhJIPYQtprbUGVGJUNv8iZPHh4');
-        // localStorage.setItem('token_type', 'Bearer');
-        localStorage.setItem('user_id', 7);
+    signIn(userData) {
+        let code_verifier = this.generateRandomString(50);
+
+        this.makeOauth2CodeChallenge(code_verifier)
+            .then(code_challenge => {
+                sessionStorage.clear();
+                sessionStorage.setItem('code_verifier', code_verifier);
+                window.location.href =
+                            'http://localhost:8000/o/authorize/' +
+                            '?client_id=Z8VUqShJQnkfa5f8fzUAVzlBxYNxU2tuqaN8Gvh9' +
+                            '&response_type=code' +
+                            '&redirect_uri=http://localhost:8080/user/receiveAuthCode.html' +
+                            '&scope=read+write+groups' +
+                            '&state=' + userData +
+                            '&code_challenge=' + code_challenge +
+                            '&code_challenge_method=S256';
+            });
     }
 
-    listAeroplanes(currentPage, okFn, errorFn) {
+    signOut() {
+        this.accessToken = localStorage.getItem("access_token");
+        this.tokenType = localStorage.getItem("token_type");
+
+        const xhr = new XMLHttpRequest();
+        xhr.open("GET", "http://localhost:8000/api-auth/logout/");
+        xhr.setRequestHeader("Authorization", this.tokenType + " " + this.accessToken);
+        xhr.send();
+
+        this.accessToken = '';
+        this.refreshToken = '';
+        this.tokenType = 'Bearer';
+        this.userId = 0;
+
+        localStorage.clear();
+        sessionStorage.clear();
+    }
+
+    isSignedIn() {
+        let a = localStorage.getItem("access_token");
+        let b = localStorage.getItem("refresh_token");
+        let c = localStorage.getItem("token_type");
+        return a != null && a.length > 0 &&
+               b != null && b.length > 0 &&
+               c != null && c.length > 0;
+    }
+
+    getLoggedInUser(okFn, errorFn) {
+        const booking = this;
+
+        this.getLoggedInUserId(
+            function (userId) {
+                booking.getUser(userId, okFn, errorFn);
+            },
+            errorFn);
+    }
+
+    getLoggedInUserId(okFn, errorFn) {
+        const booking = this;
+
+        const xhr = new XMLHttpRequest();
+        xhr.onreadystatechange = function() {
+            if (xhr.readyState == XMLHttpRequest.DONE) {
+                if (xhr.status >= 200 && xhr.status < 300) {
+                    let response = JSON.parse(this.responseText);
+                    if (response.count > 0) {
+                        okFn(response.results[0].user_id);
+                    }
+                    else {
+                        okFn(0);
+                    }
+                }
+                else if (xhr.status == 401) {
+                    booking.useRefreshToken(booking,
+                        function () {
+                            booking.getUserDetails(okFn, errorFn);
+                        },
+                        errorFn
+                    );
+                }
+                else {
+                    errorFn(xhr.status, JSON.parse(this.responseText));
+                }
+            }
+        }
+        this.accessToken = localStorage.getItem("access_token");
+        this.refreshToken = localStorage.getItem("refresh_token");
+        this.tokenType = localStorage.getItem("token_type");
+        xhr.open("GET", "http://localhost:8000/userId/?accessToken=" + this.accessToken);
+        xhr.setRequestHeader("Authorization", this.tokenType + " " + this.accessToken);
+        xhr.send();
+    }
+
+    getUser(id, okFn, errorFn) {
+        const booking = this;
+
         const xhr = new XMLHttpRequest();
         xhr.onreadystatechange = function() {
             if (xhr.readyState == XMLHttpRequest.DONE) {
@@ -18,9 +106,56 @@ class BookingAPI {
                     okFn(JSON.parse(this.responseText));
                 }
                 else if (xhr.status == 401) {
-                    this.useRefreshToken(
+                    booking.useRefreshToken(booking,
                         function () {
-                            listAeroplanes(currentPage, okFn, errorFn);
+                            booking.getAeroplane(id, okFn, errorFn);
+                        },
+                        errorFn
+                    );
+                }
+                else {
+                    errorFn(xhr.status, JSON.parse(this.responseText));
+                }
+            }
+        }
+        this.accessToken = localStorage.getItem("access_token");
+        this.refreshToken = localStorage.getItem("refresh_token");
+        this.tokenType = localStorage.getItem("token_type");
+        xhr.open("GET", "http://localhost:8000/user/" + id + "/");
+        xhr.setRequestHeader("Authorization", this.tokenType + " " + this.accessToken);
+        xhr.send();
+    }
+
+    generateRandomString(length) {
+        var text = "";
+        var possible = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+      
+        for (var i = 0; i < length; i++) {
+          text += possible.charAt(Math.floor(Math.random() * possible.length));
+        }
+      
+        return text;
+    }
+    
+    async makeOauth2CodeChallenge(codeVerifier) {
+        var digest = await crypto.subtle.digest("SHA-256", new TextEncoder().encode(codeVerifier));
+        return btoa(String.fromCharCode(...new Uint8Array(digest)))
+            .replace(/=/g, '').replace(/\+/g, '-').replace(/\//g, '_')
+    }
+
+    listAeroplanes(currentPage, okFn, errorFn) {
+        const booking = this;
+
+        const xhr = new XMLHttpRequest();
+        xhr.onreadystatechange = function() {
+            if (xhr.readyState == XMLHttpRequest.DONE) {
+                if (xhr.status >= 200 && xhr.status < 300) {
+                    okFn(JSON.parse(this.responseText));
+                }
+                else if (xhr.status == 401) {
+                    booking.useRefreshToken(booking,
+                        function () {
+                            booking.listAeroplanes(currentPage, okFn, errorFn);
                         },
                         errorFn
                     );
@@ -39,6 +174,8 @@ class BookingAPI {
     }
 
     getAeroplane(id, okFn, errorFn) {
+        const booking = this;
+
         const xhr = new XMLHttpRequest();
         xhr.onreadystatechange = function() {
             if (xhr.readyState == XMLHttpRequest.DONE) {
@@ -46,9 +183,9 @@ class BookingAPI {
                     okFn(JSON.parse(this.responseText));
                 }
                 else if (xhr.status == 401) {
-                    this.useRefreshToken(
+                    booking.useRefreshToken(booking,
                         function () {
-                            getAeroplane(id, okFn, errorFn);
+                            booking.getAeroplane(id, okFn, errorFn);
                         },
                         errorFn
                     );
@@ -67,6 +204,8 @@ class BookingAPI {
     }
 
     listFlights(currentPage, okFn, errorFn) {
+        const booking = this;
+
         const xhr = new XMLHttpRequest();
         xhr.onreadystatechange = function() {
             if (xhr.readyState == XMLHttpRequest.DONE) {
@@ -74,9 +213,9 @@ class BookingAPI {
                     okFn(JSON.parse(this.responseText));
                 }
                 else if (xhr.status == 401) {
-                    this.useRefreshToken(
+                    booking.useRefreshToken(booking,
                         function () {
-                            listFlights(currentPage, okFn, errorFn);
+                            booking.listFlights(currentPage, okFn, errorFn);
                         },
                         errorFn
                     );
@@ -95,6 +234,8 @@ class BookingAPI {
     }
 
     getFlight(id, okFn, errorFn) {
+        const booking = this;
+
         const xhr = new XMLHttpRequest();
         xhr.onreadystatechange = function() {
             if (xhr.readyState == XMLHttpRequest.DONE) {
@@ -102,9 +243,9 @@ class BookingAPI {
                     okFn(JSON.parse(this.responseText));
                 }
                 else if (xhr.status == 401) {
-                    this.useRefreshToken(
+                    booking.useRefreshToken(booking,
                         function () {
-                            getFlight(id, okFn, errorFn);
+                            booking.getFlight(id, okFn, errorFn);
                         },
                         errorFn
                     );
@@ -123,6 +264,8 @@ class BookingAPI {
     }
 
     listBookings(currentPage, okFn, errorFn) {
+        const booking = this;
+
         const xhr = new XMLHttpRequest();
         xhr.onreadystatechange = function() {
             if (xhr.readyState == XMLHttpRequest.DONE) {
@@ -130,9 +273,9 @@ class BookingAPI {
                     okFn(JSON.parse(this.responseText));
                 }
                 else if (xhr.status == 401) {
-                    this.useRefreshToken(
+                    booking.useRefreshToken(booking,
                         function () {
-                            listBookings(currentPage, okFn, errorFn);
+                            booking.listBookings(currentPage, okFn, errorFn);
                         },
                         errorFn
                     );
@@ -151,6 +294,8 @@ class BookingAPI {
     }
 
     listCompactBookings(currentPage, okFn, errorFn) {
+        const booking = this;
+
         const xhr = new XMLHttpRequest();
         xhr.onreadystatechange = function() {
             if (xhr.readyState == XMLHttpRequest.DONE) {
@@ -158,9 +303,9 @@ class BookingAPI {
                     okFn(JSON.parse(this.responseText));
                 }
                 else if (xhr.status == 401) {
-                    this.useRefreshToken(
+                    booking.useRefreshToken(booking,
                         function () {
-                            listCompactBookings(currentPage, okFn, errorFn);
+                            booking.listCompactBookings(currentPage, okFn, errorFn);
                         },
                         errorFn
                     );
@@ -179,6 +324,8 @@ class BookingAPI {
     }
 
     getBooking(id, okFn, errorFn) {
+        const booking = this;
+
         const xhr = new XMLHttpRequest();
         xhr.onreadystatechange = function() {
             if (xhr.readyState == XMLHttpRequest.DONE) {
@@ -186,9 +333,9 @@ class BookingAPI {
                     okFn(JSON.parse(this.responseText));
                 }
                 else if (xhr.status == 401) {
-                    this.useRefreshToken(
+                    booking.useRefreshToken(booking,
                         function () {
-                            getBooking(id, okFn, errorFn);
+                            booking.getBooking(id, okFn, errorFn);
                         },
                         errorFn
                     );
@@ -207,6 +354,8 @@ class BookingAPI {
     }
 
     getCompactBooking(id, okFn, errorFn) {
+        const booking = this;
+
         const xhr = new XMLHttpRequest();
         xhr.onreadystatechange = function() {
             if (xhr.readyState == XMLHttpRequest.DONE) {
@@ -214,9 +363,9 @@ class BookingAPI {
                     okFn(JSON.parse(this.responseText));
                 }
                 else if (xhr.status == 401) {
-                    this.useRefreshToken(
+                    booking.useRefreshToken(booking,
                         function () {
-                            getCompactBooking(id, okFn, errorFn);
+                            booking.getCompactBooking(id, okFn, errorFn);
                         },
                         errorFn
                     );
@@ -235,6 +384,8 @@ class BookingAPI {
     }
 
     addBooking(number, travelInsuranceId, rentalCarId, flightLegIdsArray, passengerIdsArray, okFn, errorFn) {
+        const booking = this;
+
         const xhr = new XMLHttpRequest();
         xhr.onreadystatechange = function() {
             if (xhr.readyState == XMLHttpRequest.DONE) {
@@ -242,9 +393,9 @@ class BookingAPI {
                     okFn(JSON.parse(this.responseText));
                 }
                 else if (xhr.status == 401) {
-                    this.useRefreshToken(
+                    booking.useRefreshToken(booking,
                         function () {
-                            addBooking(number, travelInsuranceId, rentalCarId, flightLegIdsArray, passengerIdsArray, okFn, errorFn);
+                            booking.addBooking(number, travelInsuranceId, rentalCarId, flightLegIdsArray, passengerIdsArray, okFn, errorFn);
                         },
                         errorFn
                     );
@@ -257,7 +408,7 @@ class BookingAPI {
         this.accessToken = localStorage.getItem("access_token");
         this.refreshToken = localStorage.getItem("refresh_token");
         this.tokenType = localStorage.getItem("token_type");
-        this.loggedInUserId = localStorage.getItem("user_id");
+        this.loggedInUserId = sessionStorage.getItem("user_id");
         xhr.open("POST", "http://localhost:8000/bookingCompact/");
         xhr.setRequestHeader("Authorization", this.tokenType + " " + this.accessToken);
         xhr.setRequestHeader('Content-type', 'application/json;charset=UTF-8');
@@ -272,6 +423,8 @@ class BookingAPI {
     }
 
     modifyBooking(id, number, travelInsuranceId, rentalCarId, flightLegIdsArray, passengerIdsArray, okFn, errorFn) {
+        const booking = this;
+
         const xhr = new XMLHttpRequest();
         xhr.onreadystatechange = function() {
             if (xhr.readyState == XMLHttpRequest.DONE) {
@@ -279,9 +432,9 @@ class BookingAPI {
                     okFn(JSON.parse(this.responseText));
                 }
                 else if (xhr.status == 401) {
-                    this.useRefreshToken(
+                    booking.useRefreshToken(booking,
                         function () {
-                            modifyBooking(id, number, travelInsuranceId, rentalCarId, flightLegIdsArray, passengerIdsArray, okFn, errorFn);
+                            booking.modifyBooking(id, number, travelInsuranceId, rentalCarId, flightLegIdsArray, passengerIdsArray, okFn, errorFn);
                         },
                         errorFn
                     );
@@ -294,7 +447,7 @@ class BookingAPI {
         this.accessToken = localStorage.getItem("access_token");
         this.refreshToken = localStorage.getItem("refresh_token");
         this.tokenType = localStorage.getItem("token_type");
-        this.loggedInUserId = localStorage.getItem("user_id");
+        this.loggedInUserId = sessionStorage.getItem("user_id");
         xhr.open("PUT", "http://localhost:8000/bookingCompact/" + id + "/");
         xhr.setRequestHeader("Authorization", this.tokenType + " " + this.accessToken);
         xhr.setRequestHeader('Content-type', 'application/json;charset=UTF-8');
@@ -309,6 +462,8 @@ class BookingAPI {
     }
 
     deleteBooking(id, okFn, errorFn) {
+        const booking = this;
+
         const xhr = new XMLHttpRequest();
         xhr.onreadystatechange = function() {
             if (xhr.readyState == XMLHttpRequest.DONE) {
@@ -316,9 +471,9 @@ class BookingAPI {
                     okFn();
                 }
                 else if (xhr.status == 401) {
-                    this.useRefreshToken(
+                    booking.useRefreshToken(booking,
                         function () {
-                            deleteBooking(id, okFn, errorFn);
+                            booking.deleteBooking(id, okFn, errorFn);
                         },
                         errorFn
                     );
@@ -337,6 +492,8 @@ class BookingAPI {
     }
 
     listPassengers(currentPage, okFn, errorFn) {
+        const booking = this;
+
         const xhr = new XMLHttpRequest();
         xhr.onreadystatechange = function() {
             if (xhr.readyState == XMLHttpRequest.DONE) {
@@ -344,9 +501,9 @@ class BookingAPI {
                     okFn(JSON.parse(this.responseText));
                 }
                 else if (xhr.status == 401) {
-                    this.useRefreshToken(
+                    booking.useRefreshToken(booking,
                         function () {
-                            listPassengers(currentPage, okFn, errorFn);
+                            booking.listPassengers(currentPage, okFn, errorFn);
                         },
                         errorFn
                     );
@@ -365,6 +522,8 @@ class BookingAPI {
     }
 
     getPassenger(id, okFn, errorFn) {
+        const booking = this;
+
         const xhr = new XMLHttpRequest();
         xhr.onreadystatechange = function() {
             if (xhr.readyState == XMLHttpRequest.DONE) {
@@ -372,9 +531,9 @@ class BookingAPI {
                     okFn(JSON.parse(this.responseText));
                 }
                 else if (xhr.status == 401) {
-                    this.useRefreshToken(
+                    booking.useRefreshToken(booking,
                         function () {
-                            getPassenger(id, okFn, errorFn);
+                            booking.getPassenger(id, okFn, errorFn);
                         },
                         errorFn
                     );
@@ -393,6 +552,8 @@ class BookingAPI {
     }
 
     addPassenger(title, firstName, lastName, emailAddress, phoneNumber, specialAssistance, okFn, errorFn) {
+        const booking = this;
+
         const xhr = new XMLHttpRequest();
         xhr.onreadystatechange = function() {
             if (xhr.readyState == XMLHttpRequest.DONE) {
@@ -400,9 +561,9 @@ class BookingAPI {
                     okFn(JSON.parse(this.responseText));
                 }
                 else if (xhr.status == 401) {
-                    this.useRefreshToken(
+                    booking.useRefreshToken(booking,
                         function () {
-                            addPassenger(title, firstName, lastName, emailAddress, phoneNumber, specialAssistance, okFn, errorFn);
+                            booking.addPassenger(title, firstName, lastName, emailAddress, phoneNumber, specialAssistance, okFn, errorFn);
                         },
                         errorFn
                     );
@@ -415,7 +576,7 @@ class BookingAPI {
         this.accessToken = localStorage.getItem("access_token");
         this.refreshToken = localStorage.getItem("refresh_token");
         this.tokenType = localStorage.getItem("token_type");
-        this.loggedInUserId = localStorage.getItem("user_id");
+        this.loggedInUserId = sessionStorage.getItem("user_id");
         xhr.open("POST", "http://localhost:8000/passenger/");
         xhr.setRequestHeader("Authorization", this.tokenType + " " + this.accessToken);
         xhr.setRequestHeader('Content-type', 'application/json;charset=UTF-8');
@@ -431,6 +592,8 @@ class BookingAPI {
     }
 
     modifyPassenger(id, title, firstName, lastName, emailAddress, phoneNumber, specialAssistance, okFn, errorFn) {
+        const booking = this;
+
         const xhr = new XMLHttpRequest();
         xhr.onreadystatechange = function() {
             if (xhr.readyState == XMLHttpRequest.DONE) {
@@ -438,9 +601,9 @@ class BookingAPI {
                     okFn(JSON.parse(this.responseText));
                 }
                 else if (xhr.status == 401) {
-                    this.useRefreshToken(
+                    booking.useRefreshToken(booking,
                         function () {
-                            modifyPassenger(id, title, firstName, lastName, emailAddress, phoneNumber, specialAssistance, okFn, errorFn);
+                            booking.modifyPassenger(id, title, firstName, lastName, emailAddress, phoneNumber, specialAssistance, okFn, errorFn);
                         },
                         errorFn
                     );
@@ -453,7 +616,7 @@ class BookingAPI {
         this.accessToken = localStorage.getItem("access_token");
         this.refreshToken = localStorage.getItem("refresh_token");
         this.tokenType = localStorage.getItem("token_type");
-        this.loggedInUserId = localStorage.getItem("user_id");
+        this.loggedInUserId = sessionStorage.getItem("user_id");
         xhr.open("PUT", "http://localhost:8000/passenger/" + id + "/");
         xhr.setRequestHeader("Authorization", this.tokenType + " " + this.accessToken);
         xhr.setRequestHeader('Content-type', 'application/json;charset=UTF-8');
@@ -469,6 +632,8 @@ class BookingAPI {
     }
 
     deletePassenger(id, okFn, errorFn) {
+        const booking = this;
+
         const xhr = new XMLHttpRequest();
         xhr.onreadystatechange = function() {
             if (xhr.readyState == XMLHttpRequest.DONE) {
@@ -476,9 +641,9 @@ class BookingAPI {
                     okFn();
                 }
                 else if (xhr.status == 401) {
-                    this.useRefreshToken(
+                    booking.useRefreshToken(booking,
                         function () {
-                            deletePassenger(id, okFn, errorFn);
+                            booking.deletePassenger(id, okFn, errorFn);
                         },
                         errorFn
                     );
@@ -497,6 +662,8 @@ class BookingAPI {
     }
 
     listTravelInsurances(currentPage, okFn, errorFn) {
+        const booking = this;
+
         const xhr = new XMLHttpRequest();
         xhr.onreadystatechange = function() {
             if (xhr.readyState == XMLHttpRequest.DONE) {
@@ -504,9 +671,9 @@ class BookingAPI {
                     okFn(JSON.parse(this.responseText));
                 }
                 else if (xhr.status == 401) {
-                    this.useRefreshToken(
+                    booking.useRefreshToken(booking,
                         function () {
-                            listTravelInsurances(currentPage, okFn, errorFn);
+                            booking.listTravelInsurances(currentPage, okFn, errorFn);
                         },
                         errorFn
                     );
@@ -525,6 +692,8 @@ class BookingAPI {
     }
 
     listRentalCars(currentPage, okFn, errorFn) {
+        const booking = this;
+
         const xhr = new XMLHttpRequest();
         xhr.onreadystatechange = function() {
             if (xhr.readyState == XMLHttpRequest.DONE) {
@@ -532,9 +701,9 @@ class BookingAPI {
                     okFn(JSON.parse(this.responseText));
                 }
                 else if (xhr.status == 401) {
-                    this.useRefreshToken(
+                    booking.useRefreshToken(booking,
                         function () {
-                            listRentalCars(currentPage, okFn, errorFn);
+                            booking.listRentalCars(currentPage, okFn, errorFn);
                         },
                         errorFn
                     );
@@ -553,6 +722,8 @@ class BookingAPI {
     }
 
     searchFlights(options, currentPage, okFn, errorFn) {
+        const booking = this;
+
         const xhr = new XMLHttpRequest();
         xhr.onreadystatechange = function() {
             if (xhr.readyState == XMLHttpRequest.DONE) {
@@ -560,9 +731,9 @@ class BookingAPI {
                     okFn(JSON.parse(this.responseText));
                 }
                 else if (xhr.status == 401) {
-                    this.useRefreshToken(
+                    booking.useRefreshToken(booking,
                         function () {
-                            searchFlights(options, currentPage, okFn, errorFn);
+                            booking.searchFlights(options, currentPage, okFn, errorFn);
                         },
                         errorFn
                     );
@@ -603,6 +774,8 @@ class BookingAPI {
     }
 
     flightsExistBetweenXAndY(departureCityId, arrivalCityId, okFn, errorFn) {
+        const booking = this;
+
         const xhr = new XMLHttpRequest();
         xhr.onreadystatechange = function() {
             if (xhr.readyState == XMLHttpRequest.DONE) {
@@ -610,9 +783,9 @@ class BookingAPI {
                     okFn(JSON.parse(this.responseText).count > 0);
                 }
                 else if (xhr.status == 401) {
-                    this.useRefreshToken(
+                    booking.useRefreshToken(booking,
                         function () {
-                            flightsExistBetweenXAndY(departureCityId, arrivalCityId, okFn, errorFn);
+                            booking.flightsExistBetweenXAndY(departureCityId, arrivalCityId, okFn, errorFn);
                         },
                         errorFn
                     );
@@ -637,6 +810,8 @@ class BookingAPI {
     }
 
     getFlightCounts(page, fromAirport, toAirport, beginDate, endDate, timezone, okFn, errorFn) {
+        const booking = this;
+
         const xhr = new XMLHttpRequest();
         xhr.onreadystatechange = function() {
             if (xhr.readyState == XMLHttpRequest.DONE) {
@@ -644,9 +819,9 @@ class BookingAPI {
                     okFn(JSON.parse(this.responseText));
                 }
                 else if (xhr.status == 401) {
-                    this.useRefreshToken(
+                    booking.useRefreshToken(booking,
                         function () {
-                            getFlightCounts(page, fromAirport, toAirport, beginDate, endDate, timezone, okFn, errorFn);
+                            booking.getFlightCounts(page, fromAirport, toAirport, beginDate, endDate, timezone, okFn, errorFn);
                         },
                         errorFn
                     );
@@ -685,7 +860,7 @@ class BookingAPI {
                 else if (xhr.status == 401) {
                     booking.useRefreshToken(booking,
                         function () {
-                            listAirports(currentPage, okFn, errorFn);
+                            booking.listAirports(currentPage, okFn, errorFn);
                         },
                         errorFn
                     );
@@ -704,6 +879,8 @@ class BookingAPI {
     }
 
     listSeatsForAeroplane(aeroplaneId, okFn, errorFn) {
+        const booking = this;
+
         const xhr = new XMLHttpRequest();
         xhr.onreadystatechange = function() {
             if (xhr.readyState == XMLHttpRequest.DONE) {
@@ -711,9 +888,9 @@ class BookingAPI {
                     okFn(JSON.parse(this.responseText));
                 }
                 else if (xhr.status == 401) {
-                    this.useRefreshToken(
+                    booking.useRefreshToken(booking,
                         function () {
-                            listSeatsForAeroplane(aeroplaneId, okFn, errorFn);
+                            booking.listSeatsForAeroplane(aeroplaneId, okFn, errorFn);
                         },
                         errorFn
                     );
@@ -732,6 +909,8 @@ class BookingAPI {
     }
 
     getNextBookingNumber(okFn, errorFn) {
+        const booking = this;
+
         const xhr = new XMLHttpRequest();
         xhr.onreadystatechange = function() {
             if (xhr.readyState == XMLHttpRequest.DONE) {
@@ -740,9 +919,9 @@ class BookingAPI {
                     okFn('DFA' + data.counter);
                 }
                 else if (xhr.status == 401) {
-                    this.useRefreshToken(
+                    booking.useRefreshToken(booking,
                         function () {
-                            getNextBookingNumber(okFn, errorFn);
+                            booking.getNextBookingNumber(okFn, errorFn);
                         },
                         errorFn
                     );
@@ -765,15 +944,12 @@ class BookingAPI {
         xhr.onreadystatechange = function() {
             if (xhr.readyState == XMLHttpRequest.DONE) {
                 if (xhr.status >= 200 && xhr.status < 300) {
-                    let data = JSON.parse(this.responseText);
+                    let response = JSON.parse(this.responseText);
+                    
+                    localStorage.setItem('access_token', response.access_token);
+                    localStorage.setItem('refresh_token', response.refresh_token);
+                    localStorage.setItem('token_type', response.token_type);
 
-                    booking.accessToken = data.access_token;
-                    booking.refreshToken = data.refresh_token;
-                    booking.tokenType = data.token_type;
-                    localStorage.setItem("access_token", booking.accessToken);
-                    localStorage.setItem("refresh_token", booking.refreshToken);
-                    localStorage.setItem("token_type", booking.tokenType);
-            
                     console.log('The refresh succeeded');
                     okFn();
                 }
@@ -783,10 +959,13 @@ class BookingAPI {
                 }
             }
         }
+
         this.accessToken = localStorage.getItem("access_token");
         this.refreshToken = localStorage.getItem("refresh_token");
         this.tokenType = localStorage.getItem("token_type");
+
         console.log('Requesting a refresh of the access token ('+booking.refreshToken+')');
+
         xhr.open("POST", "http://localhost:8000/o/token/");
         xhr.setRequestHeader('Content-type', 'application/json;charset=UTF-8');
         xhr.send(JSON.stringify({

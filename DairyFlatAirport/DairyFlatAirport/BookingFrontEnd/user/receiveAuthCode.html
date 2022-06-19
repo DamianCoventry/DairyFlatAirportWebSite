@@ -1,0 +1,90 @@
+<HTML>
+    <HEAD>
+        <META charset="utf-8"/>
+        <TITLE>Online Booking System</TITLE>
+
+        <LINK rel="stylesheet"
+            href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css"
+            integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3"
+            crossorigin="anonymous"/>
+
+        <LINK rel="stylesheet"
+            href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css"
+            integrity="sha512-KfkfwYDsLkIlwQp6LFnl8zNdLGxu9YAA1QvwINks4PhcElQSvqcyVLLD9aMhXd13uQjoXtEKNosOWaZqXgel0g=="
+            crossorigin="anonymous"
+            referrerpolicy="no-referrer"/>
+
+        <SCRIPT type="text/javascript">
+            window.onload = function() {
+                const params = new Proxy(new URLSearchParams(window.location.search), {
+                        get: (searchParams, prop) => searchParams.get(prop),
+                    });
+
+                // http://localhost:8080/?code=8N9izUZECzkx4baKIUGrzGmQA8OLe5&state=hello+world
+                // http://localhost:8080/?error=access_denied&state=hello+world
+
+                if (params.error) {
+                    errorMessage.innerText = params.error;
+                    errorBox.style.display = '';
+                }
+                else if (params.code) {
+                    receiveAuthCode(params.code);
+                }
+                else {
+                    errorMessage.innerText = 'Unexpected response from the server';
+                    errorBox.style.display = '';
+                }
+            };
+
+            function receiveAuthCode(authCode) {
+                const xhr = new XMLHttpRequest();
+                xhr.onreadystatechange = function() {
+                    if (xhr.readyState == XMLHttpRequest.DONE) {
+                        if (xhr.status >= 200 && xhr.status < 300) {
+                            // {
+                            //     "access_token": "8kreKnA7VOAXuhWIItkbGgpHiUh7fB",
+                            //     "expires_in": 36000,
+                            //     "token_type": "Bearer",
+                            //     "scope": "read write groups",
+                            //     "refresh_token": "IeBjbERoMHwqgn4dOkqOk1bSNQq9up"
+                            // }
+
+                            let response = JSON.parse(this.responseText);
+                            localStorage.setItem('access_token', response.access_token);
+                            localStorage.setItem('refresh_token', response.refresh_token);
+                            localStorage.setItem('token_type', response.token_type);
+                            window.location.href = 'http://localhost:8080/';
+                        }
+                        else {
+                            errorMessage.innerHTML = 'Received a valid auth code, but unable to use it to ' +
+                                                     'receive an access token and refresh token.<BR>' +
+                                                     '<BR>' +
+                                                     'The server responded with: ' + xhr.status + ', ' + JSON.parse(this.responseText).error;
+                            errorBox.style.display = '';
+                        }
+                    }
+                }
+
+                let code_verifier = sessionStorage.getItem('code_verifier');
+                sessionStorage.removeItem('code_verifier');
+
+                xhr.open("POST", "http://localhost:8000/o/token/");
+                xhr.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
+                xhr.send(
+                    "grant_type=authorization_code" +
+                    "&client_id=Z8VUqShJQnkfa5f8fzUAVzlBxYNxU2tuqaN8Gvh9" +
+                    "&client_secret=JER87JI9A289n66yHGX2D2ZFCdEYCusMIJEcc0eXaNBpP9vB3pfoAzXNufGaxhQ7VhvadXzEC55wKbaYumzynmLQNOqaJE5NdrON7dywt0OTAjANavOZtrJgZc9f5LRP" +
+                    "&redirect_uri=http://localhost:8080/user/receiveAuthCode.html" +
+                    "&code_verifier=" + code_verifier +
+                    "&code=" + authCode
+                );
+            }
+        </SCRIPT>
+    </HEAD>
+    <BODY>
+        <DIV class="form-floating" id="errorBox" style="display: none;">
+            <H4>Error Received</H4>
+            <H6 id="errorMessage"></H6>
+        </DIV>
+    </BODY>
+</HTML>

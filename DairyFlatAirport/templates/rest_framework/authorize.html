@@ -1,0 +1,29 @@
+<HTML>
+<HEAD>
+    <SCRIPT type="text/javascript">
+        window.onload = function () {
+            authorizationForm.submit();
+        }
+    </SCRIPT>
+</HEAD>
+<BODY>
+    {% if not error %}
+        <form id="authorizationForm" method="post">
+            {% csrf_token %}
+
+            {% for field in form %}
+                {% if field.is_hidden %}
+                    {{ field }}
+                {% endif %}
+            {% endfor %}
+
+            {{ form.errors }}
+            {{ form.non_field_errors }}
+        </form>
+
+    {% else %}
+        <h2>Error: {{ error.error }}</h2>
+        <p>{{ error.description }}</p>
+    {% endif %}
+</BODY>
+</HTML>
