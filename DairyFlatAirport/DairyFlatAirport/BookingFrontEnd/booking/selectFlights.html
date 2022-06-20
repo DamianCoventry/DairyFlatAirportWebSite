@@ -21,8 +21,12 @@
             var inboundFlightCounts = [];
 
             window.onload = function() {
-                const booking = new Booking();
+                const api = new BookingAPI();
+                if (!api.isSignedIn()) {
+                    api.signIn(window.location.href);
+                }
 
+                const booking = new Booking();
                 fromCityName1.innerText = booking.getFromCityName();
                 fromCityName2.innerText = booking.getFromCityName();
                 fromCityName3.innerText = booking.getFromCityName();
@@ -108,7 +112,7 @@
                     signedInUserSpan.style.display = 'none';
                 }
                 else {
-                    api.signIn("test test test");
+                    api.signIn(window.location.href);
                 }
                 setSignInButtonText();
             }

@@ -30,7 +30,7 @@
                 else if (params.code) {
                     signingInDiv.style.display = '';
                     setTimeout(function () {
-                        receiveAuthCode(params.code);
+                        receiveAuthCode(params.code, params.state);
                     }, 1000);
                 }
                 else {
@@ -39,7 +39,7 @@
                 }
             };
 
-            function receiveAuthCode(authCode) {
+            function receiveAuthCode(authCode, redirectTo) {
                 const xhr = new XMLHttpRequest();
                 xhr.onreadystatechange = function() {
                     if (xhr.readyState == XMLHttpRequest.DONE) {
@@ -56,7 +56,7 @@
                             localStorage.setItem('access_token', response.access_token);
                             localStorage.setItem('refresh_token', response.refresh_token);
                             localStorage.setItem('token_type', response.token_type);
-                            window.location.href = 'http://localhost:8080/';
+                            window.location.href = redirectTo;
                         }
                         else {
                             errorMessage.innerHTML = 'Received a valid auth code, but unable to use it to ' +

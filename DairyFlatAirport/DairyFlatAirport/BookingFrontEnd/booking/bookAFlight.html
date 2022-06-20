@@ -14,6 +14,11 @@
         
         <SCRIPT type="text/javascript">
             window.onload = function() {
+                const api = new BookingAPI();
+                if (!api.isSignedIn()) {
+                    api.signIn(window.location.href);
+                }
+
                 document.getElementById('leaveDate').valueAsDate = new Date();
                 var oneWeekFromToday = new Date();
                 oneWeekFromToday.setDate(oneWeekFromToday.getDate() + 7);
@@ -24,7 +29,6 @@
                 timezoneId3.value = timezoneId1.innerText;
 
                 setTimeout(function () {
-                        const api = new BookingAPI();
                         api.listAirports(1,
                             processReceivedAirportPage,
                             function (code, json) {
@@ -64,7 +68,7 @@
                     signedInUserSpan.style.display = 'none';
                 }
                 else {
-                    api.signIn("test test test");
+                    api.signIn(window.location.href);
                 }
                 setSignInButtonText();
             }

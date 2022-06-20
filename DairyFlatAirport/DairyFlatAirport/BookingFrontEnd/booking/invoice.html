@@ -14,6 +14,11 @@
 
         <SCRIPT type="text/javascript">
             window.onload = function() {
+                const api = new BookingAPI();
+                if (!api.isSignedIn()) {
+                    api.signIn(window.location.href);
+                }
+
                 const booking = new Booking();
                 insertFlights(booking);
                 insertExtras(booking);
@@ -56,7 +61,7 @@
                     signedInUserSpan.style.display = 'none';
                 }
                 else {
-                    api.signIn("test test test");
+                    api.signIn(window.location.href);
                 }
                 setSignInButtonText();
             }

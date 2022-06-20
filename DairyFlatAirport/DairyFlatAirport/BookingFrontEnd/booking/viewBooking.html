@@ -11,6 +11,11 @@
         <SCRIPT type="text/javascript" src="/javascript/bookingAPI.js"></SCRIPT>
         <SCRIPT type="text/javascript">
             window.onload = function() {
+                const api = new BookingAPI();
+                if (!api.isSignedIn()) {
+                    api.signIn(window.location.href);
+                }
+
                 const popoverTriggerList = document.querySelectorAll('[data-bs-toggle="popover"]');
                 const popoverList = [...popoverTriggerList].map(popoverTriggerEl => new bootstrap.Popover(popoverTriggerEl));
 
@@ -24,7 +29,6 @@
                 link = document.getElementById("deleteBooking");
                 link.setAttribute('href', "/booking/deleteConfirmation.html?id=" + params.id);
 
-                const api = new BookingAPI();
                 api.getBooking(params.id,
                     function (json) {
                         setTimeout(function () {
@@ -151,7 +155,7 @@
                     signedInUserSpan.style.display = 'none';
                 }
                 else {
-                    api.signIn("test test test");
+                    api.signIn(window.location.href);
                 }
                 setSignInButtonText();
             }

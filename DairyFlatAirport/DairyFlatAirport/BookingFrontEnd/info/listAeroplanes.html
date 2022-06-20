@@ -14,13 +14,17 @@
                 src="/javascript/bookingAPI.js"></SCRIPT>
         <SCRIPT type="text/javascript">
             window.onload = function() {
+                const api = new BookingAPI();
+                if (!api.isSignedIn()) {
+                    api.signIn(window.location.href);
+                }
+
                 const params = new Proxy(new URLSearchParams(window.location.search), {
                         get: (searchParams, prop) => searchParams.get(prop),
                     });
 
                 var currentPage = (params.page == null ? 1 : params.page);
 
-                const api = new BookingAPI();
                 api.listAeroplanes(currentPage, function (json) {
                     setTimeout(function(){
                         var table = document.getElementById("aeroplanesTable");
@@ -113,7 +117,7 @@
                     signedInUserSpan.style.display = 'none';
                 }
                 else {
-                    api.signIn("test test test");
+                    api.signIn(window.location.href);
                 }
                 setSignInButtonText();
             }

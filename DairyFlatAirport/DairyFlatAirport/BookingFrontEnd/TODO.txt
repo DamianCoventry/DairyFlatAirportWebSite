@@ -82,18 +82,18 @@ Functionality
 
 Users
 ~~~~~
-        Put a login guard in each page
-        Display login info on each page
-WIP     If no user token, then route to a 'please login' screen.
-        Override the authorize.html page
-        Pass the currently logged in user id to the create booking API
+DONE    Put a login guard in each page
+DONE    Display login info on each page
+DONE    Override the authorize.html page
+DONE    Pass the currently logged in user id to the create booking API
+        If we received an error when retrieving/using the refresh token, then navigate to the login page
         Should not be showing other people's data. Need to compare against 'created_by' column/variable.
 DONE    User sign in and sign out
         Create user?
         View/edit user?
         Delete user?
         clear session storage when not on a booking page
-        implement or remove the 'remember me' checkbox
+DONE    implement or remove the 'remember me' checkbox
 
 
 
