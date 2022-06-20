@@ -24,11 +24,14 @@
                 // http://localhost:8080/?error=access_denied&state=hello+world
 
                 if (params.error) {
-                    errorMessage.innerText = params.error;
+                    errorMessage.innerHTML = 'The server responded with: ' + params.error;
                     errorBox.style.display = '';
                 }
                 else if (params.code) {
-                    receiveAuthCode(params.code);
+                    signingInDiv.style.display = '';
+                    setTimeout(function () {
+                        receiveAuthCode(params.code);
+                    }, 1000);
                 }
                 else {
                     errorMessage.innerText = 'Unexpected response from the server';
@@ -60,6 +63,7 @@
                                                      'receive an access token and refresh token.<BR>' +
                                                      '<BR>' +
                                                      'The server responded with: ' + xhr.status + ', ' + JSON.parse(this.responseText).error;
+                            signingInDiv.style.display = 'none';
                             errorBox.style.display = '';
                         }
                     }
@@ -82,8 +86,25 @@
         </SCRIPT>
     </HEAD>
     <BODY>
+
+        <div id="signingInDiv" style="display:none;">
+            <div class="row">
+                <div class="col text-center">
+                    <h3 class="text-primary">Signing In...</h3>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col text-center">
+                    <div class="spinner-border text-primary" style="width: 3rem; height: 3rem;" role="status">
+                    <span class="visually-hidden">Loading...</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
         <DIV class="form-floating" id="errorBox" style="display: none;">
-            <H4>Error Received</H4>
+            <H4 class="text-danger">Error Received</H4>
             <H6 id="errorMessage"></H6>
         </DIV>
     </BODY>

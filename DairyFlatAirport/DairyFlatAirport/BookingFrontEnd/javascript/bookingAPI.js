@@ -18,7 +18,6 @@ class BookingAPI {
 
         this.makeOauth2CodeChallenge(code_verifier)
             .then(code_challenge => {
-                sessionStorage.clear();
                 sessionStorage.setItem('code_verifier', code_verifier);
                 window.location.href =
                             'http://localhost:8000/o/authorize/' +
@@ -33,11 +32,6 @@ class BookingAPI {
     }
 
     signOut() {
-        const xhr = new XMLHttpRequest();
-        xhr.open("GET", "http://localhost:8000/api-auth/logout/");
-        xhr.setRequestHeader("Authorization", this.tokenType + " " + this.accessToken);
-        xhr.send();
-
         this.accessToken = '';
         this.refreshToken = '';
         this.tokenType = 'Bearer';
@@ -45,13 +39,14 @@ class BookingAPI {
         this.signedInUserId = 0;
 
         localStorage.clear();
-        sessionStorage.clear();
+
+        window.location.href = 'http://localhost:8000/api-auth/logout/';
     }
 
     isSignedIn() {
         return this.accessToken != null && this.accessToken.length > 0 &&
-                this.refreshToken != null && this.refreshToken.length > 0 &&
-                this.signedInUserId != null && this.signedInUserId.length > 0;
+               this.refreshToken != null && this.refreshToken.length > 0 &&
+               this.tokenType != null && this.tokenType.length > 0;
     }
 
     makeUserDisplayName(json) {

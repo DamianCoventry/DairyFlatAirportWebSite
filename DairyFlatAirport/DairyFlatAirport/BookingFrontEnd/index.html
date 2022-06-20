@@ -36,6 +36,8 @@
                 setSignInButtonText();
                 const api = new BookingAPI();
                 if (api.isSignedIn()) {
+                    console.log('A user is signed in');
+
                     signedInUserDisplayName.innerText = api.signedInUserDisplayName;
                     signedInUserSpan.style.display = '';
                     api.getSignedInUser(
@@ -47,6 +49,7 @@
                     );
                 }
                 else {
+                    console.log('A user is not signed in');
                     signedInUserDisplayName.innerText = '';
                     signedInUserSpan.style.display = 'none';
                 }

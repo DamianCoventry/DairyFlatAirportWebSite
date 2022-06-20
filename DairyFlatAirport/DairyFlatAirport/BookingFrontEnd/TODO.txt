@@ -93,6 +93,7 @@ DONE    User sign in and sign out
         View/edit user?
         Delete user?
         clear session storage when not on a booking page
+        implement or remove the 'remember me' checkbox
 
 
 
