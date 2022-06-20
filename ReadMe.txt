@@ -26,11 +26,11 @@ Token flow:
 
 admin:
 {
-    "access_token": "DIqX1kZr1TuHrLSaiDVEjMtNp0DkCv",
+    "access_token": "r0EetGEbFwCmoSilRSbyqPuPo3WYCJ",
     "expires_in": 36000,
     "token_type": "Bearer",
     "scope": "read write groups",
-    "refresh_token": "Ef4VnhJIPYQtprbUGVGJUNv8iZPHh4"
+    "refresh_token": "4Az5sEKzHZSU1KMOYemlsu9J43snn0"
 }
 
 

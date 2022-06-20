@@ -25,6 +25,73 @@
                     returnFlightGUI.style.display = 'none';
                     returnFlightSeatsGUI.style.display = 'none';
                 }
+
+                updateSignInGui();
+            }
+
+            function updateSignInGui() {
+                setSignInButtonText();
+                const api = new BookingAPI();
+                if (api.isSignedIn()) {
+                    signedInUserDisplayName.innerText = api.signedInUserDisplayName;
+                    signedInUserSpan.style.display = '';
+                    api.getSignedInUser(
+                        function (json) {
+                            signedInUserDisplayName.innerText = api.signedInUserDisplayName;
+                            signedInUserSpan.style.display = '';
+                        },
+                        showHttpError
+                    );
+                }
+                else {
+                    signedInUserDisplayName.innerText = '';
+                    signedInUserSpan.style.display = 'none';
+                }
+            }
+
+            function signInOrOut() {
+                const api = new BookingAPI();
+                if (api.isSignedIn()) {
+                    api.signOut();
+                    signedInUserSpan.style.display = 'none';
+                }
+                else {
+                    api.signIn("test test test");
+                }
+                setSignInButtonText();
+            }
+
+            function setSignInButtonText() {
+                const api = new BookingAPI();
+                if (api.isSignedIn()) {
+                    signInOrOutButton.setAttribute('class', 'btn btn-success');
+                    signInOrOutButton.innerText = 'Sign Out';
+                }
+                else {
+                    signInOrOutButton.setAttribute('class', 'btn btn-primary');
+                    signInOrOutButton.innerText = 'Sign In';
+                    signedInUserDisplayName.innerText = '';
+                }
+            }
+
+            function showHttpError(code, json) {
+                errorMessageTitle.innerText = 'Error Received';
+                errorMessageBody.innerHTML = 'The server returned HTTP code ' + code + '.<BR><BR>' + javascriptObjectToDivs(json);
+                showError();
+            }
+
+            function javascriptObjectToDivs(object) {
+                let html = '';
+                for (var key of Object.keys(object)) {
+                    html = '<div class="row"><div class="col">' + key + ': ' + object[key] + '</div></div>\r\n';
+                }
+                return html;
+            }
+
+            function showError() {
+                const toastLiveExample = document.getElementById('responseCodePopup');
+                const toast = new bootstrap.Toast(toastLiveExample);
+                toast.show();
             }
 
             function insertFlights(booking) {
@@ -122,7 +189,11 @@
                                 <i class="fa-solid fa-plane"></i>&nbsp;Book a Flight</BUTTON>
                         </LI>
                     </UL>
-                </DIV>
+                    <div class="d-flex align-items-center">
+                        <span id="signedInUserSpan" class="text-light" style="display: none;">Signed in as <span class="text-primary me-3" id="signedInUserDisplayName"></span></span>
+                        <button class="btn btn-success" id="signInOrOutButton" onclick="signInOrOut();">Sign In/Out</button>
+                    </div>
+            </DIV>
             </DIV>
         </NAV>
 

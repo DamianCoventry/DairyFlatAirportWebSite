@@ -82,14 +82,17 @@ Functionality
 
 Users
 ~~~~~
+        Put a login guard in each page
+        Display login info on each page
 WIP     If no user token, then route to a 'please login' screen.
+        Override the authorize.html page
+        Pass the currently logged in user id to the create booking API
         Should not be showing other people's data. Need to compare against 'created_by' column/variable.
-        User login
+DONE    User sign in and sign out
         Create user?
         View/edit user?
         Delete user?
-        Email confirmation?
-        Forgot password?
+        clear session storage when not on a booking page
 
 
 

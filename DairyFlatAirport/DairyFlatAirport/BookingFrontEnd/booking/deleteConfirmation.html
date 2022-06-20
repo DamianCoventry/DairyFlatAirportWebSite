@@ -60,6 +60,53 @@
                     },
                     showHttpError
                 );
+
+                updateSignInGui();
+            }
+
+            function updateSignInGui() {
+                setSignInButtonText();
+                const api = new BookingAPI();
+                if (api.isSignedIn()) {
+                    signedInUserDisplayName.innerText = api.signedInUserDisplayName;
+                    signedInUserSpan.style.display = '';
+                    api.getSignedInUser(
+                        function (json) {
+                            signedInUserDisplayName.innerText = api.signedInUserDisplayName;
+                            signedInUserSpan.style.display = '';
+                        },
+                        showHttpError
+                    );
+                }
+                else {
+                    signedInUserDisplayName.innerText = '';
+                    signedInUserSpan.style.display = 'none';
+                }
+            }
+
+            function signInOrOut() {
+                const api = new BookingAPI();
+                if (api.isSignedIn()) {
+                    api.signOut();
+                    signedInUserSpan.style.display = 'none';
+                }
+                else {
+                    api.signIn("test test test");
+                }
+                setSignInButtonText();
+            }
+
+            function setSignInButtonText() {
+                const api = new BookingAPI();
+                if (api.isSignedIn()) {
+                    signInOrOutButton.setAttribute('class', 'btn btn-success');
+                    signInOrOutButton.innerText = 'Sign Out';
+                }
+                else {
+                    signInOrOutButton.setAttribute('class', 'btn btn-primary');
+                    signInOrOutButton.innerText = 'Sign In';
+                    signedInUserDisplayName.innerText = '';
+                }
             }
 
             function deleteBooking() {
@@ -138,6 +185,10 @@
                                     <i class="fa-solid fa-plane"></i>&nbsp;Book a Flight</BUTTON>
                             </LI>
                         </UL>
+                        <div class="d-flex align-items-center">
+                            <span id="signedInUserSpan" class="text-light" style="display: none;">Signed in as <span class="text-primary me-3" id="signedInUserDisplayName"></span></span>
+                            <button class="btn btn-success" id="signInOrOutButton" onclick="signInOrOut();">Sign In/Out</button>
+                        </div>
                     </DIV>
                 </DIV>
             </NAV>
