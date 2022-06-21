@@ -47,9 +47,12 @@ class FlightLegViewSet(viewsets.ModelViewSet):
 
 
 class PassengerViewSet(viewsets.ModelViewSet):
-    queryset = Passenger.objects.all().order_by('id')
     serializer_class = PassengerSerializer
     permission_classes = [permissions.IsAuthenticated, TokenHasReadWriteScope]
+
+    def get_queryset(self):
+        signedInUserId = self.request.query_params.get('signedInUserId', 0)
+        return Passenger.objects.all().filter(created_by_id=signedInUserId).order_by('id')
 
 
 class ExtraBagViewSet(viewsets.ModelViewSet):
@@ -95,10 +98,13 @@ class BookingCompactViewSet(viewsets.ModelViewSet):
     permission_classes = [permissions.IsAuthenticated, TokenHasReadWriteScope]
 
 
-class BookingViewSet(viewsets.ModelViewSet):
-    queryset = Booking.objects.all().order_by('number')
+class BookingViewSet(viewsets.ModelViewSet, viewsets.GenericViewSet):
     serializer_class = BookingSerializer
     permission_classes = [permissions.IsAuthenticated, TokenHasReadWriteScope]
+
+    def get_queryset(self):
+        signedInUserId = self.request.query_params.get('signedInUserId', 0)
+        return Booking.objects.all().filter(created_by_id=signedInUserId).order_by('number')
 
 
 class SearchFlightsViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):

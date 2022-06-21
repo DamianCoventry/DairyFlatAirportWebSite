@@ -44,6 +44,14 @@ DONE    Invoice
 DONE    The select flights page needs a better way of showing flights. A calendar? 3 days prior+post?
 DONE    Need to actually create the booking and produce a booking number
 DONE    If 401 received, then use refresh token
+DONE    Put a login guard in each page
+DONE    Display login info on each page
+DONE    Override the authorize.html page
+DONE    Pass the currently logged in user id to the create booking API
+DONE    If we received an error when retrieving/using the refresh token, then navigate to the login page
+DONE    Should not be showing other people's data. Need to compare against 'created_by' column/variable.
+DONE    User sign in and sign out
+DONE    Put tooltips on the edit and delete buttons within the view booking page
 
 
 
@@ -55,6 +63,7 @@ Look + Feel
         on the viewAeroplane page: Change text within text boxes to links for the viewFlight page
         add new css/html for the invoice page that makes the wizard icons not anchors
         the viewBooking page has a shit display format for the date/time
+        show something when the login fails
 
 
 
@@ -77,23 +86,19 @@ Functionality
         Change your seats for an existing booking
         Get the localhost URI out of the bookingAPI.js file?
         Don't allow a seat to be booked twice
+        I don't think booked sets are actually being written into the database
+        Don't allow an account to be deleted unless the user's password is entered.
+
 
 
 
 Users
 ~~~~~
-DONE    Put a login guard in each page
-DONE    Display login info on each page
-DONE    Override the authorize.html page
-DONE    Pass the currently logged in user id to the create booking API
-        If we received an error when retrieving/using the refresh token, then navigate to the login page
-        Should not be showing other people's data. Need to compare against 'created_by' column/variable.
-DONE    User sign in and sign out
-        Create user?
-        View/edit user?
-        Delete user?
-        clear session storage when not on a booking page
-DONE    implement or remove the 'remember me' checkbox
+        Sign Up
+        Edit user name/email
+        Change password
+DONE    Delete user
+        Test refresh token
 
 
 

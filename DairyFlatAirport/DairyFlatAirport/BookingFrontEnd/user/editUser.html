@@ -49,8 +49,18 @@
                             </LI>
                         </UL>
                         <div class="d-flex align-items-center">
-                            <span id="signedInUserSpan" class="text-light" style="display: none;">Signed in as <span class="text-primary me-3" id="signedInUserDisplayName"></span></span>
-                            <button class="btn btn-success" id="signInOrOutButton" onclick="signInOrOut();">Sign In/Out</button>
+                            <SPAN id="signedInUserSpan" class="text-light" style="display: none;">Signed in as <SPAN class="text-primary me-3" id="signedInUserDisplayName"></SPAN></SPAN>
+                            <BUTTON class="btn btn-success" id="signInButton" onclick="signIn();">Sign In</BUTTON>
+                            <DIV class="btn-group" id="userDropDownDiv">
+                                <BUTTON class="btn btn-success dropdown-toggle" type="button" id="userDropDown" data-bs-toggle="dropdown" data-bs-auto-close="true" aria-expanded="false">
+                                    <i class="fa-solid fa-bars"></i>
+                                </BUTTON>
+                                <UL class="dropdown-menu dropdown-menu-end shadow" aria-labelledby="userDropDown">
+                                  <LI><BUTTON class="dropdown-item" type="button" id="userAccountMenuItem" onclick="editUserAccount();">User Account</A></LI>
+                                  <LI><HR class="dropdown-divider"></LI>
+                                  <LI><BUTTON class="dropdown-item" type="button" id="signOutMenuItem" onclick="signOut();">Sign Out</BUTTON></LI>
+                                </UL>
+                            </DIV>
                         </div>
                     </DIV>
                 </DIV>

@@ -16,6 +16,9 @@
 
         <SCRIPT type="text/javascript">
             window.onload = function() {
+                const tooltipTriggerList = document.querySelectorAll('[data-bs-toggle="tooltip"]');
+                const tooltipList = [...tooltipTriggerList].map(tooltipTriggerEl => new bootstrap.Tooltip(tooltipTriggerEl));
+
                 const params = new Proxy(new URLSearchParams(window.location.search), {
                         get: (searchParams, prop) => searchParams.get(prop),
                     });

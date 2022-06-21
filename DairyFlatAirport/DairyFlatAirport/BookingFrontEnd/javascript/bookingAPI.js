@@ -66,14 +66,14 @@ class BookingAPI {
     }
 
     getSignedInUser(okFn, errorFn) {
-        const booking = this;
+        const api = this;
 
         this.getSignedInUserId(
             function (userId) {
-                booking.getUser(userId,
+                api.getUser(userId,
                     function (json) {
-                        booking.signedInUserDisplayName = booking.makeUserDisplayName(json);
-                        localStorage.setItem('user_display_name', booking.signedInUserDisplayName);
+                        api.signedInUserDisplayName = api.makeUserDisplayName(json);
+                        localStorage.setItem('user_display_name', api.signedInUserDisplayName);
                         okFn(json);
                     }
                     , errorFn);
@@ -81,8 +81,22 @@ class BookingAPI {
             errorFn);
     }
 
+    deleteSignedInUser(errorFn) {
+        const api = this;
+
+        this.getSignedInUserId(
+            function (userId) {
+                if (userId > 0) {
+                    api.deleteUser(userId, function () {
+                        api.signOut();
+                    }, errorFn);
+                }
+            },
+            errorFn);
+    }
+
     getSignedInUserId(okFn, errorFn) {
-        const booking = this;
+        const api = this;
 
         const xhr = new XMLHttpRequest();
         xhr.onreadystatechange = function() {
@@ -90,26 +104,25 @@ class BookingAPI {
                 if (xhr.status >= 200 && xhr.status < 300) {
                     let response = JSON.parse(this.responseText);
                     if (response.count > 0) {
-                        booking.signedInUserId = response.results[0].user_id;
-                        localStorage.setItem('user_id', booking.signedInUserId);
-
-                        console.log('signedInUserId = ' + booking.signedInUserId);
-
+                        api.signedInUserId = response.results[0].user_id;
+                        localStorage.setItem('user_id', api.signedInUserId);
                         okFn(response.results[0].user_id);
                     }
                     else {
-                        booking.signedInUserId = 0;
+                        api.signedInUserId = 0;
                         localStorage.setItem('user_id', 0);
-                        console.log('No user exists with the token ' + booking.accessToken);
+                        console.log('No user exists with the token ' + api.accessToken);
                         okFn(0);
                     }
                 }
                 else if (xhr.status == 401) {
-                    booking.useRefreshToken(booking,
+                    api.useRefreshToken(api.refreshToken,
                         function () {
-                            booking.getUserDetails(okFn, errorFn);
+                            api.getSignedInUserId(okFn, errorFn);
                         },
-                        errorFn
+                        function (code, json) {
+                            api.signIn(window.location.href);
+                        }
                     );
                 }
                 else {
@@ -122,8 +135,8 @@ class BookingAPI {
         xhr.send();
     }
 
-    getUser(id, okFn, errorFn) {
-        const booking = this;
+    addUser(userName, emailAddress, firstName, lastName, okFn, errorFn) {
+        const api = this;
 
         const xhr = new XMLHttpRequest();
         xhr.onreadystatechange = function() {
@@ -132,11 +145,83 @@ class BookingAPI {
                     okFn(JSON.parse(this.responseText));
                 }
                 else if (xhr.status == 401) {
-                    booking.useRefreshToken(booking,
+                    api.useRefreshToken(api.refreshToken,
                         function () {
-                            booking.getAeroplane(id, okFn, errorFn);
+                            api.addUser(userName, emailAddress, firstName, lastName, okFn, errorFn);
                         },
-                        errorFn
+                        function (code, json) {
+                            api.signIn(window.location.href);
+                        }
+                    );
+                }
+                else {
+                    errorFn(xhr.status, JSON.parse(this.responseText));
+                }
+            }
+        }
+        xhr.open("POST", "http://localhost:8000/user/");
+        xhr.setRequestHeader("Authorization", this.tokenType + " " + this.accessToken);
+        xhr.setRequestHeader('Content-type', 'application/json;charset=UTF-8');
+        xhr.send(JSON.stringify({
+            "username": userName,
+            "email": emailAddress,
+            "first_name": firstName,
+            "last_name": lastName
+        }));
+    }
+
+    modifyUser(id, userName, emailAddress, firstName, lastName, okFn, errorFn) {
+        const api = this;
+
+        const xhr = new XMLHttpRequest();
+        xhr.onreadystatechange = function() {
+            if (xhr.readyState == XMLHttpRequest.DONE) {
+                if (xhr.status >= 200 && xhr.status < 300) {
+                    okFn(JSON.parse(this.responseText));
+                }
+                else if (xhr.status == 401) {
+                    api.useRefreshToken(api.refreshToken,
+                        function () {
+                            api.modifyUser(id, userName, emailAddress, firstName, lastName, okFn, errorFn);
+                        },
+                        function (code, json) {
+                            api.signIn(window.location.href);
+                        }
+                    );
+                }
+                else {
+                    errorFn(xhr.status, JSON.parse(this.responseText));
+                }
+            }
+        }
+        xhr.open("PUT", "http://localhost:8000/user/" + id + "/");
+        xhr.setRequestHeader("Authorization", this.tokenType + " " + this.accessToken);
+        xhr.setRequestHeader('Content-type', 'application/json;charset=UTF-8');
+        xhr.send(JSON.stringify({
+            "username": userName,
+            "email": emailAddress,
+            "first_name": firstName,
+            "last_name": lastName
+        }));
+    }
+
+    getUser(id, okFn, errorFn) {
+        const api = this;
+
+        const xhr = new XMLHttpRequest();
+        xhr.onreadystatechange = function() {
+            if (xhr.readyState == XMLHttpRequest.DONE) {
+                if (xhr.status >= 200 && xhr.status < 300) {
+                    okFn(JSON.parse(this.responseText));
+                }
+                else if (xhr.status == 401) {
+                    api.useRefreshToken(api.refreshToken,
+                        function () {
+                            api.getAeroplane(id, okFn, errorFn);
+                        },
+                        function (code, json) {
+                            api.signIn(window.location.href);
+                        }
                     );
                 }
                 else {
@@ -145,6 +230,35 @@ class BookingAPI {
             }
         }
         xhr.open("GET", "http://localhost:8000/user/" + id + "/");
+        xhr.setRequestHeader("Authorization", this.tokenType + " " + this.accessToken);
+        xhr.send();
+    }
+
+    deleteUser(id, okFn, errorFn) {
+        const api = this;
+
+        const xhr = new XMLHttpRequest();
+        xhr.onreadystatechange = function() {
+            if (xhr.readyState == XMLHttpRequest.DONE) {
+                if (xhr.status >= 200 && xhr.status < 300) {
+                    okFn();
+                }
+                else if (xhr.status == 401) {
+                    api.useRefreshToken(api.refreshToken,
+                        function () {
+                            api.deleteUser(id, okFn, errorFn);
+                        },
+                        function (code, json) {
+                            api.signIn(window.location.href);
+                        }
+                    );
+                }
+                else {
+                    errorFn(xhr.status, JSON.parse(this.responseText));
+                }
+            }
+        }
+        xhr.open("DELETE", "http://localhost:8000/user/" + id + "/");
         xhr.setRequestHeader("Authorization", this.tokenType + " " + this.accessToken);
         xhr.send();
     }
@@ -167,7 +281,7 @@ class BookingAPI {
     }
 
     listAeroplanes(currentPage, okFn, errorFn) {
-        const booking = this;
+        const api = this;
 
         const xhr = new XMLHttpRequest();
         xhr.onreadystatechange = function() {
@@ -176,11 +290,13 @@ class BookingAPI {
                     okFn(JSON.parse(this.responseText));
                 }
                 else if (xhr.status == 401) {
-                    booking.useRefreshToken(booking,
+                    api.useRefreshToken(api.refreshToken,
                         function () {
-                            booking.listAeroplanes(currentPage, okFn, errorFn);
+                            api.listAeroplanes(currentPage, okFn, errorFn);
                         },
-                        errorFn
+                        function (code, json) {
+                            api.signIn(window.location.href);
+                        }
                     );
                 }
                 else {
@@ -194,7 +310,7 @@ class BookingAPI {
     }
 
     getAeroplane(id, okFn, errorFn) {
-        const booking = this;
+        const api = this;
 
         const xhr = new XMLHttpRequest();
         xhr.onreadystatechange = function() {
@@ -203,11 +319,13 @@ class BookingAPI {
                     okFn(JSON.parse(this.responseText));
                 }
                 else if (xhr.status == 401) {
-                    booking.useRefreshToken(booking,
+                    api.useRefreshToken(api.refreshToken,
                         function () {
-                            booking.getAeroplane(id, okFn, errorFn);
+                            api.getAeroplane(id, okFn, errorFn);
                         },
-                        errorFn
+                        function (code, json) {
+                            api.signIn(window.location.href);
+                        }
                     );
                 }
                 else {
@@ -221,7 +339,7 @@ class BookingAPI {
     }
 
     listFlights(currentPage, okFn, errorFn) {
-        const booking = this;
+        const api = this;
 
         const xhr = new XMLHttpRequest();
         xhr.onreadystatechange = function() {
@@ -230,11 +348,13 @@ class BookingAPI {
                     okFn(JSON.parse(this.responseText));
                 }
                 else if (xhr.status == 401) {
-                    booking.useRefreshToken(booking,
+                    api.useRefreshToken(api.refreshToken,
                         function () {
-                            booking.listFlights(currentPage, okFn, errorFn);
+                            api.listFlights(currentPage, okFn, errorFn);
                         },
-                        errorFn
+                        function (code, json) {
+                            api.signIn(window.location.href);
+                        }
                     );
                 }
                 else {
@@ -248,7 +368,7 @@ class BookingAPI {
     }
 
     getFlight(id, okFn, errorFn) {
-        const booking = this;
+        const api = this;
 
         const xhr = new XMLHttpRequest();
         xhr.onreadystatechange = function() {
@@ -257,11 +377,13 @@ class BookingAPI {
                     okFn(JSON.parse(this.responseText));
                 }
                 else if (xhr.status == 401) {
-                    booking.useRefreshToken(booking,
+                    api.useRefreshToken(api.refreshToken,
                         function () {
-                            booking.getFlight(id, okFn, errorFn);
+                            api.getFlight(id, okFn, errorFn);
                         },
-                        errorFn
+                        function (code, json) {
+                            api.signIn(window.location.href);
+                        }
                     );
                 }
                 else {
@@ -275,7 +397,7 @@ class BookingAPI {
     }
 
     listBookings(currentPage, okFn, errorFn) {
-        const booking = this;
+        const api = this;
 
         const xhr = new XMLHttpRequest();
         xhr.onreadystatechange = function() {
@@ -284,11 +406,13 @@ class BookingAPI {
                     okFn(JSON.parse(this.responseText));
                 }
                 else if (xhr.status == 401) {
-                    booking.useRefreshToken(booking,
+                    api.useRefreshToken(api.refreshToken,
                         function () {
-                            booking.listBookings(currentPage, okFn, errorFn);
+                            api.listBookings(currentPage, okFn, errorFn);
                         },
-                        errorFn
+                        function (code, json) {
+                            api.signIn(window.location.href);
+                        }
                     );
                 }
                 else {
@@ -296,13 +420,13 @@ class BookingAPI {
                 }
             }
         }
-        xhr.open("GET", "http://localhost:8000/booking/?page=" + currentPage);
+        xhr.open("GET", "http://localhost:8000/booking/?page=" + currentPage + '&signedInUserId=' + this.signedInUserId);
         xhr.setRequestHeader("Authorization", this.tokenType + " " + this.accessToken);
         xhr.send();
     }
 
     listCompactBookings(currentPage, okFn, errorFn) {
-        const booking = this;
+        const api = this;
 
         const xhr = new XMLHttpRequest();
         xhr.onreadystatechange = function() {
@@ -311,11 +435,13 @@ class BookingAPI {
                     okFn(JSON.parse(this.responseText));
                 }
                 else if (xhr.status == 401) {
-                    booking.useRefreshToken(booking,
+                    api.useRefreshToken(api.refreshToken,
                         function () {
-                            booking.listCompactBookings(currentPage, okFn, errorFn);
+                            api.listCompactBookings(currentPage, okFn, errorFn);
                         },
-                        errorFn
+                        function (code, json) {
+                            api.signIn(window.location.href);
+                        }
                     );
                 }
                 else {
@@ -329,7 +455,7 @@ class BookingAPI {
     }
 
     getBooking(id, okFn, errorFn) {
-        const booking = this;
+        const api = this;
 
         const xhr = new XMLHttpRequest();
         xhr.onreadystatechange = function() {
@@ -338,11 +464,13 @@ class BookingAPI {
                     okFn(JSON.parse(this.responseText));
                 }
                 else if (xhr.status == 401) {
-                    booking.useRefreshToken(booking,
+                    api.useRefreshToken(api.refreshToken,
                         function () {
-                            booking.getBooking(id, okFn, errorFn);
+                            api.getBooking(id, okFn, errorFn);
                         },
-                        errorFn
+                        function (code, json) {
+                            api.signIn(window.location.href);
+                        }
                     );
                 }
                 else {
@@ -350,13 +478,13 @@ class BookingAPI {
                 }
             }
         }
-        xhr.open("GET", "http://localhost:8000/booking/" + id + "/");
+        xhr.open("GET", "http://localhost:8000/booking/" + id + "/?signedInUserId=" + this.signedInUserId);
         xhr.setRequestHeader("Authorization", this.tokenType + " " + this.accessToken);
         xhr.send();
     }
 
     getCompactBooking(id, okFn, errorFn) {
-        const booking = this;
+        const api = this;
 
         const xhr = new XMLHttpRequest();
         xhr.onreadystatechange = function() {
@@ -365,11 +493,13 @@ class BookingAPI {
                     okFn(JSON.parse(this.responseText));
                 }
                 else if (xhr.status == 401) {
-                    booking.useRefreshToken(booking,
+                    api.useRefreshToken(api.refreshToken,
                         function () {
-                            booking.getCompactBooking(id, okFn, errorFn);
+                            api.getCompactBooking(id, okFn, errorFn);
                         },
-                        errorFn
+                        function (code, json) {
+                            api.signIn(window.location.href);
+                        }
                     );
                 }
                 else {
@@ -383,7 +513,7 @@ class BookingAPI {
     }
 
     addBooking(number, travelInsuranceId, rentalCarId, flightLegIdsArray, passengerIdsArray, okFn, errorFn) {
-        const booking = this;
+        const api = this;
 
         const xhr = new XMLHttpRequest();
         xhr.onreadystatechange = function() {
@@ -392,11 +522,13 @@ class BookingAPI {
                     okFn(JSON.parse(this.responseText));
                 }
                 else if (xhr.status == 401) {
-                    booking.useRefreshToken(booking,
+                    api.useRefreshToken(api.refreshToken,
                         function () {
-                            booking.addBooking(number, travelInsuranceId, rentalCarId, flightLegIdsArray, passengerIdsArray, okFn, errorFn);
+                            api.addBooking(number, travelInsuranceId, rentalCarId, flightLegIdsArray, passengerIdsArray, okFn, errorFn);
                         },
-                        errorFn
+                        function (code, json) {
+                            api.signIn(window.location.href);
+                        }
                     );
                 }
                 else {
@@ -418,7 +550,7 @@ class BookingAPI {
     }
 
     modifyBooking(id, number, travelInsuranceId, rentalCarId, flightLegIdsArray, passengerIdsArray, okFn, errorFn) {
-        const booking = this;
+        const api = this;
 
         const xhr = new XMLHttpRequest();
         xhr.onreadystatechange = function() {
@@ -427,11 +559,13 @@ class BookingAPI {
                     okFn(JSON.parse(this.responseText));
                 }
                 else if (xhr.status == 401) {
-                    booking.useRefreshToken(booking,
+                    api.useRefreshToken(api.refreshToken,
                         function () {
-                            booking.modifyBooking(id, number, travelInsuranceId, rentalCarId, flightLegIdsArray, passengerIdsArray, okFn, errorFn);
+                            api.modifyBooking(id, number, travelInsuranceId, rentalCarId, flightLegIdsArray, passengerIdsArray, okFn, errorFn);
                         },
-                        errorFn
+                        function (code, json) {
+                            api.signIn(window.location.href);
+                        }
                     );
                 }
                 else {
@@ -453,7 +587,7 @@ class BookingAPI {
     }
 
     deleteBooking(id, okFn, errorFn) {
-        const booking = this;
+        const api = this;
 
         const xhr = new XMLHttpRequest();
         xhr.onreadystatechange = function() {
@@ -462,11 +596,13 @@ class BookingAPI {
                     okFn();
                 }
                 else if (xhr.status == 401) {
-                    booking.useRefreshToken(booking,
+                    api.useRefreshToken(api.refreshToken,
                         function () {
-                            booking.deleteBooking(id, okFn, errorFn);
+                            api.deleteBooking(id, okFn, errorFn);
                         },
-                        errorFn
+                        function (code, json) {
+                            api.signIn(window.location.href);
+                        }
                     );
                 }
                 else {
@@ -480,7 +616,7 @@ class BookingAPI {
     }
 
     listPassengers(currentPage, okFn, errorFn) {
-        const booking = this;
+        const api = this;
 
         const xhr = new XMLHttpRequest();
         xhr.onreadystatechange = function() {
@@ -489,11 +625,13 @@ class BookingAPI {
                     okFn(JSON.parse(this.responseText));
                 }
                 else if (xhr.status == 401) {
-                    booking.useRefreshToken(booking,
+                    api.useRefreshToken(api.refreshToken,
                         function () {
-                            booking.listPassengers(currentPage, okFn, errorFn);
+                            api.listPassengers(currentPage, okFn, errorFn);
                         },
-                        errorFn
+                        function (code, json) {
+                            api.signIn(window.location.href);
+                        }
                     );
                 }
                 else {
@@ -501,13 +639,13 @@ class BookingAPI {
                 }
             }
         }
-        xhr.open("GET", "http://localhost:8000/passenger/?page=" + currentPage);
+        xhr.open("GET", "http://localhost:8000/passenger/?page=" + currentPage + "&signedInUserId=" + this.signedInUserId);
         xhr.setRequestHeader("Authorization", this.tokenType + " " + this.accessToken);
         xhr.send();
     }
 
     getPassenger(id, okFn, errorFn) {
-        const booking = this;
+        const api = this;
 
         const xhr = new XMLHttpRequest();
         xhr.onreadystatechange = function() {
@@ -516,11 +654,13 @@ class BookingAPI {
                     okFn(JSON.parse(this.responseText));
                 }
                 else if (xhr.status == 401) {
-                    booking.useRefreshToken(booking,
+                    api.useRefreshToken(api.refreshToken,
                         function () {
-                            booking.getPassenger(id, okFn, errorFn);
+                            api.getPassenger(id, okFn, errorFn);
                         },
-                        errorFn
+                        function (code, json) {
+                            api.signIn(window.location.href);
+                        }
                     );
                 }
                 else {
@@ -528,13 +668,13 @@ class BookingAPI {
                 }
             }
         }
-        xhr.open("GET", "http://localhost:8000/passenger/" + id + "/");
+        xhr.open("GET", "http://localhost:8000/passenger/" + id + "/?signedInUserId=" + this.signedInUserId);
         xhr.setRequestHeader("Authorization", this.tokenType + " " + this.accessToken);
         xhr.send();
     }
 
     addPassenger(title, firstName, lastName, emailAddress, phoneNumber, specialAssistance, okFn, errorFn) {
-        const booking = this;
+        const api = this;
 
         const xhr = new XMLHttpRequest();
         xhr.onreadystatechange = function() {
@@ -543,11 +683,13 @@ class BookingAPI {
                     okFn(JSON.parse(this.responseText));
                 }
                 else if (xhr.status == 401) {
-                    booking.useRefreshToken(booking,
+                    api.useRefreshToken(api.refreshToken,
                         function () {
-                            booking.addPassenger(title, firstName, lastName, emailAddress, phoneNumber, specialAssistance, okFn, errorFn);
+                            api.addPassenger(title, firstName, lastName, emailAddress, phoneNumber, specialAssistance, okFn, errorFn);
                         },
-                        errorFn
+                        function (code, json) {
+                            api.signIn(window.location.href);
+                        }
                     );
                 }
                 else {
@@ -570,7 +712,7 @@ class BookingAPI {
     }
 
     modifyPassenger(id, title, firstName, lastName, emailAddress, phoneNumber, specialAssistance, okFn, errorFn) {
-        const booking = this;
+        const api = this;
 
         const xhr = new XMLHttpRequest();
         xhr.onreadystatechange = function() {
@@ -579,11 +721,13 @@ class BookingAPI {
                     okFn(JSON.parse(this.responseText));
                 }
                 else if (xhr.status == 401) {
-                    booking.useRefreshToken(booking,
+                    api.useRefreshToken(api.refreshToken,
                         function () {
-                            booking.modifyPassenger(id, title, firstName, lastName, emailAddress, phoneNumber, specialAssistance, okFn, errorFn);
+                            api.modifyPassenger(id, title, firstName, lastName, emailAddress, phoneNumber, specialAssistance, okFn, errorFn);
                         },
-                        errorFn
+                        function (code, json) {
+                            api.signIn(window.location.href);
+                        }
                     );
                 }
                 else {
@@ -606,7 +750,7 @@ class BookingAPI {
     }
 
     deletePassenger(id, okFn, errorFn) {
-        const booking = this;
+        const api = this;
 
         const xhr = new XMLHttpRequest();
         xhr.onreadystatechange = function() {
@@ -615,11 +759,13 @@ class BookingAPI {
                     okFn();
                 }
                 else if (xhr.status == 401) {
-                    booking.useRefreshToken(booking,
+                    api.useRefreshToken(api.refreshToken,
                         function () {
-                            booking.deletePassenger(id, okFn, errorFn);
+                            api.deletePassenger(id, okFn, errorFn);
                         },
-                        errorFn
+                        function (code, json) {
+                            api.signIn(window.location.href);
+                        }
                     );
                 }
                 else {
@@ -633,7 +779,7 @@ class BookingAPI {
     }
 
     listTravelInsurances(currentPage, okFn, errorFn) {
-        const booking = this;
+        const api = this;
 
         const xhr = new XMLHttpRequest();
         xhr.onreadystatechange = function() {
@@ -642,11 +788,13 @@ class BookingAPI {
                     okFn(JSON.parse(this.responseText));
                 }
                 else if (xhr.status == 401) {
-                    booking.useRefreshToken(booking,
+                    api.useRefreshToken(api.refreshToken,
                         function () {
-                            booking.listTravelInsurances(currentPage, okFn, errorFn);
+                            api.listTravelInsurances(currentPage, okFn, errorFn);
                         },
-                        errorFn
+                        function (code, json) {
+                            api.signIn(window.location.href);
+                        }
                     );
                 }
                 else {
@@ -660,7 +808,7 @@ class BookingAPI {
     }
 
     listRentalCars(currentPage, okFn, errorFn) {
-        const booking = this;
+        const api = this;
 
         const xhr = new XMLHttpRequest();
         xhr.onreadystatechange = function() {
@@ -669,11 +817,13 @@ class BookingAPI {
                     okFn(JSON.parse(this.responseText));
                 }
                 else if (xhr.status == 401) {
-                    booking.useRefreshToken(booking,
+                    api.useRefreshToken(api.refreshToken,
                         function () {
-                            booking.listRentalCars(currentPage, okFn, errorFn);
+                            api.listRentalCars(currentPage, okFn, errorFn);
                         },
-                        errorFn
+                        function (code, json) {
+                            api.signIn(window.location.href);
+                        }
                     );
                 }
                 else {
@@ -687,7 +837,7 @@ class BookingAPI {
     }
 
     searchFlights(options, currentPage, okFn, errorFn) {
-        const booking = this;
+        const api = this;
 
         const xhr = new XMLHttpRequest();
         xhr.onreadystatechange = function() {
@@ -696,11 +846,13 @@ class BookingAPI {
                     okFn(JSON.parse(this.responseText));
                 }
                 else if (xhr.status == 401) {
-                    booking.useRefreshToken(booking,
+                    api.useRefreshToken(api.refreshToken,
                         function () {
-                            booking.searchFlights(options, currentPage, okFn, errorFn);
+                            api.searchFlights(options, currentPage, okFn, errorFn);
                         },
-                        errorFn
+                        function (code, json) {
+                            api.signIn(window.location.href);
+                        }
                     );
                 }
                 else {
@@ -736,7 +888,7 @@ class BookingAPI {
     }
 
     flightsExistBetweenXAndY(departureCityId, arrivalCityId, okFn, errorFn) {
-        const booking = this;
+        const api = this;
 
         const xhr = new XMLHttpRequest();
         xhr.onreadystatechange = function() {
@@ -745,11 +897,13 @@ class BookingAPI {
                     okFn(JSON.parse(this.responseText).count > 0);
                 }
                 else if (xhr.status == 401) {
-                    booking.useRefreshToken(booking,
+                    api.useRefreshToken(api.refreshToken,
                         function () {
-                            booking.flightsExistBetweenXAndY(departureCityId, arrivalCityId, okFn, errorFn);
+                            api.flightsExistBetweenXAndY(departureCityId, arrivalCityId, okFn, errorFn);
                         },
-                        errorFn
+                        function (code, json) {
+                            api.signIn(window.location.href);
+                        }
                     );
                 }
                 else {
@@ -769,7 +923,7 @@ class BookingAPI {
     }
 
     getFlightCounts(page, fromAirport, toAirport, beginDate, endDate, timezone, okFn, errorFn) {
-        const booking = this;
+        const api = this;
 
         const xhr = new XMLHttpRequest();
         xhr.onreadystatechange = function() {
@@ -778,11 +932,13 @@ class BookingAPI {
                     okFn(JSON.parse(this.responseText));
                 }
                 else if (xhr.status == 401) {
-                    booking.useRefreshToken(booking,
+                    api.useRefreshToken(api.refreshToken,
                         function () {
-                            booking.getFlightCounts(page, fromAirport, toAirport, beginDate, endDate, timezone, okFn, errorFn);
+                            api.getFlightCounts(page, fromAirport, toAirport, beginDate, endDate, timezone, okFn, errorFn);
                         },
-                        errorFn
+                        function (code, json) {
+                            api.signIn(window.location.href);
+                        }
                     );
                 }
                 else {
@@ -805,7 +961,7 @@ class BookingAPI {
     }
 
     listAirports(currentPage, okFn, errorFn) {
-        const booking = this;
+        const api = this;
 
         const xhr = new XMLHttpRequest();
         xhr.onreadystatechange = function() {
@@ -814,11 +970,13 @@ class BookingAPI {
                     okFn(JSON.parse(this.responseText));
                 }
                 else if (xhr.status == 401) {
-                    booking.useRefreshToken(booking,
+                    api.useRefreshToken(api.refreshToken,
                         function () {
-                            booking.listAirports(currentPage, okFn, errorFn);
+                            api.listAirports(currentPage, okFn, errorFn);
                         },
-                        errorFn
+                        function (code, json) {
+                            api.signIn(window.location.href);
+                        }
                     );
                 }
                 else {
@@ -832,7 +990,7 @@ class BookingAPI {
     }
 
     listSeatsForAeroplane(aeroplaneId, okFn, errorFn) {
-        const booking = this;
+        const api = this;
 
         const xhr = new XMLHttpRequest();
         xhr.onreadystatechange = function() {
@@ -841,11 +999,13 @@ class BookingAPI {
                     okFn(JSON.parse(this.responseText));
                 }
                 else if (xhr.status == 401) {
-                    booking.useRefreshToken(booking,
+                    api.useRefreshToken(api.refreshToken,
                         function () {
-                            booking.listSeatsForAeroplane(aeroplaneId, okFn, errorFn);
+                            api.listSeatsForAeroplane(aeroplaneId, okFn, errorFn);
                         },
-                        errorFn
+                        function (code, json) {
+                            api.signIn(window.location.href);
+                        }
                     );
                 }
                 else {
@@ -859,7 +1019,7 @@ class BookingAPI {
     }
 
     getNextBookingNumber(okFn, errorFn) {
-        const booking = this;
+        const api = this;
 
         const xhr = new XMLHttpRequest();
         xhr.onreadystatechange = function() {
@@ -869,11 +1029,13 @@ class BookingAPI {
                     okFn('DFA' + data.counter);
                 }
                 else if (xhr.status == 401) {
-                    booking.useRefreshToken(booking,
+                    api.useRefreshToken(api.refreshToken,
                         function () {
-                            booking.getNextBookingNumber(okFn, errorFn);
+                            api.getNextBookingNumber(okFn, errorFn);
                         },
-                        errorFn
+                        function (code, json) {
+                            api.signIn(window.location.href);
+                        }
                     );
                 }
                 else {
@@ -886,7 +1048,7 @@ class BookingAPI {
         xhr.send();
     }
 
-    useRefreshToken(booking, okFn, errorFn) {
+    useRefreshToken(refreshToken, okFn, errorFn) {
         const xhr = new XMLHttpRequest();
         xhr.onreadystatechange = function() {
             if (xhr.readyState == XMLHttpRequest.DONE) {
@@ -907,7 +1069,7 @@ class BookingAPI {
             }
         }
 
-        console.log('Requesting a refresh of the access token (' + booking.refreshToken + ')');
+        console.log('Requesting a refresh of the access token (' + refreshToken + ')');
 
         xhr.open("POST", "http://localhost:8000/o/token/");
         xhr.setRequestHeader('Content-type', 'application/json;charset=UTF-8');
@@ -915,7 +1077,7 @@ class BookingAPI {
             "grant_type": "refresh_token",
             "client_id": "Z8VUqShJQnkfa5f8fzUAVzlBxYNxU2tuqaN8Gvh9",
             "client_secret": "JER87JI9A289n66yHGX2D2ZFCdEYCusMIJEcc0eXaNBpP9vB3pfoAzXNufGaxhQ7VhvadXzEC55wKbaYumzynmLQNOqaJE5NdrON7dywt0OTAjANavOZtrJgZc9f5LRP",
-            "refresh_token": booking.refreshToken
+            "refresh_token": refreshToken
         }));
     }
 };
