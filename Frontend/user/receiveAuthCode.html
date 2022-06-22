@@ -14,6 +14,8 @@
             crossorigin="anonymous"
             referrerpolicy="no-referrer"/>
 
+        <SCRIPT type="text/javascript" src="/javascript/config.js"></SCRIPT>
+
         <SCRIPT type="text/javascript">
             window.onload = function() {
                 const tooltipTriggerList = document.querySelectorAll('[data-bs-toggle="tooltip"]');
@@ -75,13 +77,13 @@
                 let code_verifier = sessionStorage.getItem('code_verifier');
                 sessionStorage.removeItem('code_verifier');
 
-                xhr.open("POST", "http://localhost:8000/o/token/");
+                xhr.open("POST", BACKEND_ADDRESS + "o/token/");
                 xhr.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
                 xhr.send(
-                    "grant_type=authorization_code" +
-                    "&client_id=Z8VUqShJQnkfa5f8fzUAVzlBxYNxU2tuqaN8Gvh9" +
-                    "&client_secret=JER87JI9A289n66yHGX2D2ZFCdEYCusMIJEcc0eXaNBpP9vB3pfoAzXNufGaxhQ7VhvadXzEC55wKbaYumzynmLQNOqaJE5NdrON7dywt0OTAjANavOZtrJgZc9f5LRP" +
-                    "&redirect_uri=http://localhost:8080/user/receiveAuthCode.html" +
+                    "grant_type=" + OAUTH2_GRANT_AUTH_CODE +
+                    "&client_id=" + OAUTH2_CLIENT_ID +
+                    "&client_secret=" + OAUTH2_CLIENT_SECRET +
+                    "&redirect_uri=" + FRONTEND_ADDRESS + "user/receiveAuthCode.html" +
                     "&code_verifier=" + code_verifier +
                     "&code=" + authCode
                 );

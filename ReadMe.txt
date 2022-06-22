@@ -44,10 +44,8 @@ CollinOchoa:
 }
 
 
-admin               hUUqDyhEKXSmwTU7i2xk
-
-CollinOchoa         5xdkvlaQXeJqZ92DJf2D
-MarceloTaylor       DusBV6WfsX1vaGtWjzzA
-ElleArcher          4XhLh0K7XqnbnD6Wc9OL
-terrance            zGCX3I2s67r7Uv6KCEPZ
-jdyer               ypYqng4OvDVupVzybMOG
+admin           hUUqDyhEKXSmwTU7i2xk
+collin          5xdkvlaQXeJqZ92DJf2D
+marcelo         DusBV6WfsX1vaGtWjzzA
+elle            4XhLh0K7XqnbnD6Wc9OL
+terrance        zGCX3I2s67r7Uv6KCEPZ

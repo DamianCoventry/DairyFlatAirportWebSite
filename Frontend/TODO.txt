@@ -65,6 +65,7 @@ Look + Feel
         the viewBooking page has a shit display format for the date/time
         show something when the login fails
         CTA buttons for empty lists?
+        The error toast has empty text
 
 
 
@@ -77,6 +78,7 @@ Bugs
 
 Functionality
 ~~~~~~~~~~~~~
+        the user account dialog doesn't always navigate to the rest api
         How to implement multistop?
         Search for, and implement, all the TODO comments
         Use that horrible looking mapping program for the web dev assignment
@@ -85,7 +87,7 @@ Functionality
         If it's a one-way trip, how does a rental car work? Considering it's priced 'per day'...
         if an existing booking is modified, should we generate a new invoice page?
         Change your seats for an existing booking?
-        Get the localhost URI out of the bookingAPI.js file?
+DONE    Get the localhost URI out of the bookingAPI.js file?
         Don't allow a seat to be booked twice
         I don't think booked sets are actually being written into the database
         Don't allow an account to be deleted unless the user's password is entered?
@@ -112,8 +114,8 @@ Refactoring
 
 Deployment
 ~~~~~~~~~~
-        use docker compose
-        create database tables
-        insert default data
-        make sure the rest api works
-        make sure the website works
+DONE    use docker compose
+DONE    create database tables
+DONE    insert default data
+DONE    make sure the rest api works
+DONE    make sure the website works

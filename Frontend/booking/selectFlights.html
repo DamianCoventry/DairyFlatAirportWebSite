@@ -2,32 +2,31 @@
 <HTML lang="en">
     <HEAD>
         <META charset="utf-8"/>
+        <META name="viewport" content="width=device-width, initial-scale=1"/>
         <TITLE>Online Booking System</TITLE>
 
-        <LINK href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet"
-                integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous"/>
-        <LINK href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css" rel="stylesheet"
-                integrity="sha512-KfkfwYDsLkIlwQp6LFnl8zNdLGxu9YAA1QvwINks4PhcElQSvqcyVLLD9aMhXd13uQjoXtEKNosOWaZqXgel0g=="
-                crossorigin="anonymous" referrerpolicy="no-referrer" />
-
+        <LINK rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css"
+            integrity="sha512-KfkfwYDsLkIlwQp6LFnl8zNdLGxu9YAA1QvwINks4PhcElQSvqcyVLLD9aMhXd13uQjoXtEKNosOWaZqXgel0g=="
+            crossorigin="anonymous" referrerpolicy="no-referrer"/>
+            
+        <LINK rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css"
+            integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3"
+            crossorigin="anonymous"/>
         <LINK href="/styles/grid.css" rel="stylesheet"/>
-        <LINK href="/styles/wizard.css" rel="stylesheet"/>
 
+        <SCRIPT type="text/javascript" src="/javascript/config.js"></SCRIPT>
+        <SCRIPT type="text/javascript" src="/javascript/initialise.js"></SCRIPT>
         <SCRIPT type="text/javascript" src="/javascript/bookingAPI.js"></SCRIPT>
-        <SCRIPT type="text/javascript" src="/javascript/booking.js"></SCRIPT>
+        <SCRIPT type="text/javascript" src="/javascript/showError.js"></SCRIPT>
+        <SCRIPT type="text/javascript" src="/javascript/signInOutUp.js"></SCRIPT>
+        <SCRIPT type="text/javascript" src="/javascript/dateUtils.js"></SCRIPT>
 
         <SCRIPT type="text/javascript">
             var outboundFlightCounts = [];
             var inboundFlightCounts = [];
 
             window.onload = function() {
-                const tooltipTriggerList = document.querySelectorAll('[data-bs-toggle="tooltip"]');
-                const tooltipList = [...tooltipTriggerList].map(tooltipTriggerEl => new bootstrap.Tooltip(tooltipTriggerEl));
-
-                const api = new BookingAPI();
-                if (!api.isSignedIn()) {
-                    api.signIn(window.location.href);
-                }
+                signedInGuard();
 
                 const booking = new Booking();
                 fromCityName1.innerText = booking.getFromCityName();
@@ -86,106 +85,6 @@
                 }
 
                 updateSignInGui();
-            }
-
-            function updateSignInGui() {
-                setSignInButtonText();
-                const api = new BookingAPI();
-                if (api.isSignedIn()) {
-                    signInButton.style.display = 'none';
-                    userDropDownDiv.style.display = '';
-
-                    signedInUserDisplayName.innerText = api.signedInUserDisplayName;
-                    signedInUserSpan.style.display = '';
-                    api.getSignedInUser(
-                        function (json) {
-                            signedInUserDisplayName.innerText = api.signedInUserDisplayName;
-                            signedInUserSpan.style.display = '';
-                        },
-                        showHttpError
-                    );
-                }
-                else {
-                    signInButton.style.display = '';
-                    userDropDownDiv.style.display = 'none';
-
-                    signedInUserDisplayName.innerText = '';
-                    signedInUserSpan.style.display = 'none';
-                }
-            }
-
-            function signIn() {
-                const api = new BookingAPI();
-                if (!api.isSignedIn()) {
-                    api.signIn(window.location.href);
-                }
-                setSignInButtonText();
-            }
-
-            function signOut() {
-                const api = new BookingAPI();
-                if (api.isSignedIn()) {
-                    api.signOut();
-                    signedInUserSpan.style.display = 'none';
-                }
-                setSignInButtonText();
-            }
-
-            function editUserAccount() {
-                const element = document.getElementById("editUserAccountModal");
-                element.addEventListener('shown.bs.modal', event => {
-                    saveUserAccountButton.disabled = true;
-                    editUserAccountSpinner.style.display = "";
-                    userAccountForm.style.display = 'none';
-
-                    const api = new BookingAPI();
-                    api.getSignedInUser(function (json) {
-                            saveUserAccountButton.disabled = false;
-                            editUserAccountSpinner.style.display = 'none';
-                            userAccountForm.style.display = '';
-
-                            username.value = json.username;
-                            emailAddress.value = json.email;
-                            firstName.value = json.first_name;
-                            lastName.value = json.last_name;
-                        },
-                        showHttpError);
-                });
-                    
-                const editUserAccount = new bootstrap.Modal('#editUserAccountModal');
-                editUserAccount.show();
-            }
-
-            function saveUserAccount() {
-                // TODO
-            }
-
-            function changePassword() {
-                // TODO
-            }
-
-            function confirmDeleteUserAccount() {
-                const modalDialog = new bootstrap.Modal('#finalConfirmation');
-                modalDialog.show();
-            }
-
-            function deleteUserAccount() {
-                deleteButton.disabled = true;
-                const api = new BookingAPI();
-                api.deleteSignedInUser(showHttpError); // This will also sign out the current user
-            }
-
-            function setSignInButtonText() {
-                const api = new BookingAPI();
-                if (api.isSignedIn()) {
-                    signInButton.setAttribute('class', 'btn btn-success');
-                    signInButton.innerText = 'Sign Out';
-                }
-                else {
-                    signInButton.setAttribute('class', 'btn btn-primary');
-                    signInButton.innerText = 'Sign In';
-                    signedInUserDisplayName.innerText = '';
-                }
             }
 
             function fetchFlightCountsOnThisDate(booking, flightDate, timezone, outbound) {
@@ -698,32 +597,6 @@
                 showHttpError);
             }
 
-            function showGeneralError(message) {
-                errorMessageTitle.innerText = 'Error';
-                errorMessageBody.innerHTML = message;
-                showError();
-            }
-
-            function showHttpError(code, json) {
-                errorMessageTitle.innerText = 'Error Received';
-                errorMessageBody.innerHTML = 'The server returned HTTP code ' + code + '.<BR><BR>' + javascriptObjectToDivs(json);
-                showError();
-            }
-
-            function javascriptObjectToDivs(object) {
-                let html = '';
-                for (var key of Object.keys(object)) {
-                    html = '<div class="row"><div class="col">' + key + ': ' + object[key] + '</div></div>\r\n';
-                }
-                return html;
-            }
-
-            function showError() {
-                const toastLiveExample = document.getElementById('responseCodePopup');
-                const toast = new bootstrap.Toast(toastLiveExample);
-                toast.show();
-            }
-
             function outboundRadioButtonClicked(event) {
                 uncheckOtherRadioButtons('outboundFlightId', event);
                 enableOrDisableNextButton();
@@ -810,13 +683,6 @@
                 totalCost.innerText = cost;
             }
 
-            function calcNumDays(booking) {
-                const oneDay = 24 * 60 * 60 * 1000; // hours*minutes*seconds*milliseconds
-                const firstDate = new Date(booking.getLeaveDate());
-                const secondDate = new Date(booking.getReturnDate());
-                return Math.round(Math.abs((firstDate - secondDate) / oneDay));
-            }
-
             function enableOrDisableNextButton() {
                 var outboundChecked = isRadioButtonChecked('outboundFlightId');
 
@@ -891,16 +757,6 @@
                     }
                 }
                 return null;
-            }
-
-            function toLocaleTime(dateTime, timezone) {
-                return new Date(dateTime).toLocaleTimeString([],
-                                {
-                                    timeZone: timezone,
-                                    hour: 'numeric',
-                                    minute: '2-digit',
-                                    hour12: true
-                                });
             }
 
             function saveNewFlightDateAndUpdateGui(dateString, timezone, outbound, hiddenId) {
@@ -1216,25 +1072,16 @@
                 </P>
             </FOOTER>
         </MAIN>
-
-        <div class="toast-container position-fixed bottom-0 end-0 p-3">
-            <div id="responseCodePopup" class="toast fade" role="alert" aria-live="assertive" aria-atomic="true">
-                <div class="toast-header bg-danger">
-                    <strong class="me-auto text-white" id="errorMessageTitle"></strong>
-                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="toast" aria-label="Close"></button>
-                </div>
-                <div class="toast-body" id="errorMessageBody"></div>
+<div class="modal fade" id="editUserAccountModal" tabindex="-1" aria-labelledby="editUserAccountTitle" aria-hidden="true" style="display: none;">
+    <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title" id="editUserAccountTitle">Edit User Account</h4>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"/>
             </div>
-        </div>
-
-        <div class="modal fade" id="editUserAccountModal" tabindex="-1" aria-labelledby="editUserAccountTitle" aria-hidden="true" style="display: none;">
-            <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h4 class="modal-title" id="editUserAccountTitle">Edit User Account</h4>
-                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"/>
-                    </div>
-                    <div class="modal-body">
+            <div class="modal-body">
+                <FORM class="mb-4 needs-validation" novalidate>
+                    <fieldset id="formFieldset">
                         <div class="text-center" id="editUserAccountSpinner">
                             <div class="spinner-border" role="status">
                                 <span class="visually-hidden">Retrieving...</span>
@@ -1257,8 +1104,9 @@
                             </DIV>
                             <DIV class="row">
                                 <DIV class="col">
-                                    <LABEL for="username">Username</LABEL>
-                                    <INPUT type="text" class="form-control" id="username" placeholder="Username" required/>
+                                    <LABEL for="userName">Username</LABEL>
+                                    <INPUT type="text" class="form-control" id="userName" placeholder="Username" required/>
+                                    <div class="invalid-feedback">Please enter a unique name for the account</div>
                                 </DIV>
                             </DIV>
                             <DIV class="row">
@@ -1286,48 +1134,56 @@
                                 </DIV>
                             </DIV>
                         </DIV>
-                    </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-primary" id="saveUserAccountButton" onclick="saveUserAccount();" disabled>
-                            <i class="fa-solid fa-floppy-disk"></i>&nbsp;Save
-                        </button>
-                        <button type="button" class="btn btn-secondary" id="cancelUserAccountButton" data-bs-dismiss="modal">Cancel</button>
-                    </div>
-                </div>
+                    </fieldset>
+                </FORM>
+            </div>
+            <div class="modal-footer">
+                <DIV class="col" id="saveSpinner" style="display: none;">
+                    <span class="d-flex align-items-center justify-content-end">
+                        <SPAN class="spinner-border text-end text-success" role="status"></SPAN>
+                        <SPAN class="text-success fw-bold">&nbsp;Saving...</SPAN>
+                    </span>
+                </DIV>
+                <button type="button" class="btn btn-primary" id="saveUserAccountButton" onclick="saveUserAccountButtonClicked();" disabled>
+                    <i class="fa-solid fa-floppy-disk"></i>&nbsp;Save
+                </button>
+                <button type="button" class="btn btn-secondary" id="cancelUserAccountButton" data-bs-dismiss="modal">Cancel</button>
             </div>
         </div>
-        
-        <div class="modal fade" id="finalConfirmation" tabindex="-1" aria-labelledby="deleteConfirmationTitle" aria-hidden="true" style="display: none;">
-            <div class="modal-dialog modal-dialog-centered  modal-lg">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h5 class="modal-title" id="deleteConfirmationTitle">Are you sure?</h5>
-                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"/>
-                    </div>
-                    <div class="modal-body">
-                        This action cannot be undone. You will be logged out, and the user account will be <b>permanently</b> deleted.
-                    </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-danger" id="deleteButton" onclick="deleteUserAccount()">
-                            <i class="fa-solid fa-trash"></i>&nbsp;Confirm
-                        </button>
-                        <button type="button" class="btn btn-secondary" id="cancelButton" data-bs-dismiss="modal">Cancel</button>
-                    </div>
-                </div>
+    </div>
+</div>
+
+<div class="modal fade" id="finalConfirmation" tabindex="-1" aria-labelledby="deleteConfirmationTitle" aria-hidden="true" style="display: none;">
+    <div class="modal-dialog modal-dialog-centered  modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="deleteConfirmationTitle">Are you sure?</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"/>
+            </div>
+            <div class="modal-body">
+                This action cannot be undone. You will be logged out, and the user account will be <b>permanently</b> deleted.
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-danger" id="deleteButton" onclick="deleteUserAccount()">
+                    <i class="fa-solid fa-trash"></i>&nbsp;Confirm
+                </button>
+                <button type="button" class="btn btn-secondary" id="cancelButton" data-bs-dismiss="modal">Cancel</button>
             </div>
         </div>
-        
-        <div class="toast-container position-fixed bottom-0 end-0 p-3">
-            <div id="responseCodePopup" class="toast fade" role="alert" aria-live="assertive" aria-atomic="true">
-                <div class="toast-header bg-danger">
-                    <strong class="me-auto text-white" id="errorMessageTitle"></strong>
-                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="toast" aria-label="Close"></button>
-                </div>
-                <div class="toast-body" id="errorMessageBody"></div>
-            </div>
+    </div>
+</div>
+
+<div class="toast-container position-fixed bottom-0 end-0 p-3">
+    <div id="responseCodePopup" class="toast fade" role="alert" aria-live="assertive" aria-atomic="true">
+        <div class="toast-header bg-danger">
+            <strong class="me-auto text-white" id="errorMessageTitle"></strong>
+            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="toast" aria-label="Close"></button>
         </div>
-        
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/2.9.2/umd/popper.min.js"
+        <div class="toast-body" id="errorMessageBody"></div>
+    </div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/2.9.2/umd/popper.min.js"
     integrity="sha512-2rNj2KJ+D8s1ceNasTIex6z4HWyOnEYLVC3FigGOmyQCZc2eBXKgOxQmo3oKLHyfcj53uz4QMsRCWNbLd32Q1g=="
     crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 
@@ -1335,5 +1191,5 @@
     integrity="sha384-ka7Sk0Gln4gmtz2MlQnikT1wXgYsOg+OMhuP+IlRH9sENBO0LRn5q+8nbTov4+1p"
     crossorigin="anonymous"></SCRIPT>
 
-    </BODY>
+</BODY>
 </HTML>

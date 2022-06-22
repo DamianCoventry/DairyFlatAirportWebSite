@@ -20,11 +20,11 @@ class BookingAPI {
             .then(code_challenge => {
                 sessionStorage.setItem('code_verifier', code_verifier);
                 window.location.href =
-                            'http://localhost:8000/o/authorize/' +
-                            '?client_id=Z8VUqShJQnkfa5f8fzUAVzlBxYNxU2tuqaN8Gvh9' +
+                            BACKEND_ADDRESS + 'o/authorize/' +
+                            '?client_id=' + OAUTH2_CLIENT_ID +
                             '&response_type=code' +
-                            '&redirect_uri=http://localhost:8080/user/receiveAuthCode.html' +
-                            '&scope=read+write+groups' +
+                            '&redirect_uri=' + FRONTEND_ADDRESS + 'user/receiveAuthCode.html' +
+                            '&scope=' + OAUTH2_SCOPES +
                             '&state=' + userData +
                             '&code_challenge=' + code_challenge +
                             '&code_challenge_method=S256';
@@ -40,7 +40,7 @@ class BookingAPI {
 
         localStorage.clear();
 
-        window.location.href = 'http://localhost:8000/api-auth/logout/';
+        window.location.href = BACKEND_ADDRESS + 'api-auth/logout/';
     }
 
     isSignedIn() {
@@ -130,7 +130,7 @@ class BookingAPI {
                 }
             }
         }
-        xhr.open("GET", "http://localhost:8000/userId/?accessToken=" + this.accessToken);
+        xhr.open("GET", BACKEND_ADDRESS + "userId/?accessToken=" + this.accessToken);
         xhr.setRequestHeader("Authorization", this.tokenType + " " + this.accessToken);
         xhr.send();
     }
@@ -159,7 +159,7 @@ class BookingAPI {
                 }
             }
         }
-        xhr.open("POST", "http://localhost:8000/user/");
+        xhr.open("POST", BACKEND_ADDRESS + "user/");
         xhr.setRequestHeader("Authorization", this.tokenType + " " + this.accessToken);
         xhr.setRequestHeader('Content-type', 'application/json;charset=UTF-8');
         xhr.send(JSON.stringify({
@@ -194,7 +194,7 @@ class BookingAPI {
                 }
             }
         }
-        xhr.open("PUT", "http://localhost:8000/user/" + id + "/");
+        xhr.open("PUT", BACKEND_ADDRESS + "user/" + id + "/");
         xhr.setRequestHeader("Authorization", this.tokenType + " " + this.accessToken);
         xhr.setRequestHeader('Content-type', 'application/json;charset=UTF-8');
         xhr.send(JSON.stringify({
@@ -229,7 +229,7 @@ class BookingAPI {
                 }
             }
         }
-        xhr.open("GET", "http://localhost:8000/user/" + id + "/");
+        xhr.open("GET", BACKEND_ADDRESS + "user/" + id + "/");
         xhr.setRequestHeader("Authorization", this.tokenType + " " + this.accessToken);
         xhr.send();
     }
@@ -258,7 +258,7 @@ class BookingAPI {
                 }
             }
         }
-        xhr.open("DELETE", "http://localhost:8000/user/" + id + "/");
+        xhr.open("DELETE", BACKEND_ADDRESS + "user/" + id + "/");
         xhr.setRequestHeader("Authorization", this.tokenType + " " + this.accessToken);
         xhr.send();
     }
@@ -304,7 +304,7 @@ class BookingAPI {
                 }
             }
         }
-        xhr.open("GET", "http://localhost:8000/aeroplane/?page=" + currentPage);
+        xhr.open("GET", BACKEND_ADDRESS + "aeroplane/?page=" + currentPage);
         xhr.setRequestHeader("Authorization", this.tokenType + " " + this.accessToken);
         xhr.send();
     }
@@ -333,7 +333,7 @@ class BookingAPI {
                 }
             }
         }
-        xhr.open("GET", "http://localhost:8000/aeroplane/" + id + "/");
+        xhr.open("GET", BACKEND_ADDRESS + "aeroplane/" + id + "/");
         xhr.setRequestHeader("Authorization", this.tokenType + " " + this.accessToken);
         xhr.send();
     }
@@ -362,7 +362,7 @@ class BookingAPI {
                 }
             }
         }
-        xhr.open("GET", "http://localhost:8000/flightLeg/?page=" + currentPage);
+        xhr.open("GET", BACKEND_ADDRESS + "flightLeg/?page=" + currentPage);
         xhr.setRequestHeader("Authorization", this.tokenType + " " + this.accessToken);
         xhr.send();
     }
@@ -391,7 +391,7 @@ class BookingAPI {
                 }
             }
         }
-        xhr.open("GET", "http://localhost:8000/flightLeg/" + id + "/");
+        xhr.open("GET", BACKEND_ADDRESS + "flightLeg/" + id + "/");
         xhr.setRequestHeader("Authorization", this.tokenType + " " + this.accessToken);
         xhr.send();
     }
@@ -420,7 +420,7 @@ class BookingAPI {
                 }
             }
         }
-        xhr.open("GET", "http://localhost:8000/booking/?page=" + currentPage + '&signedInUserId=' + this.signedInUserId);
+        xhr.open("GET", BACKEND_ADDRESS + "booking/?page=" + currentPage + '&signedInUserId=' + this.signedInUserId);
         xhr.setRequestHeader("Authorization", this.tokenType + " " + this.accessToken);
         xhr.send();
     }
@@ -449,7 +449,7 @@ class BookingAPI {
                 }
             }
         }
-        xhr.open("GET", "http://localhost:8000/bookingCompact/?page=" + currentPage);
+        xhr.open("GET", BACKEND_ADDRESS + "bookingCompact/?page=" + currentPage);
         xhr.setRequestHeader("Authorization", this.tokenType + " " + this.accessToken);
         xhr.send();
     }
@@ -478,7 +478,7 @@ class BookingAPI {
                 }
             }
         }
-        xhr.open("GET", "http://localhost:8000/booking/" + id + "/?signedInUserId=" + this.signedInUserId);
+        xhr.open("GET", BACKEND_ADDRESS + "booking/" + id + "/?signedInUserId=" + this.signedInUserId);
         xhr.setRequestHeader("Authorization", this.tokenType + " " + this.accessToken);
         xhr.send();
     }
@@ -507,7 +507,7 @@ class BookingAPI {
                 }
             }
         }
-        xhr.open("GET", "http://localhost:8000/bookingCompact/" + id + "/");
+        xhr.open("GET", BACKEND_ADDRESS + "bookingCompact/" + id + "/");
         xhr.setRequestHeader("Authorization", this.tokenType + " " + this.accessToken);
         xhr.send();
     }
@@ -536,7 +536,7 @@ class BookingAPI {
                 }
             }
         }
-        xhr.open("POST", "http://localhost:8000/bookingCompact/");
+        xhr.open("POST", BACKEND_ADDRESS + "bookingCompact/");
         xhr.setRequestHeader("Authorization", this.tokenType + " " + this.accessToken);
         xhr.setRequestHeader('Content-type', 'application/json;charset=UTF-8');
         xhr.send(JSON.stringify({
@@ -573,7 +573,7 @@ class BookingAPI {
                 }
             }
         }
-        xhr.open("PUT", "http://localhost:8000/bookingCompact/" + id + "/");
+        xhr.open("PUT", BACKEND_ADDRESS + "bookingCompact/" + id + "/");
         xhr.setRequestHeader("Authorization", this.tokenType + " " + this.accessToken);
         xhr.setRequestHeader('Content-type', 'application/json;charset=UTF-8');
         xhr.send(JSON.stringify({
@@ -610,7 +610,7 @@ class BookingAPI {
                 }
             }
         }
-        xhr.open("DELETE", "http://localhost:8000/booking/" + id + "/");
+        xhr.open("DELETE", BACKEND_ADDRESS + "booking/" + id + "/");
         xhr.setRequestHeader("Authorization", this.tokenType + " " + this.accessToken);
         xhr.send();
     }
@@ -639,7 +639,7 @@ class BookingAPI {
                 }
             }
         }
-        xhr.open("GET", "http://localhost:8000/passenger/?page=" + currentPage + "&signedInUserId=" + this.signedInUserId);
+        xhr.open("GET", BACKEND_ADDRESS + "passenger/?page=" + currentPage + "&signedInUserId=" + this.signedInUserId);
         xhr.setRequestHeader("Authorization", this.tokenType + " " + this.accessToken);
         xhr.send();
     }
@@ -668,7 +668,7 @@ class BookingAPI {
                 }
             }
         }
-        xhr.open("GET", "http://localhost:8000/passenger/" + id + "/?signedInUserId=" + this.signedInUserId);
+        xhr.open("GET", BACKEND_ADDRESS + "passenger/" + id + "/?signedInUserId=" + this.signedInUserId);
         xhr.setRequestHeader("Authorization", this.tokenType + " " + this.accessToken);
         xhr.send();
     }
@@ -697,7 +697,7 @@ class BookingAPI {
                 }
             }
         }
-        xhr.open("POST", "http://localhost:8000/passenger/");
+        xhr.open("POST", BACKEND_ADDRESS + "passenger/");
         xhr.setRequestHeader("Authorization", this.tokenType + " " + this.accessToken);
         xhr.setRequestHeader('Content-type', 'application/json;charset=UTF-8');
         xhr.send(JSON.stringify({
@@ -735,7 +735,7 @@ class BookingAPI {
                 }
             }
         }
-        xhr.open("PUT", "http://localhost:8000/passenger/" + id + "/");
+        xhr.open("PUT", BACKEND_ADDRESS + "passenger/" + id + "/");
         xhr.setRequestHeader("Authorization", this.tokenType + " " + this.accessToken);
         xhr.setRequestHeader('Content-type', 'application/json;charset=UTF-8');
         xhr.send(JSON.stringify({
@@ -773,7 +773,7 @@ class BookingAPI {
                 }
             }
         }
-        xhr.open("DELETE", "http://localhost:8000/passenger/" + id + "/");
+        xhr.open("DELETE", BACKEND_ADDRESS + "passenger/" + id + "/");
         xhr.setRequestHeader("Authorization", this.tokenType + " " + this.accessToken);
         xhr.send();
     }
@@ -802,7 +802,7 @@ class BookingAPI {
                 }
             }
         }
-        xhr.open("GET", "http://localhost:8000/travelInsurance/?page=" + currentPage);
+        xhr.open("GET", BACKEND_ADDRESS + "travelInsurance/?page=" + currentPage);
         xhr.setRequestHeader("Authorization", this.tokenType + " " + this.accessToken);
         xhr.send();
     }
@@ -831,7 +831,7 @@ class BookingAPI {
                 }
             }
         }
-        xhr.open("GET", "http://localhost:8000/rentalCar/?page=" + currentPage);
+        xhr.open("GET", BACKEND_ADDRESS + "rentalCar/?page=" + currentPage);
         xhr.setRequestHeader("Authorization", this.tokenType + " " + this.accessToken);
         xhr.send();
     }
@@ -868,7 +868,7 @@ class BookingAPI {
             '&departureDate=' + this.toYYYYMMDD(options.departureDate) +
             '&timezone=' + options.timezone
 
-        xhr.open("GET", "http://localhost:8000/searchFlights/" + queryParams);
+        xhr.open("GET", BACKEND_ADDRESS + "searchFlights/" + queryParams);
         xhr.setRequestHeader("Authorization", this.tokenType + " " + this.accessToken);
         xhr.send();
     }
@@ -917,7 +917,7 @@ class BookingAPI {
             '&departureCity=' + departureCityId +
             '&arrivalCity=' + arrivalCityId;
 
-        xhr.open("GET", "http://localhost:8000/searchFlights/" + queryParams);
+        xhr.open("GET", BACKEND_ADDRESS + "searchFlights/" + queryParams);
         xhr.setRequestHeader("Authorization", this.tokenType + " " + this.accessToken);
         xhr.send();
     }
@@ -955,7 +955,7 @@ class BookingAPI {
             '&endDate=' + endDate +
             '&timezone=' + timezone;
 
-        xhr.open("GET", "http://localhost:8000/flightCounts/" + queryParams);
+        xhr.open("GET", BACKEND_ADDRESS + "flightCounts/" + queryParams);
         xhr.setRequestHeader("Authorization", this.tokenType + " " + this.accessToken);
         xhr.send();
     }
@@ -984,7 +984,7 @@ class BookingAPI {
                 }
             }
         }
-        xhr.open("GET", "http://localhost:8000/airport/?page=" + currentPage);
+        xhr.open("GET", BACKEND_ADDRESS + "airport/?page=" + currentPage);
         xhr.setRequestHeader("Authorization", this.tokenType + " " + this.accessToken);
         xhr.send();
     }
@@ -1013,7 +1013,7 @@ class BookingAPI {
                 }
             }
         }
-        xhr.open("GET", "http://localhost:8000/seat/?aeroplaneId=" + aeroplaneId);
+        xhr.open("GET", BACKEND_ADDRESS + "seat/?aeroplaneId=" + aeroplaneId);
         xhr.setRequestHeader("Authorization", this.tokenType + " " + this.accessToken);
         xhr.send();
     }
@@ -1043,7 +1043,7 @@ class BookingAPI {
                 }
             }
         }
-        xhr.open("GET", "http://localhost:8000/bookingNumber/1/");
+        xhr.open("GET", BACKEND_ADDRESS + "bookingNumber/1/");
         xhr.setRequestHeader("Authorization", this.tokenType + " " + this.accessToken);
         xhr.send();
     }
@@ -1071,12 +1071,12 @@ class BookingAPI {
 
         console.log('Requesting a refresh of the access token (' + refreshToken + ')');
 
-        xhr.open("POST", "http://localhost:8000/o/token/");
+        xhr.open("POST", BACKEND_ADDRESS + "o/token/");
         xhr.setRequestHeader('Content-type', 'application/json;charset=UTF-8');
         xhr.send(JSON.stringify({
-            "grant_type": "refresh_token",
-            "client_id": "Z8VUqShJQnkfa5f8fzUAVzlBxYNxU2tuqaN8Gvh9",
-            "client_secret": "JER87JI9A289n66yHGX2D2ZFCdEYCusMIJEcc0eXaNBpP9vB3pfoAzXNufGaxhQ7VhvadXzEC55wKbaYumzynmLQNOqaJE5NdrON7dywt0OTAjANavOZtrJgZc9f5LRP",
+            "grant_type": OAUTH2_GRANT_REFRESH_TOKEN,
+            "client_id": OAUTH2_CLIENT_ID,
+            "client_secret": OAUTH2_CLIENT_SECRET,
             "refresh_token": refreshToken
         }));
     }

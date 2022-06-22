@@ -3,17 +3,16 @@ version: "3.9"
 services:
   db:
     image: postgres
-    volumes:
-      - ./data/db:/var/lib/postgresql/data
+    container_name: db
     environment:
       - POSTGRES_DB=postgres
       - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=hUUqDyhEKXSmwTU7i2xk
   restapi:
-    build: .
-    command: bash -c "/usr/src/app/entrypoint.sh"
+    build: ./Backend
+    container_name: restapi
     volumes:
-      - .:/usr/src/app
+      - ./Backend:/usr/app
     ports:
       - "8000:8000"
     environment:
@@ -23,9 +22,10 @@ services:
     depends_on:
       - db
   web:
-    image: node:18-alpine
+    build: ./Frontend
+    container_name: frontend
     volumes:
-      - .:/usr/src/app
+      - ./Frontend:/usr/app
     ports:
       - "8080:8080"
     depends_on:
