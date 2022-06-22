@@ -1,0 +1,756 @@
+<!DOCTYPE html>
+<HTML lang="en">
+    <HEAD>
+        <META charset="utf-8"/>
+        <TITLE>Online Booking System</TITLE>
+
+        <LINK href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous"/>
+        <LINK rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css" integrity="sha512-KfkfwYDsLkIlwQp6LFnl8zNdLGxu9YAA1QvwINks4PhcElQSvqcyVLLD9aMhXd13uQjoXtEKNosOWaZqXgel0g==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+        <LINK href="/styles/grid.css" rel="stylesheet"/>
+        <LINK href="/styles/wizard.css" rel="stylesheet"/>
+
+        <SCRIPT type="text/javascript" src="/javascript/bookingAPI.js"></SCRIPT>
+        <SCRIPT type="text/javascript" src="/javascript/booking.js"></SCRIPT>
+
+        <SCRIPT type="text/javascript">
+            window.onload = function() {
+                const tooltipTriggerList = document.querySelectorAll('[data-bs-toggle="tooltip"]');
+                const tooltipList = [...tooltipTriggerList].map(tooltipTriggerEl => new bootstrap.Tooltip(tooltipTriggerEl));
+
+                const api = new BookingAPI();
+                if (!api.isSignedIn()) {
+                    api.signIn(window.location.href);
+                }
+
+                const booking = new Booking();
+                fromCityName1.innerText = booking.getFromCityName();
+                fromCityName2.innerText = booking.getFromCityName();
+                fromCityName3.innerText = booking.getFromCityName();
+
+                toCityName1.innerText = booking.getToCityName();
+                toCityName2.innerText = booking.getToCityName();
+                toCityName3.innerText = booking.getToCityName();
+
+                totalCost.innerText = booking.getTotalCost();
+                numPassengers.innerText = booking.getNumPassengers();
+
+                fromCityDate.innerText = toLocaleDate(new Date(booking.getLeaveDate()), booking.getTimezone());
+                toCityDate.innerText = toLocaleDate(new Date(booking.getReturnDate()), booking.getTimezone());
+
+                fromCityTime.innerHTML = buildTimeHtml(booking.getLeaveTime());
+                toCityTime.innerHTML = buildTimeHtml(booking.getReturnTime());
+
+                inboundFlightGUI.style.display = booking.isReturnTrip() ? '' : 'none';
+
+                outboundTripCost.innerText = booking.getNumPassengers() + ' \u00D7 $' + booking.getOutboundFlightCost();
+                returnTripCost.innerText = booking.getNumPassengers() + ' \u00D7 $' + booking.getInboundFlightCost();
+
+                if (booking.hasRentalCarName()) {
+                    rentalCarBookingGUI.innerHTML = booking.getRentalCarName() + ' <small class="text-muted fst-italic">($' + booking.getRentalCarCost() + ' per day)</small>';
+                    rentalCarCostBookingGUI.innerText = calcNumDays(booking) + ' \u00D7 $' + booking.getRentalCarCost();
+                }
+                else {
+                    rentalCarBookingGUI.innerHTML = '<span class="text-muted fst-italic">No rental car</span>'
+                }
+
+                if (booking.hasTravelInsuranceName()) {
+                    travelInsuranceBookingGUI.innerHTML = booking.getTravelInsuranceName() + ' <small class="text-muted fst-italic">($' + booking.getTravelInsuranceCost() + ' per person)</small>';
+                    travelInsuranceCostBookingGUI.innerText = booking.getNumPassengers() + ' \u00D7 $' + booking.getTravelInsuranceCost();
+                }
+                else {
+                    travelInsuranceBookingGUI.innerHTML = '<span class="text-muted fst-italic">No travel insurance</span>'
+                }
+
+                setTimeout(function () {
+                    api.listSeatsForAeroplane(
+                        booking.getOutboundAeroplaneId(),
+                        function (json) {
+                            json.results.forEach(x => {
+                                outboundSeatSelect1.appendChild(makeSelectOption(x.id, x.number, x.emergency_exit));
+                                outboundSeatSelect2.appendChild(makeSelectOption(x.id, x.number, x.emergency_exit));
+                                outboundSeatSelect3.appendChild(makeSelectOption(x.id, x.number, x.emergency_exit));
+                                outboundSeatSelect4.appendChild(makeSelectOption(x.id, x.number, x.emergency_exit));
+                                outboundSeatSelect5.appendChild(makeSelectOption(x.id, x.number, x.emergency_exit));
+                                outboundSeatSelect6.appendChild(makeSelectOption(x.id, x.number, x.emergency_exit));
+                            });
+
+                            outboundPassenger1.innerText = booking.getDisplayName1();
+                            outboundPassenger2.innerText = booking.getDisplayName2();
+                            outboundPassenger3.innerText = booking.getDisplayName3();
+                            outboundPassenger4.innerText = booking.getDisplayName4();
+                            outboundPassenger5.innerText = booking.getDisplayName5();
+                            outboundPassenger6.innerText = booking.getDisplayName6();
+                            showRequiredOutboundPassengerGui(booking);
+                        },
+                        showHttpError);
+                    }, 500);
+
+                if (booking.isReturnTrip()) {
+                    setTimeout(function () {
+                        api.listSeatsForAeroplane(
+                            booking.getInboundAeroplaneId(),
+                            function (json) {
+                                json.results.forEach(x => {
+                                    inboundSeatSelect1.appendChild(makeSelectOption(x.id, x.number, x.emergency_exit));
+                                    inboundSeatSelect2.appendChild(makeSelectOption(x.id, x.number, x.emergency_exit));
+                                    inboundSeatSelect3.appendChild(makeSelectOption(x.id, x.number, x.emergency_exit));
+                                    inboundSeatSelect4.appendChild(makeSelectOption(x.id, x.number, x.emergency_exit));
+                                    inboundSeatSelect5.appendChild(makeSelectOption(x.id, x.number, x.emergency_exit));
+                                    inboundSeatSelect6.appendChild(makeSelectOption(x.id, x.number, x.emergency_exit));
+                                });
+
+                                inboundPassenger1.innerText = booking.getDisplayName1();
+                                inboundPassenger2.innerText = booking.getDisplayName2();
+                                inboundPassenger3.innerText = booking.getDisplayName3();
+                                inboundPassenger4.innerText = booking.getDisplayName4();
+                                inboundPassenger5.innerText = booking.getDisplayName5();
+                                inboundPassenger6.innerText = booking.getDisplayName6();
+                                showRequiredInboundPassengerGui(booking);
+                            },
+                            showError);
+                        }, 500);
+                }
+                else {
+                    returnFlightGUI.style.display = 'none';
+                    returnFlightBookingGUI.style.display = 'none';
+                }
+
+                updateSignInGui();
+            }
+
+            function updateSignInGui() {
+                setSignInButtonText();
+                const api = new BookingAPI();
+                if (api.isSignedIn()) {
+                    signInButton.style.display = 'none';
+                    userDropDownDiv.style.display = '';
+
+                    signedInUserDisplayName.innerText = api.signedInUserDisplayName;
+                    signedInUserSpan.style.display = '';
+                    api.getSignedInUser(
+                        function (json) {
+                            signedInUserDisplayName.innerText = api.signedInUserDisplayName;
+                            signedInUserSpan.style.display = '';
+                        },
+                        showHttpError
+                    );
+                }
+                else {
+                    signInButton.style.display = '';
+                    userDropDownDiv.style.display = 'none';
+
+                    signedInUserDisplayName.innerText = '';
+                    signedInUserSpan.style.display = 'none';
+                }
+            }
+
+            function signIn() {
+                const api = new BookingAPI();
+                if (!api.isSignedIn()) {
+                    api.signIn(window.location.href);
+                }
+                setSignInButtonText();
+            }
+
+            function signOut() {
+                const api = new BookingAPI();
+                if (api.isSignedIn()) {
+                    api.signOut();
+                    signedInUserSpan.style.display = 'none';
+                }
+                setSignInButtonText();
+            }
+
+            function editUserAccount() {
+                const element = document.getElementById("editUserAccountModal");
+                element.addEventListener('shown.bs.modal', event => {
+                    saveUserAccountButton.disabled = true;
+                    editUserAccountSpinner.style.display = "";
+                    userAccountForm.style.display = 'none';
+
+                    const api = new BookingAPI();
+                    api.getSignedInUser(function (json) {
+                            saveUserAccountButton.disabled = false;
+                            editUserAccountSpinner.style.display = 'none';
+                            userAccountForm.style.display = '';
+
+                            username.value = json.username;
+                            emailAddress.value = json.email;
+                            firstName.value = json.first_name;
+                            lastName.value = json.last_name;
+                        },
+                        showHttpError);
+                });
+                    
+                const editUserAccount = new bootstrap.Modal('#editUserAccountModal');
+                editUserAccount.show();
+            }
+
+            function saveUserAccount() {
+                // TODO
+            }
+
+            function changePassword() {
+                // TODO
+            }
+
+            function confirmDeleteUserAccount() {
+                const modalDialog = new bootstrap.Modal('#finalConfirmation');
+                modalDialog.show();
+            }
+
+            function deleteUserAccount() {
+                deleteButton.disabled = true;
+                const api = new BookingAPI();
+                api.deleteSignedInUser(showHttpError); // This will also sign out the current user
+            }
+
+            function setSignInButtonText() {
+                const api = new BookingAPI();
+                if (api.isSignedIn()) {
+                    signInButton.setAttribute('class', 'btn btn-success');
+                    signInButton.innerText = 'Sign Out';
+                }
+                else {
+                    signInButton.setAttribute('class', 'btn btn-primary');
+                    signInButton.innerText = 'Sign In';
+                    signedInUserDisplayName.innerText = '';
+                }
+            }
+
+            function showHttpError(code, json) {
+                errorMessageTitle.innerText = 'Error Received';
+                errorMessageBody.innerHTML = 'The server returned HTTP code ' + code + '.<BR><BR>' + javascriptObjectToDivs(json);
+                showError();
+            }
+
+            function javascriptObjectToDivs(object) {
+                let html = '';
+                for (var key of Object.keys(object)) {
+                    html = '<div class="row"><div class="col">' + key + ': ' + object[key] + '</div></div>\r\n';
+                }
+                return html;
+            }
+
+            function showError() {
+                const toastLiveExample = document.getElementById('responseCodePopup');
+                const toast = new bootstrap.Toast(toastLiveExample);
+                toast.show();
+            }
+
+            function calcNumDays(booking) {
+                const oneDay = 24 * 60 * 60 * 1000; // hours*minutes*seconds*milliseconds
+                const firstDate = new Date(booking.getLeaveDate());
+                const secondDate = new Date(booking.getReturnDate());
+                return Math.round(Math.abs((firstDate - secondDate) / oneDay));
+            }
+
+            function makeSelectOption(id, seatNumber, isEmergency) {
+                var option = document.createElement("option");
+                option.setAttribute("value", id);
+                if (isEmergency) {
+                    option.innerText = seatNumber + ' (Emergency Exit)';
+                }
+                else {
+                    option.innerText = seatNumber;
+                }
+                return option;
+            }
+
+            function showRequiredOutboundPassengerGui(booking) {
+                if (booking.getNumPassengers() >= 6) outboundSeatSelect6.style.display = '';
+                if (booking.getNumPassengers() >= 5) outboundSeatSelect5.style.display = '';
+                if (booking.getNumPassengers() >= 4) outboundSeatSelect4.style.display = '';
+                if (booking.getNumPassengers() >= 3) outboundSeatSelect3.style.display = '';
+                if (booking.getNumPassengers() >= 2) outboundSeatSelect2.style.display = '';
+
+                if (booking.hasOutboundSeatId1()) {
+                    outboundSeatSelect1.value = booking.getOutboundSeatId1();
+                }
+                if (booking.hasOutboundSeatId2()) {
+                    outboundSeatSelect2.value = booking.getOutboundSeatId2();
+                }
+                if (booking.hasOutboundSeatId3()) {
+                    outboundSeatSelect3.value = booking.getOutboundSeatId3();
+                }
+                if (booking.hasOutboundSeatId4()) {
+                    outboundSeatSelect4.value = booking.getOutboundSeatId4();
+                }
+                if (booking.hasOutboundSeatId5()) {
+                    outboundSeatSelect5.value = booking.getOutboundSeatId5();
+                }
+                if (booking.hasOutboundSeatId6()) {
+                    outboundSeatSelect6.value = booking.getOutboundSeatId6();
+                }
+
+                outboundSeatSelect1.style.display = '';
+                outboundSeatSpinner.style.display = 'none';
+            }
+
+            function showRequiredInboundPassengerGui(booking) {
+                if (booking.getNumPassengers() >= 6) inboundSeatSelect6.style.display = '';
+                if (booking.getNumPassengers() >= 5) inboundSeatSelect5.style.display = '';
+                if (booking.getNumPassengers() >= 4) inboundSeatSelect4.style.display = '';
+                if (booking.getNumPassengers() >= 3) inboundSeatSelect3.style.display = '';
+                if (booking.getNumPassengers() >= 2) inboundSeatSelect2.style.display = '';
+
+                if (booking.hasInboundSeatId1()) {
+                    inboundSeatSelect1.value = booking.getInboundSeatId1();
+                }
+                if (booking.hasInboundSeatId2()) {
+                    inboundSeatSelect2.value = booking.getInboundSeatId2();
+                }
+                if (booking.hasInboundSeatId3()) {
+                    inboundSeatSelect3.value = booking.getInboundSeatId3();
+                }
+                if (booking.hasInboundSeatId4()) {
+                    inboundSeatSelect4.value = booking.getInboundSeatId4();
+                }
+                if (booking.hasInboundSeatId5()) {
+                    inboundSeatSelect5.value = booking.getInboundSeatId5();
+                }
+                if (booking.hasInboundSeatId6()) {
+                    inboundSeatSelect6.value = booking.getInboundSeatId6();
+                }
+
+                inboundSeatSelect1.style.display = '';
+                inboundSeatSpinner.style.display = 'none';
+            }
+
+            function toLocaleDate(dateTime, timezone) {
+                return new Date(dateTime).toLocaleDateString([],
+                                {
+                                    timeZone: timezone,
+                                    weekday: 'short',
+                                    day: 'numeric',
+                                    month: 'short'
+                                });
+            }
+
+            function buildTimeHtml(timeString) {
+                const re = /(\d+:\d\d\s(AM|PM))\s(.+)/;
+                const results = re.exec(timeString);
+                if (results != null && results.length > 3) {
+                    return '<span>' + results[1] + '</span> ' +
+                           '<small class="text-muted fst-italic" style="font-size: x-small">' + results[3] + '</small>';
+                }
+                return '';
+            }
+
+            function nextButtonClicked() {
+                const booking = new Booking();
+                if (outboundSeatSelect1.value) {
+                    booking.setOutboundSeatId1(outboundSeatSelect1.value);
+                }
+                if (outboundSeatSelect1.selectedIndex >= 0 && outboundSeatSelect1.options[outboundSeatSelect1.selectedIndex]) {
+                    booking.setOutboundSeatName1(outboundSeatSelect1.options[outboundSeatSelect1.selectedIndex].text);
+                }
+                if (outboundSeatSelect2.value) {
+                    booking.setOutboundSeatId2(outboundSeatSelect2.value);
+                }
+                if (outboundSeatSelect2.selectedIndex >= 0 && outboundSeatSelect2.options[outboundSeatSelect2.selectedIndex]) {
+                    booking.setOutboundSeatName2(outboundSeatSelect2.options[outboundSeatSelect2.selectedIndex].text);
+                }
+                if (outboundSeatSelect3.value) {
+                    booking.setOutboundSeatId3(outboundSeatSelect3.value);
+                }
+                if (outboundSeatSelect3.selectedIndex >= 0 && outboundSeatSelect3.options[outboundSeatSelect3.selectedIndex]) {
+                    booking.setOutboundSeatName3(outboundSeatSelect3.options[outboundSeatSelect3.selectedIndex].text);
+                }
+                if (outboundSeatSelect4.value) {
+                    booking.setOutboundSeatId4(outboundSeatSelect4.value);
+                }
+                if (outboundSeatSelect4.selectedIndex >= 0 && outboundSeatSelect4.options[outboundSeatSelect4.selectedIndex]) {
+                    booking.setOutboundSeatName4(outboundSeatSelect4.options[outboundSeatSelect4.selectedIndex].text);
+                }
+                if (outboundSeatSelect5.value) {
+                    booking.setOutboundSeatId5(outboundSeatSelect5.value);
+                }
+                if (outboundSeatSelect5.selectedIndex >= 0 && outboundSeatSelect5.options[outboundSeatSelect5.selectedIndex]) {
+                    booking.setOutboundSeatName5(outboundSeatSelect5.options[outboundSeatSelect5.selectedIndex].text);
+                }
+                if (outboundSeatSelect6.value) {
+                    booking.setOutboundSeatId6(outboundSeatSelect6.value);
+                }
+                if (outboundSeatSelect6.selectedIndex >= 0 && outboundSeatSelect6.options[outboundSeatSelect6.selectedIndex]) {
+                    booking.setOutboundSeatName6(outboundSeatSelect6.options[outboundSeatSelect6.selectedIndex].text);
+                }
+                if (inboundSeatSelect1.value) {
+                    booking.setInboundSeatId1(inboundSeatSelect1.value);
+                }
+                if (inboundSeatSelect1.selectedIndex >= 0 && inboundSeatSelect1.options[inboundSeatSelect1.selectedIndex]) {
+                    booking.setInboundSeatName1(inboundSeatSelect1.options[inboundSeatSelect1.selectedIndex].text);
+                }
+                if (inboundSeatSelect2.value) {
+                    booking.setInboundSeatId2(inboundSeatSelect2.value);
+                }
+                if (inboundSeatSelect2.selectedIndex >= 0 && inboundSeatSelect2.options[inboundSeatSelect2.selectedIndex]) {
+                    booking.setInboundSeatName2(inboundSeatSelect2.options[inboundSeatSelect2.selectedIndex].text);
+                }
+                if (inboundSeatSelect3.value) {
+                    booking.setInboundSeatId3(inboundSeatSelect3.value);
+                }
+                if (inboundSeatSelect3.selectedIndex >= 0 && inboundSeatSelect3.options[inboundSeatSelect3.selectedIndex]) {
+                    booking.setInboundSeatName3(inboundSeatSelect3.options[inboundSeatSelect3.selectedIndex].text);
+                }
+                if (inboundSeatSelect4.value) {
+                    booking.setInboundSeatId4(inboundSeatSelect4.value);
+                }
+                if (inboundSeatSelect4.selectedIndex >= 0 && inboundSeatSelect4.options[inboundSeatSelect4.selectedIndex]) {
+                    booking.setInboundSeatName4(inboundSeatSelect4.options[inboundSeatSelect4.selectedIndex].text);
+                }
+                if (inboundSeatSelect5.value) {
+                    booking.setInboundSeatId5(inboundSeatSelect5.value);
+                }
+                if (inboundSeatSelect5.selectedIndex >= 0 && inboundSeatSelect5.options[inboundSeatSelect5.selectedIndex]) {
+                    booking.setInboundSeatName5(inboundSeatSelect5.options[inboundSeatSelect5.selectedIndex].text);
+                }
+                if (inboundSeatSelect6.value) {
+                    booking.setInboundSeatId6(inboundSeatSelect6.value);
+                }
+                if (inboundSeatSelect6.selectedIndex >= 0 && inboundSeatSelect6.options[inboundSeatSelect6.selectedIndex]) {
+                    booking.setInboundSeatName6(inboundSeatSelect6.options[inboundSeatSelect6.selectedIndex].text);
+                }
+                window.location.href = "/booking/confirm.html";
+            }
+        </SCRIPT>
+    </HEAD>
+    <BODY>
+        <NAV class="navbar navbar-expand-md navbar-dark fixed-top bg-dark">
+            <DIV class="container-fluid">
+                <A class="navbar-brand" href="/">Home</A>
+                <BUTTON class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation">
+                    <SPAN class="navbar-toggler-icon"/>
+                </BUTTON>
+                <DIV class="collapse navbar-collapse" id="navbarCollapse">
+                    <UL class="navbar-nav me-auto mb-2 mb-md-0">
+                        <LI class="nav-item">
+                            <A class="nav-link active" href="/info/listFlights.html">Flights</A>
+                        </LI>
+                        <LI class="nav-item">
+                            <A class="nav-link" href="/info/listAeroplanes.html">Aeroplanes</A>
+                        </LI>
+                        <LI class="nav-item">
+                            <A class="nav-link" href="/user/editUser.html">User</A>
+                        </LI>
+                        <LI class="nav-item">
+                            <A class="nav-link" href="/booking/listBookings.html">Bookings</A>
+                        </LI>
+                        <LI class="nav-item">
+                            <BUTTON class="btn btn-success" type="button" onclick="window.location.href = '/booking/bookAFlight.html'">
+                                <i class="fa-solid fa-plane"></i>&nbsp;Book a Flight</BUTTON>
+                        </LI>
+                    </UL>
+                    <div class="d-flex align-items-center">
+                        <SPAN id="signedInUserSpan" class="text-light" style="display: none;">Signed in as <SPAN class="text-primary me-3" id="signedInUserDisplayName"></SPAN></SPAN>
+                        <BUTTON class="btn btn-success" id="signInButton" onclick="signIn();">Sign In</BUTTON>
+                        <DIV class="btn-group" id="userDropDownDiv">
+                            <BUTTON class="btn btn-success dropdown-toggle" type="button" id="userDropDown" data-bs-toggle="dropdown" data-bs-auto-close="true" aria-expanded="false">
+                                <i class="fa-solid fa-bars"></i>
+                            </BUTTON>
+                            <UL class="dropdown-menu dropdown-menu-end shadow" aria-labelledby="userDropDown">
+                              <LI><BUTTON class="dropdown-item" type="button" id="userAccountMenuItem" onclick="editUserAccount();">User Account</A></LI>
+                              <LI><HR class="dropdown-divider"></LI>
+                              <LI><BUTTON class="dropdown-item" type="button" id="signOutMenuItem" onclick="signOut();">Sign Out</BUTTON></LI>
+                            </UL>
+                        </DIV>
+                    </div>
+                </DIV>
+            </DIV>
+        </NAV>
+        <MAIN class="container">
+            <HEADER class="pb-3 mt-3 mb-5 border-bottom">
+                <h1 class="h1 d-flex align-items-center text-dark text-decoration-none">
+                    <i class="fa-solid fa-chair"></i>
+                    <span>&nbsp;Book a Flight</span>
+                </h1>
+            </HEADER>
+
+            <DIV class="row mb-5">
+                <ul class="wizard-progress">
+                    <li class="wizard-step completed" id="searchStep" onclick="window.location.href='/booking/bookAFlight.html?source=session';">Search</li>
+                    <li class="wizard-step completed" id="searchFlights" onclick="window.location.href='/booking/selectFlights.html';">Flights</li>
+                    <li class="wizard-step completed" id="searchPassengers" onclick="window.location.href='/booking/passengerDetails.html';">Passengers</li>
+                    <li class="wizard-step completed" id="searchExtras" onclick="window.location.href='/booking/extras.html';">Extras</li>
+                    <li class="wizard-step active" id="searchSeats">Seats</li>
+                    <li class="wizard-step" id="searchConfirm">Confirm</li>
+                    <li class="wizard-step" id="searchInvoice">Invoice</li>
+                </ul>
+            </DIV>
+
+            <div class="row mb-4">
+                <div class="col-md-7">
+                    <h4 class="mb-3 text-primary">Seat Selection</h4>
+
+                    <FORM id="mainForm" class="needs-validation mb-5" novalidate>
+                        <div class="fs-5 mb-4">
+                            Select your seats for the flight to <span class="text-success fw-bold text-decoration-underline" id="toCityName1"></span>
+                        </div>
+    
+                        <div id="extrasErrorDiv" style="display: none;"></div>
+
+                        <div class="text-center" id="outboundSeatSpinner">
+                            <div class="spinner-border" role="status">
+                                <span class="visually-hidden">Retrieving...</span>
+                            </div>
+                        </div>
+                        <div class="mb-3 col">
+                            <div class="row mb-2 align-items-center">
+                                <div class="col-3"><span id="outboundPassenger1"></span></div>
+                                <div class="col-4"><select class="form-control form-select" id="outboundSeatSelect1" aria-label="Outbound Seat" style="display: none;"></select></div>
+                            </div>
+                            <div class="row mb-2 align-items-center">
+                                <div class="col-3"><span id="outboundPassenger2"></span></div>
+                                <div class="col-4"><select class="form-control form-select" id="outboundSeatSelect2" aria-label="Outbound Seat" style="display: none;"></select></div>
+                            </div>
+                            <div class="row mb-2 align-items-center">
+                                <div class="col-3"><span id="outboundPassenger3"></span></div>
+                                <div class="col-4"><select class="form-control form-select" id="outboundSeatSelect3" aria-label="Outbound Seat" style="display: none;"></select></div>
+                            </div>
+                            <div class="row mb-2 align-items-center">
+                                <div class="col-3"><span id="outboundPassenger4"></span></div>
+                                <div class="col-4"><select class="form-control form-select" id="outboundSeatSelect4" aria-label="Outbound Seat" style="display: none;"></select></div>
+                            </div>
+                            <div class="row mb-2 align-items-center">
+                                <div class="col-3"><span id="outboundPassenger5"></span></div>
+                                <div class="col-4"><select class="form-control form-select" id="outboundSeatSelect5" aria-label="Outbound Seat" style="display: none;"></select></div>
+                            </div>
+                            <div class="row mb-2 align-items-center">
+                                <div class="col-3"><span id="outboundPassenger6"></span></div>
+                                <div class="col-4"><select class="form-control form-select" id="outboundSeatSelect6" aria-label="Outbound Seat" style="display: none;"></select></div>
+                            </div>
+                        </div>
+                        <span id="inboundFlightGUI" style="display: none;">
+                            <div class="fs-5 mt-5 mb-4">
+                                Select your seats for the return flight to <span class="text-success fw-bold text-decoration-underline" id="fromCityName1"></span>
+                            </div>
+
+                            <div class="text-center" id="inboundSeatSpinner">
+                                <div class="spinner-border" role="status">
+                                    <span class="visually-hidden">Retrieving...</span>
+                                </div>
+                            </div>
+                            <div class="mb-3">
+                                <div class="row mb-2 align-items-center">
+                                    <div class="col-3"><span id="inboundPassenger1"></span></div>
+                                    <div class="col-4"><select class="form-control form-select" id="inboundSeatSelect1" aria-label="inbound Seat" style="display: none;"></select></div>
+                                </div>
+                                <div class="row mb-2 align-items-center">
+                                    <div class="col-3"><span id="inboundPassenger2"></span></div>
+                                    <div class="col-4"><select class="form-control form-select" id="inboundSeatSelect2" aria-label="inbound Seat" style="display: none;"></select></div>
+                                </div>
+                                <div class="row mb-2 align-items-center">
+                                    <div class="col-3"><span id="inboundPassenger3"></span></div>
+                                    <div class="col-4"><select class="form-control form-select" id="inboundSeatSelect3" aria-label="inbound Seat" style="display: none;"></select></div>
+                                </div>
+                                <div class="row mb-2 align-items-center">
+                                    <div class="col-3"><span id="inboundPassenger4"></span></div>
+                                    <div class="col-4"><select class="form-control form-select" id="inboundSeatSelect4" aria-label="inbound Seat" style="display: none;"></select></div>
+                                </div>
+                                <div class="row mb-2 align-items-center">
+                                    <div class="col-3"><span id="inboundPassenger5"></span></div>
+                                    <div class="col-4"><select class="form-control form-select" id="inboundSeatSelect5" aria-label="inbound Seat" style="display: none;"></select></div>
+                                </div>
+                                <div class="row mb-2 align-items-center">
+                                    <div class="col-3"><span id="inboundPassenger6"></span></div>
+                                    <div class="col-4"><select class="form-control form-select" id="inboundSeatSelect6" aria-label="inbound Seat" style="display: none;"></select></div>
+                                </div>
+                            </div>
+                        </span>
+                    </FORM>
+
+                    <div class="row justify-content-between">
+                        <div class="col col-md-auto">
+                            <a class="btn btn-secondary mb-4" href="/booking/extras.html">
+                                <i class="fa-solid fa-circle-arrow-left"></i>&nbsp;Previous
+                            </a>
+                        </div>
+                        <div class="col col-md-auto">
+                            <button class="btn btn-primary mb-4" id="nextButton" onclick="nextButtonClicked();">
+                                Next&nbsp;<i class="fa-solid fa-circle-arrow-right"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-4 order-md-last">
+                    <div class="card">
+                        <div class="card-header">
+                            <h4 class="text-primary">Your Booking</h4>
+                        </div>
+                        <div class="card-body">
+                            <div class="row">
+                                <span class="col">Num Passengers</span>
+                                <span class="col text-end" id="numPassengers">1</span>
+                            </div>
+                            <hr>
+                            <div class="row">
+                                <div class="col"><h5 class="card-title">Outbound trip</h5></div>
+                                <div class="col-md-auto text-end"><span id="outboundTripCost"></span></div>
+                            </div>
+                            <span class="text-success fw-bold" id="fromCityName2"></span> to <span class="text-success fw-bold" id="toCityName2"></span>
+                            <p class="card-text">
+                                <span id="fromCityDate"></span>&nbsp;<span id="fromCityTime"></span>
+                            </p>
+                            <span id="returnFlightBookingGUI">
+                                <hr>
+                                <div class="row">
+                                    <div class="col"><h5 class="card-title">Return trip</h5></div>
+                                    <div class="col-md-auto text-end"><span id="returnTripCost"></span></div>
+                                </div>
+                                <span class="text-success fw-bold" id="toCityName3"></span> to <span class="text-success fw-bold" id="fromCityName3"></span>
+                                <p class="card-text">
+                                    <span id="toCityDate"></span>&nbsp;<span id="toCityTime"></span>
+                                </p>
+                            </span>
+                            <span id="extrasBookingGUI">
+                                <hr>
+                                <h5 class="card-title">Extras</h5>
+                                <div class="row">
+                                    <span class="col" id="rentalCarBookingGUI"></span>
+                                    <span class="col-md-auto text-end" id="rentalCarCostBookingGUI"></span>
+                                </div>
+                                <div class="row">
+                                    <span class="col" id="travelInsuranceBookingGUI"></span>
+                                    <span class="col-md-auto text-end" id="travelInsuranceCostBookingGUI"></span>
+                                </div>
+                            </span>
+                        </div>
+                        <div class="card-footer">
+                            <div class="row">
+                                <span class="col">Total (NZD)</span>
+                                <strong class="col text-end">$<span id="totalCost">0</span></strong>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <FOOTER class="container">
+                <P>Built by Damian Coventry, Copyright &copy; 2022, all rights reserved. &middot; <A href="#">Privacy</A> &middot; <A href="#">Terms</A>
+                </P>
+                <P>Flight icon created by Freepik &middot; <A href="https://www.flaticon.com/free-icons/plane" title="plane icons">Flaticon</A>
+                </P>
+            </FOOTER>
+        </MAIN>
+
+        <div class="toast-container position-fixed bottom-0 end-0 p-3">
+            <div id="responseCodePopup" class="toast fade" role="alert" aria-live="assertive" aria-atomic="true">
+                <div class="toast-header bg-danger">
+                    <strong class="me-auto text-white" id="errorMessageTitle"></strong>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="toast" aria-label="Close"></button>
+                </div>
+                <div class="toast-body" id="errorMessageBody"></div>
+            </div>
+        </div>
+
+        <div class="modal fade" id="editUserAccountModal" tabindex="-1" aria-labelledby="editUserAccountTitle" aria-hidden="true" style="display: none;">
+            <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h4 class="modal-title" id="editUserAccountTitle">Edit User Account</h4>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"/>
+                    </div>
+                    <div class="modal-body">
+                        <div class="text-center" id="editUserAccountSpinner">
+                            <div class="spinner-border" role="status">
+                                <span class="visually-hidden">Retrieving...</span>
+                            </div>
+                        </div>
+                        <DIV id="userAccountForm" style="display: none;">
+                            <DIV class="row">
+                                <DIV class="col ms-auto text-end">
+                                    <BUTTON type="button" class="btn btn-secondary"
+                                        data-bs-toggle="tooltip" data-bs-placement="top"
+                                        title="Change Password" onclick="changePassword();">
+                                        <i class="fa-solid fa-key"></i>
+                                    </BUTTON>
+                                    <BUTTON class="btn btn-danger" type="button"
+                                        data-bs-toggle="tooltip" data-bs-placement="top"
+                                        title="Delete User Account" onclick="confirmDeleteUserAccount();">
+                                        <i class="fa-solid fa-trash"></i>
+                                    </BUTTON>
+                                </DIV>
+                            </DIV>
+                            <DIV class="row">
+                                <DIV class="col">
+                                    <LABEL for="username">Username</LABEL>
+                                    <INPUT type="text" class="form-control" id="username" placeholder="Username" required/>
+                                </DIV>
+                            </DIV>
+                            <DIV class="row">
+                                <DIV class="col">
+                                    <LABEL for="emailAddress">Email Address</LABEL>
+                                    <INPUT type="email" class="form-control" id="emailAddress" placeholder="Email Address" required/>
+                                    <div class="valid-feedback">Looks good!</div>
+                                    <div class="invalid-feedback">Please enter an email address</div>
+                                </DIV>
+                            </DIV>
+                            <DIV class="row">
+                                <DIV class="col">
+                                    <LABEL for="firstName">First Name</LABEL>
+                                    <INPUT type="text" class="form-control" id="firstName" placeholder="First Name" required/>
+                                    <div class="valid-feedback">Looks good!</div>
+                                    <div class="invalid-feedback">Please enter a first name</div>
+                                </DIV>
+                            </DIV>
+                            <DIV class="row">
+                                <DIV class="col">
+                                    <LABEL for="lastName">Last Name</LABEL>
+                                    <INPUT type="text" class="form-control" id="lastName" placeholder="Last Name" required/>
+                                    <div class="valid-feedback">Looks good!</div>
+                                    <div class="invalid-feedback">Please enter a last name</div>
+                                </DIV>
+                            </DIV>
+                        </DIV>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-primary" id="saveUserAccountButton" onclick="saveUserAccount();" disabled>
+                            <i class="fa-solid fa-floppy-disk"></i>&nbsp;Save
+                        </button>
+                        <button type="button" class="btn btn-secondary" id="cancelUserAccountButton" data-bs-dismiss="modal">Cancel</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="modal fade" id="finalConfirmation" tabindex="-1" aria-labelledby="deleteConfirmationTitle" aria-hidden="true" style="display: none;">
+            <div class="modal-dialog modal-dialog-centered  modal-lg">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="deleteConfirmationTitle">Are you sure?</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"/>
+                    </div>
+                    <div class="modal-body">
+                        This action cannot be undone. You will be logged out, and the user account will be <b>permanently</b> deleted.
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-danger" id="deleteButton" onclick="deleteUserAccount()">
+                            <i class="fa-solid fa-trash"></i>&nbsp;Confirm
+                        </button>
+                        <button type="button" class="btn btn-secondary" id="cancelButton" data-bs-dismiss="modal">Cancel</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="toast-container position-fixed bottom-0 end-0 p-3">
+            <div id="responseCodePopup" class="toast fade" role="alert" aria-live="assertive" aria-atomic="true">
+                <div class="toast-header bg-danger">
+                    <strong class="me-auto text-white" id="errorMessageTitle"></strong>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="toast" aria-label="Close"></button>
+                </div>
+                <div class="toast-body" id="errorMessageBody"></div>
+            </div>
+        </div>
+        
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/2.9.2/umd/popper.min.js"
+    integrity="sha512-2rNj2KJ+D8s1ceNasTIex6z4HWyOnEYLVC3FigGOmyQCZc2eBXKgOxQmo3oKLHyfcj53uz4QMsRCWNbLd32Q1g=="
+    crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+
+<SCRIPT src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"
+    integrity="sha384-ka7Sk0Gln4gmtz2MlQnikT1wXgYsOg+OMhuP+IlRH9sENBO0LRn5q+8nbTov4+1p"
+    crossorigin="anonymous"></SCRIPT>
+
+    </BODY>
+</HTML>

@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<HTML lang="en">
+    <HEAD>
+        <META charset="utf-8"/>
+        <TITLE>Online Booking System</TITLE>
+        <LINK rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css" integrity="sha512-KfkfwYDsLkIlwQp6LFnl8zNdLGxu9YAA1QvwINks4PhcElQSvqcyVLLD9aMhXd13uQjoXtEKNosOWaZqXgel0g==" crossorigin="anonymous" referrerpolicy="no-referrer"/>
+        <LINK href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css"
+              rel="stylesheet"
+              integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3"
+              crossorigin="anonymous"/>
+    </HEAD>
+    <BODY>
+        <HEADER>
+            <NAV class="navbar navbar-expand-md navbar-dark fixed-top bg-dark">
+                <DIV class="container-fluid">
+                    <A class="navbar-brand"
+                       href="/">Home</A>
+                    <BUTTON class="navbar-toggler"
+                            type="button"
+                            data-bs-toggle="collapse"
+                            data-bs-target="#navbarCollapse"
+                            aria-controls="navbarCollapse"
+                            aria-expanded="false"
+                            aria-label="Toggle navigation">
+                        <SPAN class="navbar-toggler-icon"/>
+                    </BUTTON>
+                    <DIV class="collapse navbar-collapse"
+                         id="navbarCollapse">
+                        <UL class="navbar-nav me-auto mb-2 mb-md-0">
+                            <LI class="nav-item">
+                                <A class="nav-link"
+                                   href="/info/listFlights.html">Flights</A>
+                            </LI>
+                            <LI class="nav-item">
+                                <A class="nav-link"
+                                   href="/info/listAeroplanes.html">Aeroplanes</A>
+                            </LI>
+                            <LI class="nav-item">
+                                <A class="nav-link active"
+                                   href="/user/editUser.html">User</A>
+                            </LI>
+                            <LI class="nav-item">
+                                <A class="nav-link"
+                                   href="/booking/listBookings.html">Bookings</A>
+                            </LI>
+                            <LI class="nav-item">
+                                <BUTTON class="btn btn-success" type="button" onclick="window.location.href = '/booking/bookAFlight.html'">
+                                    <i class="fa-solid fa-plane"></i>&nbsp;Book a Flight</BUTTON>
+                            </LI>
+                        </UL>
+                        <div class="d-flex align-items-center">
+                            <SPAN id="signedInUserSpan" class="text-light" style="display: none;">Signed in as <SPAN class="text-primary me-3" id="signedInUserDisplayName"></SPAN></SPAN>
+                            <BUTTON class="btn btn-success" id="signInButton" onclick="signIn();">Sign In</BUTTON>
+                            <DIV class="btn-group" id="userDropDownDiv">
+                                <BUTTON class="btn btn-success dropdown-toggle" type="button" id="userDropDown" data-bs-toggle="dropdown" data-bs-auto-close="true" aria-expanded="false">
+                                    <i class="fa-solid fa-bars"></i>
+                                </BUTTON>
+                                <UL class="dropdown-menu dropdown-menu-end shadow" aria-labelledby="userDropDown">
+                                  <LI><BUTTON class="dropdown-item" type="button" id="userAccountMenuItem" onclick="editUserAccount();">User Account</A></LI>
+                                  <LI><HR class="dropdown-divider"></LI>
+                                  <LI><BUTTON class="dropdown-item" type="button" id="signOutMenuItem" onclick="signOut();">Sign Out</BUTTON></LI>
+                                </UL>
+                            </DIV>
+                        </div>
+                    </DIV>
+                </DIV>
+            </NAV>
+        </HEADER>
+        <MAIN>
+            &nbsp;
+        </MAIN>
+    </BODY>
+</HTML>

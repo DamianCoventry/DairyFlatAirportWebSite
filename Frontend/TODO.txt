@@ -1,0 +1,119 @@
+DONE    selectFlights page:
+DONE            Conditionally insert return flight into 
+DONE            Make radio buttons mutually exclusive
+DONE            Enable/disable the Next buttons
+DONE            When using the previous button, generate the correct URL params
+DONE            When using the next button, generate the correct URL params
+DONE            Update the booking on the right side
+DONE            Handle 'no flights happening between those dates" nicely
+DONE    Landing
+DONE    Search for flights
+DONE        - "The ability for a user to conveniently browse the data for flights between two centres on (or between) selected dates."
+DONE        - "It is expected that you use actual dates and not just days of the week."
+DONE        - format departure_time_of_day nicely
+DONE        - calculate correct timezone
+DONE        - calculate arrival time, in correct timezone
+DONE    List/filter aeroplanes
+DONE        - insert pager
+DONE    Insurance types need an image each
+DONE    Select your flights
+DONE        - "It is expected that you use actual dates and not just days of the week."
+DONE        - format departure_time_of_day nicely
+DONE        - calculate correct timezone
+DONE        - calculate arrival time, in correct timezone
+DONE    Passenger details
+DONE    Extras
+DONE    Review "Presentaion of a summary/invoice page when making the booking."
+DONE    List bookings
+DONE        - insert pager
+DONE    Delete booking needs to actually delete the booking
+DONE    Edit passenger details
+DONE    Edit extras
+DONE    Put a minimum time on spinners
+DONE    Make the buttons on the home page 'do the right thing'
+DONE    Use the other parts of the 'book a flight' form
+DONE    Print the user's timezone on the GUI where dates are entered
+DONE    Get rid of search box in toolbar? Or redirect to search results page?
+DONE    Add the travel insurance cost to the total
+DONE    Add the rental car cost to the total
+DONE    the extras page needs to update the booking visually when a car and/or insurance is selected
+DONE    Make sure that the return date is AFTER the leave date
+DONE    format the JSON nicely within the toast messages
+DONE    Indicate to the user when there are no flights from the chosen source to destination
+DONE    Invoice
+DONE    The select flights page needs a better way of showing flights. A calendar? 3 days prior+post?
+DONE    Need to actually create the booking and produce a booking number
+DONE    If 401 received, then use refresh token
+DONE    Put a login guard in each page
+DONE    Display login info on each page
+DONE    Override the authorize.html page
+DONE    Pass the currently logged in user id to the create booking API
+DONE    If we received an error when retrieving/using the refresh token, then navigate to the login page
+DONE    Should not be showing other people's data. Need to compare against 'created_by' column/variable.
+DONE    User sign in and sign out
+DONE    Put tooltips on the edit and delete buttons within the view booking page
+
+
+
+Look + Feel
+~~~~~~~~~~~
+        View aeroplane needs an image
+        Select your seats needs an image
+        Reorganize toolbar left hand links
+        on the viewAeroplane page: Change text within text boxes to links for the viewFlight page
+        add new css/html for the invoice page that makes the wizard icons not anchors
+        the viewBooking page has a shit display format for the date/time
+        show something when the login fails
+        CTA buttons for empty lists?
+
+
+
+Bugs
+~~~~
+        handle pagination on the listBookings page
+        the 'right chevron' on the paginator has the wrong page value. test with the viewBookings page.
+
+
+
+Functionality
+~~~~~~~~~~~~~
+        How to implement multistop?
+        Search for, and implement, all the TODO comments
+        Use that horrible looking mapping program for the web dev assignment
+        Do not allow bookings if aeroplane is full
+        Do not allow num passengers to be 6 if the aeroplane doesn't have 6 seats
+        If it's a one-way trip, how does a rental car work? Considering it's priced 'per day'...
+        if an existing booking is modified, should we generate a new invoice page?
+        Change your seats for an existing booking?
+        Get the localhost URI out of the bookingAPI.js file?
+        Don't allow a seat to be booked twice
+        I don't think booked sets are actually being written into the database
+        Don't allow an account to be deleted unless the user's password is entered?
+        Remove the 'add existing' passenger?
+
+
+
+Users
+~~~~~
+DONE    Sign Up
+DONE    Edit user name/email
+DONE    Change password
+DONE    Delete user
+        Test refresh token (see 'Test refresh token.png')
+
+
+
+Refactoring
+~~~~~~~~~~~
+        refactor bookingApi.js
+        refactor javascript that's currently within HTML into its .js files
+
+
+
+Deployment
+~~~~~~~~~~
+        use docker compose
+        create database tables
+        insert default data
+        make sure the rest api works
+        make sure the website works
