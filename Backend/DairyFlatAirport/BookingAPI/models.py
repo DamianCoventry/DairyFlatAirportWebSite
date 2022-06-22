@@ -10,6 +10,7 @@ class Aeroplane(models.Model):
     tail_number = models.CharField(max_length=8, unique=True, null=False)    # ZK-Z001, ZK-Z763, G-NZ23, G-NZ01, etc
     make_model = models.CharField(max_length=64, null=False)
     num_seats = models.IntegerField(default=5, null=False, validators=[MinValueValidator(1), MaxValueValidator(8)])
+    image_link = models.CharField(max_length=512, null=True)
 
 
 class Airport(models.Model):

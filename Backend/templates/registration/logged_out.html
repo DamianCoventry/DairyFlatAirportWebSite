@@ -14,22 +14,46 @@
               integrity="sha512-KfkfwYDsLkIlwQp6LFnl8zNdLGxu9YAA1QvwINks4PhcElQSvqcyVLLD9aMhXd13uQjoXtEKNosOWaZqXgel0g=="
               crossorigin="anonymous" referrerpolicy="no-referrer">
         <STYLE>
-            .bd-placeholder-img {
-                font-size: 1.125rem;
-                text-anchor: middle;
-                -webkit-user-select: none;
-                -moz-user-select: none;
-                user-select: none;
+            html, body {
+              height: 100%;
             }
 
-            @media (min-width: 768px) {
-                .bd-placeholder-img-lg {
-                    font-size: 3.5rem;
-                }
+            body {
+              display: flex;
+              align-items: center;
+              padding-top: 40px;
+              padding-bottom: 40px;
+              background-color: #f5f5f5;
+            }
+
+            .form-signin {
+              width: 100%;
+              max-width: 330px;
+              padding: 15px;
+              margin: auto;
+            }
+
+            .form-signin .checkbox {
+              font-weight: 400;
+            }
+
+            .form-signin .form-floating:focus-within {
+              z-index: 2;
+            }
+
+            .form-signin input[type="email"] {
+              margin-bottom: -1px;
+              border-bottom-right-radius: 0;
+              border-bottom-left-radius: 0;
+            }
+
+            .form-signin input[type="password"] {
+              margin-bottom: 10px;
+              border-top-left-radius: 0;
+              border-top-right-radius: 0;
             }
         </STYLE>
 
-        <LINK href="http://127.0.0.1:8080/styles/signin.css" rel="stylesheet">
         <SCRIPT type="text/javascript" src="http://127.0.0.1:8080/javascript/bookingAPI.js"></SCRIPT>
 
         <SCRIPT type="text/javascript">

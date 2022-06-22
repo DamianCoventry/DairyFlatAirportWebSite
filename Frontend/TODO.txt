@@ -57,15 +57,15 @@ DONE    Put tooltips on the edit and delete buttons within the view booking page
 
 Look + Feel
 ~~~~~~~~~~~
-        View aeroplane needs an image
+DONE    View aeroplane needs an image
         Select your seats needs an image
 DONE    Reorganize toolbar left hand links
         on the viewAeroplane page: Change text within text boxes to links for the viewFlight page
         add new css/html for the invoice page that makes the wizard icons not anchors
         the viewBooking page has a shit display format for the date/time
-        show something when the login fails
+DONE    show something when the login fails
         CTA buttons for empty lists?
-        The error toast has empty text
+DONE    The error toast has empty text
 
 
 

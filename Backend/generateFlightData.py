@@ -40,10 +40,10 @@ CIRRUS_SF50_B: Final = 5
 # these numbers are the PKs within my database
 NORTH_SHORE_AERODROME: Final = {'pk': 1, 'code': 'NZNE'}
 ROTORUA_AIRPORT: Final = {'pk': 2, 'code': 'ROT'}
+LAKE_TEKAPO_AIRPORT: Final = {'pk': 3, 'code': 'NZTL'}
 SYDNEY_AIRPORT: Final = {'pk': 4, 'code': 'SYD'}
 CLARIS_AIRPORT: Final = {'pk': 5, 'code': 'GBZ'}
 TUUTA_AIRPORT: Final = {'pk': 6, 'code': 'CHT'}
-LAKE_TEKAPO_AIRPORT: Final = {'pk': 3, 'code': 'NZTL'}
 
 # data from Google Maps, Google Flights, Air Chathams
 FLIGHT_TIMES: Final = {
@@ -76,7 +76,7 @@ FLIGHT_COSTS: Final = {
 NUM_OF_WEEKS: Final = 20
 
 # https://docs.python.org/3/library/datetime.html#aware-and-naive-objects
-sunday1May2022_naive: Final = datetime(2022, 6, 1)
+sunday5June2022_naive: Final = datetime(2022, 6, 5)
 
 
 def makeFlightNumber(prefix, number):
@@ -150,8 +150,8 @@ def insertSydneyFlightLegs(cursor, aeroplanePK):
     nzst = pytz.timezone('Pacific/Auckland')
     aest = pytz.timezone('Australia/Sydney')
 
-    sunday1May2022_NZST = nzst.localize(sunday1May2022_naive, is_dst=None)
-    sunday1May2022_AEST = aest.localize(sunday1May2022_naive, is_dst=None)
+    sunday1May2022_NZST = nzst.localize(sunday5June2022_naive, is_dst=None)
+    sunday1May2022_AEST = aest.localize(sunday5June2022_naive, is_dst=None)
 
     friEarlyMorningNZST = sunday1May2022_NZST + timedelta(days=5, hours=5, minutes=30)
     friMidMorningNZST = sunday1May2022_NZST + timedelta(days=5, hours=9)
@@ -180,7 +180,7 @@ def insertRotoruaFlightLegs(cursor, aeroplanePK):
     # north shore -> rotorua, Mon-Fri late afternoon PM, NZST
     # rotorua -> north shore, Mon-Fri evening PM, NZST
 
-    sunday1May2022_NZST = pytz.timezone('Pacific/Auckland').localize(sunday1May2022_naive, is_dst=None)
+    sunday1May2022_NZST = pytz.timezone('Pacific/Auckland').localize(sunday5June2022_naive, is_dst=None)
 
     monEarlyMorningNZST = sunday1May2022_NZST + timedelta(days=1, hours=6)
     monNoonNZST = sunday1May2022_NZST + timedelta(days=1, hours=12)
@@ -214,7 +214,7 @@ def insertGreatBarrierIslandFlightLegs(cursor, aeroplanePK):
     # north shore -> gbi, Mon+Wed+Fri AM, NZST
     # gbi -> north shore, Tue+Fri+Sat AM, NZST
 
-    sunday1May2022_NZST = pytz.timezone('Pacific/Auckland').localize(sunday1May2022_naive, is_dst=None)
+    sunday1May2022_NZST = pytz.timezone('Pacific/Auckland').localize(sunday5June2022_naive, is_dst=None)
 
     monMorningNZST = sunday1May2022_NZST + timedelta(days=1, hours=7, minutes=30)
     tueMorningNZST = sunday1May2022_NZST + timedelta(days=2, hours=10, minutes=15)
@@ -251,8 +251,8 @@ def insertChathamIslandsFlightLegs(cursor, aeroplanePK):
     nzst = pytz.timezone('Pacific/Auckland')
     chast = pytz.timezone('Pacific/Chatham')
 
-    sunday1May2022_NZST = nzst.localize(sunday1May2022_naive, is_dst=None)
-    sunday1May2022_CHAST = chast.localize(sunday1May2022_naive, is_dst=None)
+    sunday1May2022_NZST = nzst.localize(sunday5June2022_naive, is_dst=None)
+    sunday1May2022_CHAST = chast.localize(sunday5June2022_naive, is_dst=None)
 
     tueMidMorningNZST = sunday1May2022_NZST + timedelta(days=2, hours=9, minutes=45)
     wedMidMorningCHAST = sunday1May2022_CHAST + timedelta(days=3, hours=10, minutes=30)
@@ -280,7 +280,7 @@ def insertLakeTekapoFlightLegs(cursor, aeroplanePK):
     # north shore -> lt, Mon, NZST
     # lt -> north shore, Fri, NZST
 
-    sunday1May2022_NZST = pytz.timezone('Pacific/Auckland').localize(sunday1May2022_naive, is_dst=None)
+    sunday1May2022_NZST = pytz.timezone('Pacific/Auckland').localize(sunday5June2022_naive, is_dst=None)
 
     monMorningNZST = sunday1May2022_NZST + timedelta(days=1, hours=13)
     friMorningNZST = sunday1May2022_NZST + timedelta(days=5, hours=11)

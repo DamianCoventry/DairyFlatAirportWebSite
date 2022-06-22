@@ -18,11 +18,9 @@ class GroupSerializer(serializers.ModelSerializer):
 
 
 class AeroplaneSerializer(serializers.ModelSerializer):
-    flightLegs = serializers.StringRelatedField(many=True)
-
     class Meta:
         model = Aeroplane
-        fields = ['id', 'tail_number', 'make_model', 'num_seats', 'flightLegs']
+        fields = ['id', 'tail_number', 'make_model', 'num_seats', 'image_link']
 
 
 class AirportSerializer(serializers.ModelSerializer):
