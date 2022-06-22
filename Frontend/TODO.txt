@@ -59,7 +59,7 @@ Look + Feel
 ~~~~~~~~~~~
         View aeroplane needs an image
         Select your seats needs an image
-        Reorganize toolbar left hand links
+DONE    Reorganize toolbar left hand links
         on the viewAeroplane page: Change text within text boxes to links for the viewFlight page
         add new css/html for the invoice page that makes the wizard icons not anchors
         the viewBooking page has a shit display format for the date/time
@@ -78,7 +78,7 @@ Bugs
 
 Functionality
 ~~~~~~~~~~~~~
-        the user account dialog doesn't always navigate to the rest api
+DONE    the user account dialog doesn't always navigate to the rest api
         How to implement multistop?
         Search for, and implement, all the TODO comments
         Use that horrible looking mapping program for the web dev assignment
@@ -108,7 +108,7 @@ DONE    Delete user
 Refactoring
 ~~~~~~~~~~~
         refactor bookingApi.js
-        refactor javascript that's currently within HTML into its .js files
+WIP     refactor javascript that's currently within HTML into its .js files
 
 
 

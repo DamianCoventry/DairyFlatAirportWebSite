@@ -34,11 +34,12 @@
         <SCRIPT type="text/javascript" src="/javascript/config.js"></SCRIPT>
         <SCRIPT type="text/javascript" src="/javascript/initialise.js"></SCRIPT>
         <SCRIPT type="text/javascript" src="/javascript/bookingAPI.js"></SCRIPT>
+        <SCRIPT type="text/javascript" src="/javascript/booking.js"></SCRIPT>
         <SCRIPT type="text/javascript" src="/javascript/showError.js"></SCRIPT>
         <SCRIPT type="text/javascript" src="/javascript/signInOutUp.js"></SCRIPT>
+        <SCRIPT type="text/javascript" src="/javascript/dateUtils.js"></SCRIPT>
 
         <SCRIPT type="text/javascript">
-            let editUserAccountModal = null;
             window.onload = updateSignInGui;
         </SCRIPT>
     </HEAD>
@@ -53,13 +54,7 @@
                     <DIV class="collapse navbar-collapse" id="navbarCollapse">
                         <UL class="navbar-nav me-auto mb-2 mb-md-0">
                             <LI class="nav-item">
-                                <A class="nav-link" href="/info/listFlights.html">Flights</A>
-                            </LI>
-                            <LI class="nav-item">
                                 <A class="nav-link" href="/info/listAeroplanes.html">Aeroplanes</A>
-                            </LI>
-                            <LI class="nav-item">
-                                <A class="nav-link" href="/user/editUser.html">User</A>
                             </LI>
                             <LI class="nav-item">
                                 <A class="nav-link" href="/booking/listBookings.html">Bookings</A>
