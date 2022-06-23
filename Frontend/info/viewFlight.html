@@ -21,6 +21,7 @@
         <SCRIPT type="text/javascript" src="/javascript/booking.js"></SCRIPT>
         <SCRIPT type="text/javascript" src="/javascript/showError.js"></SCRIPT>
         <SCRIPT type="text/javascript" src="/javascript/signInOutUp.js"></SCRIPT>
+        <SCRIPT type="text/javascript" src="/javascript/dateUtils.js"></SCRIPT>
 
         <SCRIPT type="text/javascript">
             window.onload = function() {
@@ -36,14 +37,18 @@
                         setTimeout(function () {
                             spinnerButton.style.display = "none";
                             flight.style.display = "";
-                            document.getElementById("flight").value = json.number;
-                            document.getElementById("tailNumber").value = json.aeroplane.tail_number;
-                            document.getElementById("makeModel").value = json.aeroplane.make_model;
-                            document.getElementById("departsAirport").value = json.departure_airport.name;
-                            document.getElementById("departsDateTime").value = json.departure_date_time_utc;
-                            document.getElementById("arrivesAirport").value = json.arrival_airport.name;
-                            document.getElementById("arrivesDateTime").value = json.arrival_date_time_utc;
-                            document.getElementById("flightTimeMins").value = json.flight_time_mins;
+                            flight.value = json.number;
+                            tailNumber.value = json.aeroplane.tail_number;
+                            makeModel.value = json.aeroplane.make_model;
+                            departsAirport.value = json.departure_airport.name;
+                            departsDateTime.value =
+                                    toLocaleDate(json.departure_date_time_utc, json.departure_airport.timezone) + ' ' +
+                                    toLocaleTime(json.departure_date_time_utc, json.departure_airport.timezone);
+                            arrivesAirport.value = json.arrival_airport.name;
+                            arrivesDateTime.value =
+                                    toLocaleDate(json.arrival_date_time_utc, json.arrival_airport.timezone) + ' ' +
+                                    toLocaleTime(json.arrival_date_time_utc, json.arrival_airport.timezone);
+                            flightTimeMins.value = json.flight_time_mins;
                         }, 500);
                     },
                     showHttpError);

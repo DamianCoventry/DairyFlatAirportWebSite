@@ -117,13 +117,19 @@
                                 newCell.appendChild(document.createTextNode(x.departure_airport.name));
 
                                 newCell = newRow.insertCell(3);
-                                newCell.appendChild(document.createTextNode(toLocaleTime(x.departure_date_time_utc, x.departure_airport.timezone)));
+                                newCell.appendChild(document.createTextNode(
+                                    toLocaleDate(x.departure_date_time_utc, x.departure_airport.timezone) + ' ' +
+                                    toLocaleTime(x.departure_date_time_utc, x.departure_airport.timezone)
+                                ));
 
                                 newCell = newRow.insertCell(4);
                                 newCell.appendChild(document.createTextNode(x.arrival_airport.name));
 
                                 newCell = newRow.insertCell(5);
-                                newCell.appendChild(document.createTextNode(toLocaleTime(x.arrival_date_time_utc, x.arrival_airport.timezone)));
+                                newCell.appendChild(document.createTextNode(
+                                    toLocaleDate(x.arrival_date_time_utc, x.arrival_airport.timezone) + ' ' +
+                                    toLocaleTime(x.arrival_date_time_utc, x.arrival_airport.timezone)
+                                ));
 
                                 newCell = newRow.insertCell(6);
                                 newCell.appendChild(document.createTextNode(x.flight_time_mins));
@@ -375,6 +381,7 @@
 
                         selectPassengerButton.disabled = true;
                         selectPassengerSpinner.style.display = "";
+                        noPassengersAddedYet.style.display = "none";
 
                         const api = new BookingAPI();
                         api.listPassengers(1, processReceivedPassengerPage, displayPassengerErrorResponse);
@@ -422,9 +429,15 @@
                     }
                 }
 
-                selectPassengerSpinner.style.display = "none";
-                existingPassengers.style.display = "";
-                selectPassengerButton.disabled = false;
+                if (existingPassengers.children.length == 0) {
+                    selectPassengerSpinner.style.display = "none";
+                    noPassengersAddedYet.style.display = "";
+                }
+                else {
+                    selectPassengerSpinner.style.display = "none";
+                    existingPassengers.style.display = "";
+                    selectPassengerButton.disabled = false;
+                }
             }
 
             function displayNoPassengers() {
@@ -692,6 +705,9 @@
                     <div class="spinner-border" role="status">
                         <span class="visually-hidden">Retrieving...</span>
                     </div>
+                </div>
+                <div id="noPassengersAddedYet" style="display: none;">
+                    <span class="fst-italic">All the passengers you've added to the system are already on the flight.</span>
                 </div>
                 <select class="form-select" id="existingPassengers" aria-label="Existing passengers" style="display: none;"></select>
             </div>

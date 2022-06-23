@@ -493,14 +493,22 @@
                             newCell.appendChild(radio);
 
                             var link = document.createElement('a');
+                            link.setAttribute('href', "/info/viewFlight.html?id=" + x.id);
+                            link.setAttribute('id', flightIdName);
+                            link.setAttribute('name', flightIdName);
+                            link.innerText = x.number;
+                            newCell = newRow.insertCell(1);
+                            newCell.appendChild(link);
+
+                            link = document.createElement('a');
                             link.setAttribute('href', "/info/viewAeroplane.html?id=" + x.aeroplane.id);
                             link.setAttribute('id', aeroplaneIdName);
                             link.setAttribute('name', aeroplaneIdName);
                             link.innerText = x.aeroplane.make_model;
-                            newCell = newRow.insertCell(1);
+                            newCell = newRow.insertCell(2);
                             newCell.appendChild(link);
 
-                            newCell = newRow.insertCell(2);
+                            newCell = newRow.insertCell(3);
                             var span = document.createElement('span');
                             span.setAttribute('id', (outbound ? 'outboundTime' : 'inboundTime') + x.id);
                             span.appendChild(document.createTextNode(toLocaleTime(x.departure_date_time_utc, x.departure_airport.timezone)));
@@ -512,7 +520,7 @@
                             small.innerText = ' ' + x.departure_airport.timezone + ' time';
                             newCell.appendChild(small);
 
-                            newCell = newRow.insertCell(3);
+                            newCell = newRow.insertCell(4);
                             newCell.appendChild(document.createTextNode(toLocaleTime(x.arrival_date_time_utc, x.arrival_airport.timezone)));
 
                             small = document.createElement('small');
@@ -522,7 +530,7 @@
                             small.innerText = ' ' + x.arrival_airport.timezone + ' time';
                             newCell.appendChild(small);
 
-                            newCell = newRow.insertCell(4);
+                            newCell = newRow.insertCell(5);
                             var s = '';
                             var h = Math.floor(x.flight_time_mins/60);
                             if (h > 0) {
@@ -530,7 +538,7 @@
                             }
                             newCell.appendChild(document.createTextNode(s + (x.flight_time_mins%60) + 'm'));
 
-                            newCell = newRow.insertCell(5);
+                            newCell = newRow.insertCell(6);
                             span = document.createElement('span');
                             span.appendChild(document.createTextNode('$'));
                             newCell.appendChild(span);
@@ -928,6 +936,7 @@
                         <thead>
                             <tr>
                                 <th scope="col">&nbsp;</th>
+                                <th scope="col">Flight</th>
                                 <th scope="col">Aeroplane</th>
                                 <th scope="col">Departs</th>
                                 <th scope="col">Arrives</th>
@@ -974,6 +983,7 @@
                             <thead>
                                 <tr>
                                     <th scope="col">&nbsp;</th>
+                                    <th scope="col">Flight</th>
                                     <th scope="col">Aeroplane</th>
                                     <th scope="col">Departs</th>
                                     <th scope="col">Arrives</th>

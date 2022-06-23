@@ -697,7 +697,7 @@ class BookingAPI {
                 }
             }
         }
-        xhr.open("POST", BACKEND_ADDRESS + "passenger/");
+        xhr.open("POST", BACKEND_ADDRESS + "passenger/?signedInUserId=" + this.signedInUserId);
         xhr.setRequestHeader("Authorization", this.tokenType + " " + this.accessToken);
         xhr.setRequestHeader('Content-type', 'application/json;charset=UTF-8');
         xhr.send(JSON.stringify({
@@ -735,7 +735,7 @@ class BookingAPI {
                 }
             }
         }
-        xhr.open("PUT", BACKEND_ADDRESS + "passenger/" + id + "/");
+        xhr.open("PUT", BACKEND_ADDRESS + "passenger/" + id + "/?signedInUserId=" + this.signedInUserId);
         xhr.setRequestHeader("Authorization", this.tokenType + " " + this.accessToken);
         xhr.setRequestHeader('Content-type', 'application/json;charset=UTF-8');
         xhr.send(JSON.stringify({
@@ -773,7 +773,7 @@ class BookingAPI {
                 }
             }
         }
-        xhr.open("DELETE", BACKEND_ADDRESS + "passenger/" + id + "/");
+        xhr.open("DELETE", BACKEND_ADDRESS + "passenger/" + id + "/?signedInUserId=" + this.signedInUserId);
         xhr.setRequestHeader("Authorization", this.tokenType + " " + this.accessToken);
         xhr.send();
     }
