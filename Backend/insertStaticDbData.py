@@ -31,16 +31,21 @@ def deleteExistingData(cursor):
 
 
 def insertAeroplanes(cursor):
-    cursor.execute('INSERT INTO public."BookingAPI_aeroplane"(tail_number, make_model, num_seats, image_link)' +
-                   'VALUES (\'ZK-Z556\', \'SyberJet SJ30i\', 6, \'/images/SyberJetSJ30i.jpg\')')
-    cursor.execute('INSERT INTO public."BookingAPI_aeroplane"(tail_number, make_model, num_seats, image_link)' +
-                   'VALUES (\'ZK-Z763\', \'HondaJet Elite\', 5, \'/images/HondaJetElite.png\')')
-    cursor.execute('INSERT INTO public."BookingAPI_aeroplane"(tail_number, make_model, num_seats, image_link)' +
-                   'VALUES (\'ZK-Z764\', \'HondaJet Elite\', 5, \'/images/HondaJetElite.png\')')
-    cursor.execute('INSERT INTO public."BookingAPI_aeroplane"(tail_number, make_model, num_seats, image_link)' +
-                   'VALUES (\'G-NZ23\', \'Cirrus SF50\', 4, \'/images/CirrusSF50.png\')')
-    cursor.execute('INSERT INTO public."BookingAPI_aeroplane"(tail_number, make_model, num_seats, image_link)' +
-                   'VALUES (\'G-NZ24\', \'Cirrus SF50\', 4, \'/images/CirrusSF50.png\')')
+    cursor.execute('INSERT INTO public."BookingAPI_aeroplane"(tail_number, make_model, num_seats, image_link, ' +
+                    'floor_plan_link) VALUES (\'ZK-Z556\', \'SyberJet SJ30i\', 6, \'/images/SyberJetSJ30i.jpg\', ' +
+                   '\'/images/FloorPlan6.png\')')
+    cursor.execute('INSERT INTO public."BookingAPI_aeroplane"(tail_number, make_model, num_seats, image_link, ' +
+                    'floor_plan_link) VALUES (\'ZK-Z763\', \'HondaJet Elite\', 5, \'/images/HondaJetElite.png\', ' +
+                   '\'/images/FloorPlan5.png\')')
+    cursor.execute('INSERT INTO public."BookingAPI_aeroplane"(tail_number, make_model, num_seats, image_link, ' +
+                    'floor_plan_link) VALUES (\'ZK-Z764\', \'HondaJet Elite\', 5, \'/images/HondaJetElite.png\', ' +
+                   '\'/images/FloorPlan5.png\')')
+    cursor.execute('INSERT INTO public."BookingAPI_aeroplane"(tail_number, make_model, num_seats, image_link, ' +
+                    'floor_plan_link) VALUES (\'G-NZ23\', \'Cirrus SF50\', 4, \'/images/CirrusSF50.png\', ' +
+                   '\'/images/FloorPlan4.png\')')
+    cursor.execute('INSERT INTO public."BookingAPI_aeroplane"(tail_number, make_model, num_seats, image_link, ' +
+                    'floor_plan_link) VALUES (\'G-NZ24\', \'Cirrus SF50\', 4, \'/images/CirrusSF50.png\', ' +
+                   '\'/images/FloorPlan4.png\')')
 
     print("Inserted aeroplane static data")
 
@@ -136,6 +141,8 @@ def insertSeat(cursor):
                    'VALUES (\'B1\', false, 2)')
     cursor.execute('INSERT INTO public."BookingAPI_seat"("number", emergency_exit, aeroplane_id) ' +
                    'VALUES (\'B2\', true, 2)')
+    cursor.execute('INSERT INTO public."BookingAPI_seat"("number", emergency_exit, aeroplane_id) ' +
+                   'VALUES (\'C1\', false, 2)')
 
     cursor.execute('INSERT INTO public."BookingAPI_seat"("number", emergency_exit, aeroplane_id) ' +
                    'VALUES (\'A1\', false, 3)')
@@ -145,6 +152,8 @@ def insertSeat(cursor):
                    'VALUES (\'B1\', false, 3)')
     cursor.execute('INSERT INTO public."BookingAPI_seat"("number", emergency_exit, aeroplane_id) ' +
                    'VALUES (\'B2\', true, 3)')
+    cursor.execute('INSERT INTO public."BookingAPI_seat"("number", emergency_exit, aeroplane_id) ' +
+                   'VALUES (\'C1\', false, 3)')
 
     cursor.execute('INSERT INTO public."BookingAPI_seat"("number", emergency_exit, aeroplane_id) ' +
                    'VALUES (\'A1\', false, 4)')
@@ -154,8 +163,6 @@ def insertSeat(cursor):
                    'VALUES (\'B1\', false, 4)')
     cursor.execute('INSERT INTO public."BookingAPI_seat"("number", emergency_exit, aeroplane_id) ' +
                    'VALUES (\'B2\', true, 4)')
-    cursor.execute('INSERT INTO public."BookingAPI_seat"("number", emergency_exit, aeroplane_id) ' +
-                   'VALUES (\'C1\', false, 4)')
 
     cursor.execute('INSERT INTO public."BookingAPI_seat"("number", emergency_exit, aeroplane_id) ' +
                    'VALUES (\'A1\', false, 5)')
@@ -165,8 +172,6 @@ def insertSeat(cursor):
                    'VALUES (\'B1\', false, 5)')
     cursor.execute('INSERT INTO public."BookingAPI_seat"("number", emergency_exit, aeroplane_id) ' +
                    'VALUES (\'B2\', true, 5)')
-    cursor.execute('INSERT INTO public."BookingAPI_seat"("number", emergency_exit, aeroplane_id) ' +
-                   'VALUES (\'C1\', false, 5)')
 
     print("Inserted seat static data")
 

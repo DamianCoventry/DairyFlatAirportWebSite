@@ -217,7 +217,7 @@ class BookingAPI {
                 else if (xhr.status == 401) {
                     api.useRefreshToken(api.refreshToken,
                         function () {
-                            api.getAeroplane(id, okFn, errorFn);
+                            api.getUser(id, okFn, errorFn);
                         },
                         function (code, json) {
                             api.signIn(window.location.href);

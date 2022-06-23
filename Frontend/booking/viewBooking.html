@@ -117,13 +117,13 @@
                                 newCell.appendChild(document.createTextNode(x.departure_airport.name));
 
                                 newCell = newRow.insertCell(3);
-                                newCell.appendChild(document.createTextNode(x.departure_date_time_utc));
+                                newCell.appendChild(document.createTextNode(toLocaleTime(x.departure_date_time_utc, x.departure_airport.timezone)));
 
                                 newCell = newRow.insertCell(4);
                                 newCell.appendChild(document.createTextNode(x.arrival_airport.name));
 
                                 newCell = newRow.insertCell(5);
-                                newCell.appendChild(document.createTextNode(x.arrival_date_time_utc));
+                                newCell.appendChild(document.createTextNode(toLocaleTime(x.arrival_date_time_utc, x.arrival_airport.timezone)));
 
                                 newCell = newRow.insertCell(6);
                                 newCell.appendChild(document.createTextNode(x.flight_time_mins));

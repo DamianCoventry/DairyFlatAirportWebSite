@@ -67,54 +67,64 @@
                 }
 
                 const api = new BookingAPI();
-                setTimeout(function () {
-                    api.listSeatsForAeroplane(
-                        booking.getOutboundAeroplaneId(),
-                        function (json) {
-                            json.results.forEach(x => {
-                                outboundSeatSelect1.appendChild(makeSelectOption(x.id, x.number, x.emergency_exit));
-                                outboundSeatSelect2.appendChild(makeSelectOption(x.id, x.number, x.emergency_exit));
-                                outboundSeatSelect3.appendChild(makeSelectOption(x.id, x.number, x.emergency_exit));
-                                outboundSeatSelect4.appendChild(makeSelectOption(x.id, x.number, x.emergency_exit));
-                                outboundSeatSelect5.appendChild(makeSelectOption(x.id, x.number, x.emergency_exit));
-                                outboundSeatSelect6.appendChild(makeSelectOption(x.id, x.number, x.emergency_exit));
-                            });
+                api.listSeatsForAeroplane(
+                    booking.getOutboundAeroplaneId(),
+                    function (json) {
+                        json.results.forEach(x => {
+                            outboundSeatSelect1.appendChild(makeSelectOption(x.id, x.number, x.emergency_exit));
+                            outboundSeatSelect2.appendChild(makeSelectOption(x.id, x.number, x.emergency_exit));
+                            outboundSeatSelect3.appendChild(makeSelectOption(x.id, x.number, x.emergency_exit));
+                            outboundSeatSelect4.appendChild(makeSelectOption(x.id, x.number, x.emergency_exit));
+                            outboundSeatSelect5.appendChild(makeSelectOption(x.id, x.number, x.emergency_exit));
+                            outboundSeatSelect6.appendChild(makeSelectOption(x.id, x.number, x.emergency_exit));
+                        });
 
-                            outboundPassenger1.innerText = booking.getDisplayName1();
-                            outboundPassenger2.innerText = booking.getDisplayName2();
-                            outboundPassenger3.innerText = booking.getDisplayName3();
-                            outboundPassenger4.innerText = booking.getDisplayName4();
-                            outboundPassenger5.innerText = booking.getDisplayName5();
-                            outboundPassenger6.innerText = booking.getDisplayName6();
-                            showRequiredOutboundPassengerGui(booking);
-                        },
-                        showHttpError);
-                    }, 500);
+                        outboundPassenger1.innerText = booking.getDisplayName1();
+                        outboundPassenger2.innerText = booking.getDisplayName2();
+                        outboundPassenger3.innerText = booking.getDisplayName3();
+                        outboundPassenger4.innerText = booking.getDisplayName4();
+                        outboundPassenger5.innerText = booking.getDisplayName5();
+                        outboundPassenger6.innerText = booking.getDisplayName6();
+                        showRequiredOutboundPassengerGui(booking);
+                    },
+                    showHttpError);
+
+                api.getAeroplane(
+                    booking.getOutboundAeroplaneId(),
+                    function (json) {
+                        outboundFloorPlan.setAttribute('src', json.floor_plan_link);
+                    },
+                    showHttpError);
 
                 if (booking.isReturnTrip()) {
-                    setTimeout(function () {
-                        api.listSeatsForAeroplane(
-                            booking.getInboundAeroplaneId(),
-                            function (json) {
-                                json.results.forEach(x => {
-                                    inboundSeatSelect1.appendChild(makeSelectOption(x.id, x.number, x.emergency_exit));
-                                    inboundSeatSelect2.appendChild(makeSelectOption(x.id, x.number, x.emergency_exit));
-                                    inboundSeatSelect3.appendChild(makeSelectOption(x.id, x.number, x.emergency_exit));
-                                    inboundSeatSelect4.appendChild(makeSelectOption(x.id, x.number, x.emergency_exit));
-                                    inboundSeatSelect5.appendChild(makeSelectOption(x.id, x.number, x.emergency_exit));
-                                    inboundSeatSelect6.appendChild(makeSelectOption(x.id, x.number, x.emergency_exit));
-                                });
+                    api.listSeatsForAeroplane(
+                        booking.getInboundAeroplaneId(),
+                        function (json) {
+                            json.results.forEach(x => {
+                                inboundSeatSelect1.appendChild(makeSelectOption(x.id, x.number, x.emergency_exit));
+                                inboundSeatSelect2.appendChild(makeSelectOption(x.id, x.number, x.emergency_exit));
+                                inboundSeatSelect3.appendChild(makeSelectOption(x.id, x.number, x.emergency_exit));
+                                inboundSeatSelect4.appendChild(makeSelectOption(x.id, x.number, x.emergency_exit));
+                                inboundSeatSelect5.appendChild(makeSelectOption(x.id, x.number, x.emergency_exit));
+                                inboundSeatSelect6.appendChild(makeSelectOption(x.id, x.number, x.emergency_exit));
+                            });
 
-                                inboundPassenger1.innerText = booking.getDisplayName1();
-                                inboundPassenger2.innerText = booking.getDisplayName2();
-                                inboundPassenger3.innerText = booking.getDisplayName3();
-                                inboundPassenger4.innerText = booking.getDisplayName4();
-                                inboundPassenger5.innerText = booking.getDisplayName5();
-                                inboundPassenger6.innerText = booking.getDisplayName6();
-                                showRequiredInboundPassengerGui(booking);
-                            },
-                            showError);
-                        }, 500);
+                            inboundPassenger1.innerText = booking.getDisplayName1();
+                            inboundPassenger2.innerText = booking.getDisplayName2();
+                            inboundPassenger3.innerText = booking.getDisplayName3();
+                            inboundPassenger4.innerText = booking.getDisplayName4();
+                            inboundPassenger5.innerText = booking.getDisplayName5();
+                            inboundPassenger6.innerText = booking.getDisplayName6();
+                            showRequiredInboundPassengerGui(booking);
+                        },
+                        showError);
+
+                    api.getAeroplane(
+                        booking.getInboundAeroplaneId(),
+                        function (json) {
+                            inboundFloorPlan.setAttribute('src', json.floor_plan_link);
+                        },
+                        showHttpError);
                 }
                 else {
                     returnFlightGUI.style.display = 'none';
@@ -337,79 +347,98 @@
                     <h4 class="mb-3 text-primary">Seat Selection</h4>
 
                     <FORM id="mainForm" class="needs-validation mb-5" novalidate>
-                        <div class="fs-5 mb-4">
-                            Select your seats for the flight to <span class="text-success fw-bold text-decoration-underline" id="toCityName1"></span>
-                        </div>
-    
-                        <div id="extrasErrorDiv" style="display: none;"></div>
+                        <HR>
+                        <DIV class="row mb-4">
+                            <DIV class="col align-self-start">
+                                <div class="fs-5">
+                                    Select your seats for the flight to <span class="text-success fw-bold text-decoration-underline" id="toCityName1"></span>
+                                </div>
+                                <div class="mb-4">
+                                    <strong class="fst-italic text-danger">* The red dot represents an emergency exit</strong>
+                                </div>
+                                <div class="text-center" id="outboundSeatSpinner">
+                                    <div class="spinner-border" role="status">
+                                        <span class="visually-hidden">Retrieving...</span>
+                                    </div>
+                                </div>
+                                <div class="mb-3 col">
+                                    <div class="row mb-2 align-items-center">
+                                        <div class="col-3"><span id="outboundPassenger1"></span></div>
+                                        <div class="col-4"><select class="form-control form-select" id="outboundSeatSelect1" aria-label="Outbound Seat" style="display: none;"></select></div>
+                                    </div>
+                                    <div class="row mb-2 align-items-center">
+                                        <div class="col-3"><span id="outboundPassenger2"></span></div>
+                                        <div class="col-4"><select class="form-control form-select" id="outboundSeatSelect2" aria-label="Outbound Seat" style="display: none;"></select></div>
+                                    </div>
+                                    <div class="row mb-2 align-items-center">
+                                        <div class="col-3"><span id="outboundPassenger3"></span></div>
+                                        <div class="col-4"><select class="form-control form-select" id="outboundSeatSelect3" aria-label="Outbound Seat" style="display: none;"></select></div>
+                                    </div>
+                                    <div class="row mb-2 align-items-center">
+                                        <div class="col-3"><span id="outboundPassenger4"></span></div>
+                                        <div class="col-4"><select class="form-control form-select" id="outboundSeatSelect4" aria-label="Outbound Seat" style="display: none;"></select></div>
+                                    </div>
+                                    <div class="row mb-2 align-items-center">
+                                        <div class="col-3"><span id="outboundPassenger5"></span></div>
+                                        <div class="col-4"><select class="form-control form-select" id="outboundSeatSelect5" aria-label="Outbound Seat" style="display: none;"></select></div>
+                                    </div>
+                                    <div class="row mb-2 align-items-center">
+                                        <div class="col-3"><span id="outboundPassenger6"></span></div>
+                                        <div class="col-4"><select class="form-control form-select" id="outboundSeatSelect6" aria-label="Outbound Seat" style="display: none;"></select></div>
+                                    </div>
+                                </div>
+                            </DIV>
+                            <DIV class="col-4 align-self-start">
+                                <IMG width="128" height="256" id="outboundFloorPlan" src="">
+                            </DIV>
+                        </DIV>
 
-                        <div class="text-center" id="outboundSeatSpinner">
-                            <div class="spinner-border" role="status">
-                                <span class="visually-hidden">Retrieving...</span>
-                            </div>
-                        </div>
-                        <div class="mb-3 col">
-                            <div class="row mb-2 align-items-center">
-                                <div class="col-3"><span id="outboundPassenger1"></span></div>
-                                <div class="col-4"><select class="form-control form-select" id="outboundSeatSelect1" aria-label="Outbound Seat" style="display: none;"></select></div>
-                            </div>
-                            <div class="row mb-2 align-items-center">
-                                <div class="col-3"><span id="outboundPassenger2"></span></div>
-                                <div class="col-4"><select class="form-control form-select" id="outboundSeatSelect2" aria-label="Outbound Seat" style="display: none;"></select></div>
-                            </div>
-                            <div class="row mb-2 align-items-center">
-                                <div class="col-3"><span id="outboundPassenger3"></span></div>
-                                <div class="col-4"><select class="form-control form-select" id="outboundSeatSelect3" aria-label="Outbound Seat" style="display: none;"></select></div>
-                            </div>
-                            <div class="row mb-2 align-items-center">
-                                <div class="col-3"><span id="outboundPassenger4"></span></div>
-                                <div class="col-4"><select class="form-control form-select" id="outboundSeatSelect4" aria-label="Outbound Seat" style="display: none;"></select></div>
-                            </div>
-                            <div class="row mb-2 align-items-center">
-                                <div class="col-3"><span id="outboundPassenger5"></span></div>
-                                <div class="col-4"><select class="form-control form-select" id="outboundSeatSelect5" aria-label="Outbound Seat" style="display: none;"></select></div>
-                            </div>
-                            <div class="row mb-2 align-items-center">
-                                <div class="col-3"><span id="outboundPassenger6"></span></div>
-                                <div class="col-4"><select class="form-control form-select" id="outboundSeatSelect6" aria-label="Outbound Seat" style="display: none;"></select></div>
-                            </div>
-                        </div>
                         <span id="inboundFlightGUI" style="display: none;">
-                            <div class="fs-5 mt-5 mb-4">
-                                Select your seats for the return flight to <span class="text-success fw-bold text-decoration-underline" id="fromCityName1"></span>
-                            </div>
-
-                            <div class="text-center" id="inboundSeatSpinner">
-                                <div class="spinner-border" role="status">
-                                    <span class="visually-hidden">Retrieving...</span>
+                            <HR>
+                            <DIV class="row">
+                                <DIV class="col align-self-start">
+                                    <div class="fs-5">
+                                        Select your seats for the return flight to <span class="text-success fw-bold text-decoration-underline" id="fromCityName1"></span>
+                                    </div>
+                                    <div class="mb-4">
+                                        <strong class="fst-italic text-danger">* The red dot represents an emergency exit</strong>
+                                    </div>
+                                        <div class="text-center" id="inboundSeatSpinner">
+                                        <div class="spinner-border" role="status">
+                                            <span class="visually-hidden">Retrieving...</span>
+                                        </div>
+                                    </div>
+                                    <div class="mb-3">
+                                        <div class="row mb-2 align-items-center">
+                                            <div class="col-3"><span id="inboundPassenger1"></span></div>
+                                            <div class="col-4"><select class="form-control form-select" id="inboundSeatSelect1" aria-label="inbound Seat" style="display: none;"></select></div>
+                                        </div>
+                                        <div class="row mb-2 align-items-center">
+                                            <div class="col-3"><span id="inboundPassenger2"></span></div>
+                                            <div class="col-4"><select class="form-control form-select" id="inboundSeatSelect2" aria-label="inbound Seat" style="display: none;"></select></div>
+                                        </div>
+                                        <div class="row mb-2 align-items-center">
+                                            <div class="col-3"><span id="inboundPassenger3"></span></div>
+                                            <div class="col-4"><select class="form-control form-select" id="inboundSeatSelect3" aria-label="inbound Seat" style="display: none;"></select></div>
+                                        </div>
+                                        <div class="row mb-2 align-items-center">
+                                            <div class="col-3"><span id="inboundPassenger4"></span></div>
+                                            <div class="col-4"><select class="form-control form-select" id="inboundSeatSelect4" aria-label="inbound Seat" style="display: none;"></select></div>
+                                        </div>
+                                        <div class="row mb-2 align-items-center">
+                                            <div class="col-3"><span id="inboundPassenger5"></span></div>
+                                            <div class="col-4"><select class="form-control form-select" id="inboundSeatSelect5" aria-label="inbound Seat" style="display: none;"></select></div>
+                                        </div>
+                                        <div class="row mb-2 align-items-center">
+                                            <div class="col-3"><span id="inboundPassenger6"></span></div>
+                                            <div class="col-4"><select class="form-control form-select" id="inboundSeatSelect6" aria-label="inbound Seat" style="display: none;"></select></div>
+                                        </div>
+                                    </div>
                                 </div>
-                            </div>
-                            <div class="mb-3">
-                                <div class="row mb-2 align-items-center">
-                                    <div class="col-3"><span id="inboundPassenger1"></span></div>
-                                    <div class="col-4"><select class="form-control form-select" id="inboundSeatSelect1" aria-label="inbound Seat" style="display: none;"></select></div>
-                                </div>
-                                <div class="row mb-2 align-items-center">
-                                    <div class="col-3"><span id="inboundPassenger2"></span></div>
-                                    <div class="col-4"><select class="form-control form-select" id="inboundSeatSelect2" aria-label="inbound Seat" style="display: none;"></select></div>
-                                </div>
-                                <div class="row mb-2 align-items-center">
-                                    <div class="col-3"><span id="inboundPassenger3"></span></div>
-                                    <div class="col-4"><select class="form-control form-select" id="inboundSeatSelect3" aria-label="inbound Seat" style="display: none;"></select></div>
-                                </div>
-                                <div class="row mb-2 align-items-center">
-                                    <div class="col-3"><span id="inboundPassenger4"></span></div>
-                                    <div class="col-4"><select class="form-control form-select" id="inboundSeatSelect4" aria-label="inbound Seat" style="display: none;"></select></div>
-                                </div>
-                                <div class="row mb-2 align-items-center">
-                                    <div class="col-3"><span id="inboundPassenger5"></span></div>
-                                    <div class="col-4"><select class="form-control form-select" id="inboundSeatSelect5" aria-label="inbound Seat" style="display: none;"></select></div>
-                                </div>
-                                <div class="row mb-2 align-items-center">
-                                    <div class="col-3"><span id="inboundPassenger6"></span></div>
-                                    <div class="col-4"><select class="form-control form-select" id="inboundSeatSelect6" aria-label="inbound Seat" style="display: none;"></select></div>
-                                </div>
-                            </div>
+                                <DIV class="col-4">
+                                    <IMG width="128" height="256" id="inboundFloorPlan" src="">
+                                </DIV>
+                            </DIV>
                         </span>
                     </FORM>
 

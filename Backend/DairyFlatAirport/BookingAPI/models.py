@@ -11,6 +11,7 @@ class Aeroplane(models.Model):
     make_model = models.CharField(max_length=64, null=False)
     num_seats = models.IntegerField(default=5, null=False, validators=[MinValueValidator(1), MaxValueValidator(8)])
     image_link = models.CharField(max_length=512, null=True)
+    floor_plan_link = models.CharField(max_length=512, null=True)
 
 
 class Airport(models.Model):

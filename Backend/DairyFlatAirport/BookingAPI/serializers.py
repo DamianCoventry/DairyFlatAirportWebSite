@@ -20,7 +20,7 @@ class GroupSerializer(serializers.ModelSerializer):
 class AeroplaneSerializer(serializers.ModelSerializer):
     class Meta:
         model = Aeroplane
-        fields = ['id', 'tail_number', 'make_model', 'num_seats', 'image_link']
+        fields = ['id', 'tail_number', 'make_model', 'num_seats', 'image_link', 'floor_plan_link']
 
 
 class AirportSerializer(serializers.ModelSerializer):

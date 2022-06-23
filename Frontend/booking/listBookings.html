@@ -35,85 +35,108 @@
 
                 const api = new BookingAPI();
                 api.listBookings(currentPage, function (json) {
-                    setTimeout(function() {
-                        var table = document.getElementById("bookingsTable");
-                        var oldTbody = table.tBodies[0];
-                        var newTbody = document.createElement("tbody");
+                    var table = document.getElementById("bookingsTable");
+                    var oldTbody = table.tBodies[0];
+                    var newTbody = document.createElement("tbody");
 
-                        json.results.forEach(x => {
-                            var newRow = newTbody.insertRow(-1);
+                    if (json.results.length == 0) {
+                        var newRow = newTbody.insertRow(-1);
+                        var newRow = tableBody.insertRow(-1);
 
-                            var link = document.createElement('a');
-                            link.setAttribute('href', "/booking/viewBooking.html?id=" + x.id);
-                            link.innerText = x.number;
-                            var newCell = newRow.insertCell(0);
-                            newCell.appendChild(link);
+                        var newCell = newRow.insertCell(0);
+                        newCell.setAttribute('colspan', '6');
 
-                            newCell = newRow.insertCell(1);
-                            newCell.appendChild(document.createTextNode(x.created_by.username));
+                        var div1 = document.createElement('div');
+                        div1.setAttribute('class', 'row');
 
-                            newCell = newRow.insertCell(2);
-                            newCell.appendChild(document.createTextNode(x.flightLegs.length + " flight legs"));
+                        var div2 = document.createElement('div');
+                        div2.setAttribute('class', 'col text-center');
 
-                            newCell = newRow.insertCell(3);
-                            newCell.appendChild(document.createTextNode(x.passengers.length + " passengers"));
+                        var span = document.createElement('span');
+                        span.setAttribute('class', 'fst-italic');
+                        span.innerText = 'You haven\'t created a booking yet.';
+                        div2.appendChild(span);
 
-                            newCell = newRow.insertCell(4);
-                            if (x.travelInsurance == null) {
-                                newCell.appendChild(document.createTextNode("-"));
-                            }
-                            else {
-                                newCell.appendChild(document.createTextNode(x.travelInsurance.title));
-                            }
-
-                            newCell = newRow.insertCell(5);
-                            if (x.rentalCar == null) {
-                                newCell.appendChild(document.createTextNode("-"));
-                            }
-                            else {
-                                newCell.appendChild(document.createTextNode(x.rentalCar.make + " " + x.rentalCar.model));
-                            }
-                        });
+                        div1.appendChild(div2);
+                        newCell.appendChild(div1);
 
                         oldTbody.parentNode.replaceChild(newTbody, oldTbody);
+                        return;
+                    }
 
-                        if (json.count < 10) {
-                            document.getElementById("paginationNav").style.display = "none";
+                    json.results.forEach(x => {
+                        var newRow = newTbody.insertRow(-1);
+
+                        var link = document.createElement('a');
+                        link.setAttribute('href', "/booking/viewBooking.html?id=" + x.id);
+                        link.innerText = x.number;
+                        var newCell = newRow.insertCell(0);
+                        newCell.appendChild(link);
+
+                        newCell = newRow.insertCell(1);
+                        newCell.appendChild(document.createTextNode(x.created_by.username));
+
+                        newCell = newRow.insertCell(2);
+                        newCell.appendChild(document.createTextNode(x.flightLegs.length + " flight legs"));
+
+                        newCell = newRow.insertCell(3);
+                        newCell.appendChild(document.createTextNode(x.passengers.length + " passengers"));
+
+                        newCell = newRow.insertCell(4);
+                        if (x.travelInsurance == null) {
+                            newCell.appendChild(document.createTextNode("-"));
                         }
                         else {
-                            var ul = document.getElementById("paginationList");
-                            while (ul.hasChildNodes()) {
-                                ul.removeChild(ul.firstChild);
-                            }
-
-                            var totalPages = Math.floor(json.count / 10);
-                            if (json.count % 10 != 0) {
-                                ++totalPages;
-                            }
-
-                            const maxVisiblePages = 3;
-                            var firstPage = currentPage - 1;
-                            if (firstPage < 1) {
-                                firstPage = 1;
-                            }
-
-                            // insert a left chevron icon if required
-                            if (totalPages > maxVisiblePages && (currentPage - 2) > 0) {
-                                createAndAppendItem(ul, currentPage - 2, "&laquo;", false);
-                            }
-
-                            for (var i = 0; i < maxVisiblePages && (firstPage + i) <= totalPages; ++i) {
-                                createAndAppendItem(ul, firstPage + i, firstPage + i, firstPage + i == currentPage);
-                            }
-
-                            // insert a right chevron icon if required
-                            if (totalPages > maxVisiblePages && (currentPage + 2) < totalPages) {
-                                createAndAppendItem(ul, currentPage + 2, "&raquo;", false);
-                            }
-
-                            document.getElementById("paginationNav").style.display = "";
+                            newCell.appendChild(document.createTextNode(x.travelInsurance.title));
                         }
-                    }, 500);
+
+                        newCell = newRow.insertCell(5);
+                        if (x.rentalCar == null) {
+                            newCell.appendChild(document.createTextNode("-"));
+                        }
+                        else {
+                            newCell.appendChild(document.createTextNode(x.rentalCar.make + " " + x.rentalCar.model));
+                        }
+                    });
+
+                    oldTbody.parentNode.replaceChild(newTbody, oldTbody);
+
+                    if (json.count < 10) {
+                        document.getElementById("paginationNav").style.display = "none";
+                    }
+                    else {
+                        var ul = document.getElementById("paginationList");
+                        while (ul.hasChildNodes()) {
+                            ul.removeChild(ul.firstChild);
+                        }
+
+                        var totalPages = Math.floor(json.count / 10);
+                        if (json.count % 10 != 0) {
+                            ++totalPages;
+                        }
+
+                        const maxVisiblePages = 3;
+                        var firstPage = currentPage - 1;
+                        if (firstPage < 1) {
+                            firstPage = 1;
+                        }
+
+                        // insert a left chevron icon if required
+                        if (totalPages > maxVisiblePages && (currentPage - 2) > 0) {
+                            createAndAppendItem(ul, currentPage - 2, "&laquo;", false);
+                        }
+
+                        for (var i = 0; i < maxVisiblePages && (firstPage + i) <= totalPages; ++i) {
+                            createAndAppendItem(ul, firstPage + i, firstPage + i, firstPage + i == currentPage);
+                        }
+
+                        // insert a right chevron icon if required
+                        if (totalPages > maxVisiblePages && (currentPage + 2) < totalPages) {
+                            createAndAppendItem(ul, currentPage + 2, "&raquo;", false);
+                        }
+
+                        document.getElementById("paginationNav").style.display = "";
+                    }
                 },
                 showHttpError);
 

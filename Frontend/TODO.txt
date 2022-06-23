@@ -58,13 +58,13 @@ DONE    Put tooltips on the edit and delete buttons within the view booking page
 Look + Feel
 ~~~~~~~~~~~
 DONE    View aeroplane needs an image
-        Select your seats needs an image
+DONE    Select your seats needs an image
 DONE    Reorganize toolbar left hand links
-        on the viewAeroplane page: Change text within text boxes to links for the viewFlight page
+DONE    on the viewAeroplane page: Change text within text boxes to links for the viewFlight page
         add new css/html for the invoice page that makes the wizard icons not anchors
-        the viewBooking page has a shit display format for the date/time
+DONE    the viewBooking page has a shit display format for the date/time
 DONE    show something when the login fails
-        CTA buttons for empty lists?
+DONE    CTA buttons for empty lists?
 DONE    The error toast has empty text
 
 
@@ -90,7 +90,7 @@ DONE    the user account dialog doesn't always navigate to the rest api
 DONE    Get the localhost URI out of the bookingAPI.js file?
         Don't allow a seat to be booked twice
         I don't think booked sets are actually being written into the database
-        Don't allow an account to be deleted unless the user's password is entered?
+DONE    Don't allow an account to be deleted unless the user's password is entered?
         Remove the 'add existing' passenger?
 
 

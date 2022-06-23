@@ -51,12 +51,12 @@
                     const api = new BookingAPI();
                     api.getPassenger(params.id,
                         function (json) {
-                            document.getElementById("title").value = json.title;
-                            document.getElementById("firstName").value = json.first_name;
-                            document.getElementById("lastName").value = json.second_name;
-                            document.getElementById("emailAddress").value = json.email_address;
-                            document.getElementById("phoneNumber").value = json.phone_number;
-                            document.getElementById("specialAssistance").value = json.special_assistance;
+                            title.value = json.title;
+                            firstName.value = json.first_name;
+                            lastName.value = json.second_name;
+                            emailAddress.value = json.email_address;
+                            phoneNumber.value = json.phone_number;
+                            specialAssistance.value = json.special_assistance;
                         },
                         showHttpError);
                 }
@@ -90,6 +90,48 @@
                     });
             }
 
+            function addPassengerToBooking(api, bookingId, id) {
+                api.getCompactBooking(bookingId,
+                    function(json) {
+                        api.modifyBooking(bookingId,
+                            json.number, json.travelInsurance, json.rentalCar,
+                            json.flightLegs, json.passengers.concat(id),
+                            function(json) {
+                                setTimeout(function() {
+                                    document.location.href = "/booking/viewBooking.html?id=" + bookingId;
+                                }, 500);
+                            },
+                            function(code, json) {
+                                formFieldset.disabled = false;
+                                saveButton.disabled = false;
+                                formSaveSpinner.style.display = "none";
+                                showHttpError(code, json);
+                            });
+                    },
+                    function(code, json) {
+                        formFieldset.disabled = false;
+                        saveButton.disabled = false;
+                        formSaveSpinner.style.display = "none";
+                        showHttpError(code, json);
+                    });
+            }
+
+            function saveButtonClicked() {
+                const forms = document.querySelectorAll('.needs-validation');
+                Array.from(forms).forEach(form => {
+                    if (form.checkValidity()) {
+                        formFieldset.disabled = true;
+                        formSaveSpinner.style.display = "";
+                        savePassenger();
+                    }
+                    else {
+                        event.preventDefault();
+                        event.stopPropagation();
+                        form.classList.add('was-validated');
+                    }
+                }, false);
+            }
+
             function savePassenger() {
                 const params = new Proxy(new URLSearchParams(window.location.search), {
                         get: (searchParams, prop) => searchParams.get(prop),
@@ -100,85 +142,32 @@
                 const api = new BookingAPI();
                 if (params.mode != null && params.mode === "add") {
                     api.addPassenger(
-                        document.getElementById("title").value,
-                        document.getElementById("firstName").value,
-                        document.getElementById("lastName").value,
-                        document.getElementById("emailAddress").value,
-                        document.getElementById("phoneNumber").value,
-                        document.getElementById("specialAssistance").value,
+                        title.value, firstName.value, lastName.value, emailAddress.value,
+                        phoneNumber.value, specialAssistance.value,
                         function(json) {
                             addPassengerToBooking(api, params.bookingId, json.id);
                         },
                         function(code, json) {
                             formFieldset.disabled = false;
                             saveButton.disabled = false;
-                            saveSpinner.style.display = "none";
+                            formSaveSpinner.style.display = "none";
                             showHttpError(code, json);
                         });
                 }
                 else {
                     api.modifyPassenger(params.id,
-                        document.getElementById("title").value,
-                        document.getElementById("firstName").value,
-                        document.getElementById("lastName").value,
-                        document.getElementById("emailAddress").value,
-                        document.getElementById("phoneNumber").value,
-                        document.getElementById("specialAssistance").value,
+                        title.value, firstName.value, lastName.value, emailAddress.value,
+                        phoneNumber.value, specialAssistance.value,
                         function(json) {
                             document.location.href = "/booking/viewBooking.html?id=" + params.bookingId;
                         },
                         function(code, json) {
                             formFieldset.disabled = false;
                             saveButton.disabled = false;
-                            saveSpinner.style.display = "none";
+                            formSaveSpinner.style.display = "none";
                             showHttpError(code, json);
                         });
                 }
-            }
-
-            function addPassengerToBooking(api, bookingId, id) {
-                api.getCompactBooking(bookingId,
-                    function(json) {
-                        api.modifyBooking(bookingId,
-                            json.number,
-                            json.travelInsurance,
-                            json.rentalCar,
-                            json.flightLegs,
-                            json.passengers.concat(id),
-                            function(json) {
-                                setTimeout(function() {
-                                    document.location.href = "/booking/viewBooking.html?id=" + bookingId;
-                                }, 500);
-                            },
-                            function(code, json) {
-                                formFieldset.disabled = false;
-                                saveButton.disabled = false;
-                                saveSpinner.style.display = "none";
-                                showHttpError(code, json);
-                            });
-                    },
-                    function(code, json) {
-                        formFieldset.disabled = false;
-                        saveButton.disabled = false;
-                        saveSpinner.style.display = "none";
-                        showHttpError(code, json);
-                    });
-            }
-
-            function saveButtonClicked() {
-                const forms = document.querySelectorAll('.needs-validation');
-                Array.from(forms).forEach(form => {
-                    if (form.checkValidity()) {
-                        formFieldset.disabled = true;
-                        saveSpinner.style.display = "";
-                        savePassenger();
-                    }
-                    else {
-                        event.preventDefault();
-                        event.stopPropagation();
-                        form.classList.add('was-validated');
-                    }
-                }, false);
             }
         </SCRIPT>
     </HEAD>
@@ -282,7 +271,7 @@
                 </fieldset>
 
                 <DIV class="row justify-content-end">
-                    <DIV class="col" id="saveSpinner" style="display: none;">
+                    <DIV class="col" id="formSaveSpinner" style="display: none;">
                         <span class="d-flex align-items-center justify-content-end">
                             <SPAN class="spinner-border text-end text-success" role="status"></SPAN>
                             <SPAN class="text-success fw-bold">&nbsp;Saving...</SPAN>
