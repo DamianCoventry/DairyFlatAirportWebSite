@@ -67,8 +67,8 @@
                 }
 
                 const api = new BookingAPI();
-                api.listSeatsForAeroplane(
-                    booking.getOutboundAeroplaneId(),
+                api.listUnbookedSeats(
+                    booking.getOutboundFlightId(),
                     function (json) {
                         json.results.forEach(x => {
                             outboundSeatSelect1.appendChild(makeSelectOption(x.id, x.number, x.emergency_exit));
@@ -107,44 +107,44 @@
                     showHttpError);
 
                 if (booking.isReturnTrip()) {
-                    api.listSeatsForAeroplane(
-                        booking.getInboundAeroplaneId(),
-                        function (json) {
-                            json.results.forEach(x => {
-                                inboundSeatSelect1.appendChild(makeSelectOption(x.id, x.number, x.emergency_exit));
-                                inboundSeatSelect2.appendChild(makeSelectOption(x.id, x.number, x.emergency_exit));
-                                inboundSeatSelect3.appendChild(makeSelectOption(x.id, x.number, x.emergency_exit));
-                                inboundSeatSelect4.appendChild(makeSelectOption(x.id, x.number, x.emergency_exit));
-                                inboundSeatSelect5.appendChild(makeSelectOption(x.id, x.number, x.emergency_exit));
-                                inboundSeatSelect6.appendChild(makeSelectOption(x.id, x.number, x.emergency_exit));
-                            });
+                    api.listUnbookedSeats(
+                        booking.getInboundFlightId(),
+                            function (json) {
+                                json.results.forEach(x => {
+                                    inboundSeatSelect1.appendChild(makeSelectOption(x.id, x.number, x.emergency_exit));
+                                    inboundSeatSelect2.appendChild(makeSelectOption(x.id, x.number, x.emergency_exit));
+                                    inboundSeatSelect3.appendChild(makeSelectOption(x.id, x.number, x.emergency_exit));
+                                    inboundSeatSelect4.appendChild(makeSelectOption(x.id, x.number, x.emergency_exit));
+                                    inboundSeatSelect5.appendChild(makeSelectOption(x.id, x.number, x.emergency_exit));
+                                    inboundSeatSelect6.appendChild(makeSelectOption(x.id, x.number, x.emergency_exit));
+                                });
 
-                            inboundPassenger1.innerText = booking.getDisplayName1();
-                            if (booking.getNumPassengers() > 1) {
-                                inboundPassenger2.innerText = booking.getDisplayName2();
-                            }
-                            if (booking.getNumPassengers() > 1) {
-                                inboundPassenger3.innerText = booking.getDisplayName3();
-                            }
-                            if (booking.getNumPassengers() > 1) {
-                                inboundPassenger4.innerText = booking.getDisplayName4();
-                            }
-                            if (booking.getNumPassengers() > 1) {
-                                inboundPassenger5.innerText = booking.getDisplayName5();
-                            }
-                            if (booking.getNumPassengers() > 1) {
-                                inboundPassenger6.innerText = booking.getDisplayName6();
-                            }
-                            showRequiredInboundPassengerGui(booking);
-                        },
-                        showError);
+                                inboundPassenger1.innerText = booking.getDisplayName1();
+                                if (booking.getNumPassengers() > 1) {
+                                    inboundPassenger2.innerText = booking.getDisplayName2();
+                                }
+                                if (booking.getNumPassengers() > 1) {
+                                    inboundPassenger3.innerText = booking.getDisplayName3();
+                                }
+                                if (booking.getNumPassengers() > 1) {
+                                    inboundPassenger4.innerText = booking.getDisplayName4();
+                                }
+                                if (booking.getNumPassengers() > 1) {
+                                    inboundPassenger5.innerText = booking.getDisplayName5();
+                                }
+                                if (booking.getNumPassengers() > 1) {
+                                    inboundPassenger6.innerText = booking.getDisplayName6();
+                                }
+                                showRequiredInboundPassengerGui(booking);
+                            },
+                            showError);
 
-                    api.getAeroplane(
-                        booking.getInboundAeroplaneId(),
-                        function (json) {
-                            inboundFloorPlan.setAttribute('src', json.floor_plan_link);
-                        },
-                        showHttpError);
+                        api.getAeroplane(
+                            booking.getInboundAeroplaneId(),
+                            function (json) {
+                                inboundFloorPlan.setAttribute('src', json.floor_plan_link);
+                            },
+                            showHttpError);
                 }
                 else {
                     returnFlightBookingGUI.style.display = 'none';

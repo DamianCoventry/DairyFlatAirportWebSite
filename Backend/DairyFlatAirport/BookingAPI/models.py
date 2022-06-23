@@ -110,7 +110,7 @@ class Booking(models.Model):
                                         related_name='travelInsurance')
     rentalCar = models.ForeignKey(RentalCar, null=True, on_delete=models.CASCADE, related_name='rentalCar')
     flightLegs = models.ManyToManyField(FlightLeg)
-    passengers = models.ManyToManyField(Passenger)
+    passengers = models.ManyToManyField(Passenger, related_name='passengersBooking')
 
 
 class BookedSeat(models.Model):

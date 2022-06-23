@@ -79,8 +79,7 @@ Bugs
 Functionality
 ~~~~~~~~~~~~~
         How to implement multistop?
-        delete booking doesn't work
-        Deleting a booking needs to remove ALL data
+DONE    delete booking doesn't work
         don't show the seats in the choose seats that are unavailable
         can the container be started/stopped repeatedly?
 
