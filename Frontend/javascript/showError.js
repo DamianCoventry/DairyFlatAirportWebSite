@@ -19,7 +19,7 @@ function javascriptObjectToDivs(object) {
 }
 
 function showError() {
-    const toastLiveExample = document.getElementById('responseCodePopup');
-    const toast = new bootstrap.Toast(toastLiveExample);
+    const element = document.getElementById('responseCodePopup');
+    const toast = new bootstrap.Toast(element);
     toast.show();
 }

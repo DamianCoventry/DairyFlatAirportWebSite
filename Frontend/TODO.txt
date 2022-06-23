@@ -83,7 +83,7 @@ DONE    the user account dialog doesn't always navigate to the rest api
         Search for, and implement, all the TODO comments
         Use that horrible looking mapping program for the web dev assignment
         Do not allow bookings if aeroplane is full
-        Do not allow num passengers to be 6 if the aeroplane doesn't have 6 seats
+WIP     Do not allow num passengers to be 6 if the aeroplane doesn't have 6 seats
         If it's a one-way trip, how does a rental car work? Considering it's priced 'per day'...
         if an existing booking is modified, should we generate a new invoice page?
 DONE    Change your seats for an existing booking?

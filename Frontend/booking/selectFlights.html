@@ -723,11 +723,21 @@
             }
 
             function getChosenFlightId(namePrefix) {
-                var radioButtons = document.getElementsByTagName('input');
-                for (var i = 0; i < radioButtons.length; ++i) {
-                    var x = radioButtons[i];
+                var elements = document.getElementsByTagName('input');
+                for (var i = 0; i < elements.length; ++i) {
+                    var x = elements[i];
                     if (x.getAttribute('type') == 'radio' && x.name.substring(0, namePrefix.length) == namePrefix && x.checked) {
                         return x.name.substring(namePrefix.length);
+                    }
+                }
+                return null;
+            }
+
+            function getChosenFlightNumber(namePrefix, flightId) {
+                var anchors = document.getElementsByTagName('a');
+                for (var i = 0; i < anchors.length; ++i) {
+                    if (anchors[i].name.substring(0, namePrefix.length) == namePrefix && anchors[i].name.substring(namePrefix.length) == flightId) {
+                        return anchors[i].innerText;
                     }
                 }
                 return null;
@@ -822,32 +832,95 @@
                     const leavesWhen = new Date(leaveDate.value);
                     const returnsWhen = new Date(returnDate.value);
                     if (returnsWhen <= leavesWhen) {
-                        showGeneralError('The return date must be after the leave date.')
+                        showGeneralError('The return trip date must be after the outbound trip date.')
                         return false;
                     }
                 }
 
-                var outboundFlightId = getChosenFlightId('outboundFlightId');
-                var outboundAeroplaneId = getChosenAeroplaneId('outboundAeroplaneId', outboundFlightId);
-                var outboundFlightCost = getChosenFlightCost('outboundFlightId', 'outboundCost');
+                checkFlightCapacity(booking, function () {
+                    var outboundFlightId = getChosenFlightId('outboundFlightId');
+                    var outboundAeroplaneId = getChosenAeroplaneId('outboundAeroplaneId', outboundFlightId);
+                    var outboundFlightCost = getChosenFlightCost('outboundFlightId', 'outboundCost');
 
-                var inboundFlightId = getChosenFlightId('inboundFlightId');
-                var inboundAeroplaneId = getChosenAeroplaneId('inboundAeroplaneId', inboundFlightId);
-                var inboundFlightCost = getChosenFlightCost('inboundFlightId', 'inboundCost');
+                    var inboundFlightId = getChosenFlightId('inboundFlightId');
+                    var inboundAeroplaneId = getChosenAeroplaneId('inboundAeroplaneId', inboundFlightId);
+                    var inboundFlightCost = getChosenFlightCost('inboundFlightId', 'inboundCost');
 
-                booking.setOutboundFlightId(outboundFlightId);
-                booking.setOutboundAeroplaneId(outboundAeroplaneId);
-                booking.setOutboundFlightCost(outboundFlightCost);
+                    booking.setOutboundFlightId(outboundFlightId);
+                    booking.setOutboundAeroplaneId(outboundAeroplaneId);
+                    booking.setOutboundFlightCost(outboundFlightCost);
 
-                booking.setInboundFlightId(inboundFlightId == null ? '' : inboundFlightId);
-                booking.setInboundAeroplaneId(inboundAeroplaneId == null ? '' : inboundAeroplaneId);
-                booking.setInboundFlightCost(inboundFlightCost == null ? '' : inboundFlightCost);
+                    booking.setInboundFlightId(inboundFlightId == null ? '' : inboundFlightId);
+                    booking.setInboundAeroplaneId(inboundAeroplaneId == null ? '' : inboundAeroplaneId);
+                    booking.setInboundFlightCost(inboundFlightCost == null ? '' : inboundFlightCost);
 
-                booking.setTotalCost(totalCost.innerText);
-                booking.setLeaveTime(fromCityTime.innerText);
-                booking.setReturnTime(toCityTime.innerText);
+                    booking.setTotalCost(totalCost.innerText);
+                    booking.setLeaveTime(fromCityTime.innerText);
+                    booking.setReturnTime(toCityTime.innerText);
 
-                window.location.href = "/booking/passengerDetails.html";
+                    window.location.href = "/booking/passengerDetails.html";
+                });
+            }
+
+            function checkFlightCapacity(booking, sufficientCapacity) {
+                checkAeroplaneCapacity(booking, true,
+                    function (outbound, json) {
+                        showInsufficientCapacityModal(booking, outbound, json.make_model, json.num_seats);
+                    },
+                    function () {
+                        checkAeroplaneCapacity(booking, false,
+                            function (outbound, json) {
+                                showInsufficientCapacityModal(booking, outbound, json.make_model, json.num_seats);
+                            },
+                            sufficientCapacity);
+                    });
+            }
+
+            function checkAeroplaneCapacity(booking, outbound, insufficientCapacity, sufficientCapacity) {
+                let flightElementName, aeroplaneElementName;
+                if (outbound) {
+                    flightElementName = 'outboundFlightId';
+                    aeroplaneElementName = 'outboundAeroplaneId';
+                }
+                else {
+                    flightElementName = 'inboundFlightId';
+                    aeroplaneElementName = 'inboundAeroplaneId';
+                }
+
+                var outboundFlightId = getChosenFlightId(flightElementName);
+                var aeroplaneId = getChosenAeroplaneId(aeroplaneElementName, outboundFlightId);
+
+                const api = new BookingAPI();
+                api.getAeroplane(aeroplaneId,
+                    function (json) {
+                        if (booking.getNumPassengers() > json.num_seats) {
+                            insufficientCapacity(outbound, json);
+                        }
+                        else {
+                            sufficientCapacity();
+                        }
+                    },
+                    showHttpError);
+            }
+
+            function showInsufficientCapacityModal(booking, outbound, aeroplaneMakeModel, aeroplaneNumSeats) {
+                let flightElementName, aeroplaneElementName;
+                if (outbound) {
+                    flightElementName = 'outboundFlightId';
+                }
+                else {
+                    flightElementName = 'inboundFlightId';
+                }
+
+                var flightId = getChosenFlightId(flightElementName);
+
+                insufficientCapacityFlightNumber.innerText = getChosenFlightNumber(flightElementName, flightId);
+                insufficientCapacityDestination.innerText = booking.getToCityName();
+                insufficientCapacityAeroplane.innerText = aeroplaneMakeModel;
+                insufficientCapacityNumSeats.innerText = aeroplaneNumSeats;
+
+                const modalDialog = new bootstrap.Modal('#insufficientCapacityModal');
+                modalDialog.show();
             }
         </SCRIPT>
     </HEAD>
@@ -1079,6 +1152,25 @@
                 </P>
             </FOOTER>
         </MAIN>
+
+<div class="modal fade" id="insufficientCapacityModal" tabindex="-1" aria-labelledby="insufficientCapacityTitle" aria-hidden="true" style="display: none;">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="insufficientCapacityTitle">Insufficient Capacity</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"/>
+            </div>
+            <div class="modal-body">
+                <p>There aren't enough seats for your passengers upon flight <span id="insufficientCapacityFlightNumber"></span> to <span id="insufficientCapacityDestination"></span>.</p>
+                <p>The aeroplane is a <span id="insufficientCapacityAeroplane"></span> that has <span id="insufficientCapacityNumSeats"></span> seats.</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-primary" data-bs-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+        
 <div class="modal fade" id="editUserAccountModal" tabindex="-1" aria-labelledby="editUserAccountTitle" aria-hidden="true" style="display: none;">
     <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
         <div class="modal-content">
@@ -1161,7 +1253,7 @@
 </div>
 
 <div class="modal fade" id="finalConfirmation" tabindex="-1" aria-labelledby="deleteConfirmationTitle" aria-hidden="true" style="display: none;">
-    <div class="modal-dialog modal-dialog-centered  modal-lg">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
         <div class="modal-content">
             <div class="modal-header">
                 <h5 class="modal-title" id="deleteConfirmationTitle">Are you sure?</h5>
