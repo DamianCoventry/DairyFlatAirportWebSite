@@ -86,12 +86,12 @@ DONE    the user account dialog doesn't always navigate to the rest api
         Do not allow num passengers to be 6 if the aeroplane doesn't have 6 seats
         If it's a one-way trip, how does a rental car work? Considering it's priced 'per day'...
         if an existing booking is modified, should we generate a new invoice page?
-        Change your seats for an existing booking?
+DONE    Change your seats for an existing booking?
 DONE    Get the localhost URI out of the bookingAPI.js file?
-        Don't allow a seat to be booked twice
+DONE    Don't allow a seat to be booked twice
         I don't think booked sets are actually being written into the database
 DONE    Don't allow an account to be deleted unless the user's password is entered?
-        Remove the 'add existing' passenger?
+DONE    Remove the 'add existing' passenger?
 
 
 
