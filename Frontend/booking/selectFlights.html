@@ -868,11 +868,16 @@
                         showInsufficientCapacityModal(booking, outbound, json.make_model, json.num_seats);
                     },
                     function () {
-                        checkAeroplaneCapacity(booking, false,
-                            function (outbound, json) {
-                                showInsufficientCapacityModal(booking, outbound, json.make_model, json.num_seats);
-                            },
-                            sufficientCapacity);
+                        if (booking.isReturnTrip()) {
+                            checkAeroplaneCapacity(booking, false,
+                                function (outbound, json) {
+                                    showInsufficientCapacityModal(booking, outbound, json.make_model, json.num_seats);
+                                },
+                                sufficientCapacity);
+                            }
+                            else {
+                                sufficientCapacity();
+                            }
                     });
             }
 
