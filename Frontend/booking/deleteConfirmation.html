@@ -34,46 +34,44 @@
                 const api = new BookingAPI();
                 api.getBooking(params.id,
                     function (json) {
-                        setTimeout(function () {
-                            spinnerLoading.style.display = "none";
-                            passengers.style.display = "";
+                        spinnerLoading.style.display = "none";
+                        passengers.style.display = "";
 
-                            document.getElementById("bookingNumber").innerText = json.number;
-                            document.getElementById("createdBy").innerText = json.created_by.username;
+                        bookingNumber.innerText = json.number;
+                        createdBy.innerText = json.created_by.username;
 
-                            json.passengers.forEach(x => {
-                                var passengersList = document.getElementById("passengers");
-                                var listItem = document.createElement("li");
-                                listItem.setAttribute("class", "list-group-item");
-                                var s = "";
-                                if (x.title != null) {
-                                    s += x.title + " ";
-                                }
-                                listItem.innerText = s + x.first_name + " " + x.second_name;
-                                passengersList.appendChild(listItem);
-                            });
+                        json.passengers.forEach(x => {
+                            var passengersList = document.getElementById("passengers");
+                            var listItem = document.createElement("li");
+                            listItem.setAttribute("class", "list-group-item");
+                            var s = "";
+                            if (x.title != null) {
+                                s += x.title + " ";
+                            }
+                            listItem.innerText = s + x.first_name + " " + x.second_name;
+                            passengersList.appendChild(listItem);
+                        });
 
-                            json.flightLegs.forEach(x => {
-                                var passengersList = document.getElementById("flightLegs");
-                                var listItem = document.createElement("li");
-                                listItem.setAttribute("class", "list-group-item");
-                                listItem.innerText = x.number + ", " + x.departure_airport.name + " -> " + x.arrival_airport.name;
-                                passengersList.appendChild(listItem);
-                            });
+                        json.flightLegs.forEach(x => {
+                            var passengersList = document.getElementById("flightLegs");
+                            var listItem = document.createElement("li");
+                            listItem.setAttribute("class", "list-group-item");
+                            listItem.innerText = x.number + ", " + x.departure_airport.name + " -> " + x.arrival_airport.name;
+                            passengersList.appendChild(listItem);
+                        });
 
-                            if (json.travelInsurance != null) {
-                                document.getElementById("travelInsurance").innerText = json.travelInsurance.title;
-                            }
-                            else {
-                                document.getElementById("travelInsurance").innerText = "-";
-                            }
-                            if (json.rentalCar != null) {
-                                document.getElementById("rentalCar").innerText = json.rentalCar.type + ", " + json.rentalCar.make + " " + json.rentalCar.model;
-                            }
-                            else {
-                                document.getElementById("rentalCar").innerText = "-";
-                            }
-                        }, 500);
+                        if (json.travelInsurance != null) {
+                            travelInsurance.innerText = json.travelInsurance.title;
+                        }
+                        else {
+                            travelInsurance.innerText = "-";
+                        }
+                        if (json.rentalCar != null) {
+                            rentalCar.innerText = json.rentalCar.type + ", " + json.rentalCar.make + " " + json.rentalCar.model;
+                        }
+                        else {
+                            rentalCar.innerText = "-";
+                        }
                     },
                     showHttpError
                 );
@@ -82,11 +80,11 @@
             }
 
             function deleteBooking() {
-                document.getElementById("deleteBookingModelTitle").innerText = "Deleting...";
-                document.getElementById("deleteText").style.display = "none";
-                document.getElementById("cancelButton").disabled = true;
-                document.getElementById("deleteButton").disabled = true;
-                document.getElementById("deleteSpinner").style.display = "";
+                formDeleteModalTitle.innerText = "Deleting...";
+                formDeleteText.style.display = "none";
+                formCancelButton.disabled = true;
+                formDeleteButton.disabled = true;
+                formDeleteSpinner.style.display = "";
 
                 const params = new Proxy(new URLSearchParams(window.location.search), {
                         get: (searchParams, prop) => searchParams.get(prop),
@@ -95,14 +93,12 @@
                 const api = new BookingAPI();
                 api.deleteBooking(params.id,
                     function(json) {
-                        setTimeout(function() {
-                            document.location.href = "/booking/listBookings.html";
-                        }, 500);
+                        document.location.href = "/booking/listBookings.html";
                     },
                     function(code, json) {
-                        document.getElementById("cancelButton").disabled = false;
-                        document.getElementById("deleteButton").disabled = false;
-                        document.getElementById("deleteSpinner").style.display = "none";
+                        formCancelButton.disabled = false;
+                        formDeleteButton.disabled = false;
+                        formDeleteSpinner.style.display = "none";
                         showHttpError(code, json);
                     });
             }
@@ -202,30 +198,6 @@
                     </div>
                 </div>
             </div>
-
-            <div class="modal fade" id="finalDeleteBookingConfirmation" tabindex="-1" aria-labelledby="deleteBookingModelTitle" aria-hidden="true" style="display: none;">
-                <div class="modal-dialog modal-dialog-centered">
-                    <div class="modal-content">
-                        <div class="modal-header">
-                            <h5 class="modal-title" id="deleteBookingModelTitle">Are you sure?</h5>
-                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"/>
-                        </div>
-                        <div class="modal-body">
-                            <p id="deleteText">This action cannot be undone. The booking will be <b>permanently</b> deleted.</p>
-                            <div class="text-center" id="deleteSpinner" style="display: none;">
-                                <div class="spinner-border" role="status">
-                                    <span class="visually-hidden">Deleting...</span>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="modal-footer">
-                            <button type="button" class="btn btn-danger" id="deleteButton" onclick="deleteBooking()"><i class="fa-solid fa-trash"></i>&nbsp;Confirm</button>
-                            <button type="button" class="btn btn-secondary" id="cancelButton" data-bs-dismiss="modal">Cancel</button>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
         </MAIN>
 
         <FOOTER class="container mt-5 text-center">
@@ -234,6 +206,29 @@
             <P>Flight icon created by Freepik &middot; <A href="https://www.flaticon.com/free-icons/plane" title="plane icons">Flaticon</A>
             </P>
         </FOOTER>
+
+    <div class="modal fade" id="finalDeleteBookingConfirmation" tabindex="-1" aria-labelledby="formDeleteModalTitle" aria-hidden="true" style="display: none;">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="formDeleteModalTitle">Are you sure?</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"/>
+                </div>
+                <div class="modal-body">
+                    <p id="formDeleteText">This action cannot be undone. The booking will be <b>permanently</b> deleted.</p>
+                    <div class="text-center" id="formDeleteSpinner" style="display: none;">
+                        <div class="spinner-border" role="status">
+                            <span class="visually-hidden">Deleting...</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-danger" id="formDeleteButton" onclick="deleteBooking()"><i class="fa-solid fa-trash"></i>&nbsp;Confirm</button>
+                    <button type="button" class="btn btn-secondary" id="formCancelButton" data-bs-dismiss="modal">Cancel</button>
+                </div>
+            </div>
+        </div>
+    </div>
 
 <div class="modal fade" id="editUserAccountModal" tabindex="-1" aria-labelledby="editUserAccountTitle" aria-hidden="true" style="display: none;">
     <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">

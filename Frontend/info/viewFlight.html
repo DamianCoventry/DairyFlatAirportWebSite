@@ -39,7 +39,7 @@
                             flight.style.display = "";
                             flight.value = json.number;
                             tailNumber.value = json.aeroplane.tail_number;
-                            makeModel.value = json.aeroplane.make_model;
+                            makeModal.value = json.aeroplane.make_model;
                             departsAirport.value = json.departure_airport.name;
                             departsDateTime.value =
                                     toLocaleDate(json.departure_date_time_utc, json.departure_airport.timezone) + ' ' +
@@ -123,11 +123,11 @@
                       <input type="text" class="form-control" id="tailNumber" placeholder="Aeroplane Tail Number" readonly>
                     </div>
                     <div class="col">
-                        <label for="makeModel">Aeroplane Make/Model</label>
-                        <input type="text" class="form-control" id="makeModel" placeholder="Aeroplane Make/Model" readonly>
+                        <label for="makeModal">Aeroplane Make/Modal</label>
+                        <input type="text" class="form-control" id="makeModal" placeholder="Aeroplane Make/Modal" readonly>
                     </div>
                     <div class="col">
-                        <label for="makeModel">Flight Time (minutes)</label>
+                        <label for="makeModal">Flight Time (minutes)</label>
                         <input type="text" class="form-control" id="flightTimeMins" placeholder="Flight Time (minutes)" readonly>
                     </div>
                 </div>

@@ -24,6 +24,8 @@
         <SCRIPT type="text/javascript" src="/javascript/dateUtils.js"></SCRIPT>
 
         <SCRIPT type="text/javascript">
+            let removeConfirmationDialog = null;
+
             window.onload = function() {
                 signedInGuard();
 
@@ -290,8 +292,10 @@
                                        (selectedIds.length == 1 ? "r" : "rs") +
                                        " will be removed from this booking.";
 
-                const confirmation = new bootstrap.Modal('#removeConfirmationModel');
-                confirmation.show();
+                if (!removeConfirmationDialog) {
+                    removeConfirmationDialog = new bootstrap.Modal('#removeConfirmationModal');
+                }
+                removeConfirmationDialog.show();
             }
 
             function removePassenger() {
@@ -668,7 +672,7 @@
     </P>
 </FOOTER>
 
-<div class="modal fade" id="removeConfirmationModel" tabindex="-1" aria-labelledby="deleteConfirmationTitle" aria-hidden="true" style="display: none;">
+<div class="modal fade" id="removeConfirmationModal" tabindex="-1" aria-labelledby="deleteConfirmationTitle" aria-hidden="true" style="display: none;">
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
             <div class="modal-header">

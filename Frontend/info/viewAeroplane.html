@@ -34,7 +34,7 @@
                 api.getAeroplane(params.id,
                     function (json) {
                         tailNumber.value = json.tail_number;
-                        makeModel.value = json.make_model;
+                        makeModal.value = json.make_model;
                         numSeats.value = json.num_seats;
                         aeroplaneImage.setAttribute('src', json.image_link);
                     },
@@ -105,8 +105,8 @@
                     </div>
                     <div class="row mb-3">
                         <div class="col">
-                            <label for="makeModel">Make/Model</label>
-                            <input type="text" class="form-control" id="makeModel" placeholder="Make/Model" readonly>
+                            <label for="makeModal">Make/Modal</label>
+                            <input type="text" class="form-control" id="makeModal" placeholder="Make/Modal" readonly>
                         </div>
                     </div>
                     <div class="row mb-3">

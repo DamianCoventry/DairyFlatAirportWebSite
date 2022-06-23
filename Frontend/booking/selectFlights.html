@@ -985,7 +985,7 @@
                     showHttpError);
             }
 
-            function showInsufficientCapacityModal(booking, outbound, aeroplaneMakeModel, aeroplaneNumSeats) {
+            function showInsufficientCapacityModal(booking, outbound, aeroplaneMakeModal, aeroplaneNumSeats) {
                 let flightElementName, aeroplaneElementName, destination;
                 if (outbound) {
                     flightElementName = 'outboundFlightId';
@@ -1000,7 +1000,7 @@
 
                 insufficientCapacityFlightNumber.innerText = getChosenFlightNumber(flightElementName, flightId);
                 insufficientCapacityDestination.innerText = destination;
-                insufficientCapacityAeroplane.innerText = aeroplaneMakeModel;
+                insufficientCapacityAeroplane.innerText = aeroplaneMakeModal;
                 insufficientCapacityNumSeats.innerText = aeroplaneNumSeats;
 
                 const modalDialog = new bootstrap.Modal('#insufficientCapacityModal');

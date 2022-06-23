@@ -610,7 +610,7 @@ class BookingAPI {
                 }
             }
         }
-        xhr.open("DELETE", BACKEND_ADDRESS + "booking/" + id + "/");
+        xhr.open("DELETE", BACKEND_ADDRESS + "booking/" + id + "/?signedInUserId=" + this.signedInUserId);
         xhr.setRequestHeader("Authorization", this.tokenType + " " + this.accessToken);
         xhr.send();
     }
