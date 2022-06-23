@@ -26,6 +26,7 @@
         <SCRIPT type="text/javascript">
             var newPassengerDetails = [];
             var newPassengerIds = [];
+            var newPassengerSeats = [];
 
             window.onload = function() {
                 signedInGuard();
@@ -266,7 +267,9 @@
                 enableConfirmGui(false);
                 newPassengerDetails = [];
                 newPassengerIds = [];
+                newPassengerSeats = [];
                 buildNewPassengerDetailsArray();
+                buildNewPassengerSeatsArray();
                 addNextPassenger();
             }
 
@@ -282,7 +285,7 @@
                         "special_assistance": booking.getSpecialAssistance1(),
                     });
                 }
-                if (booking.hasFirstName2()) {
+                if (booking.hasFirstName2() && booking.getNumPassengers() > 1) {
                     newPassengerDetails.push({
                         "title": booking.getTitle2(),
                         "first_name": booking.getFirstName2(),
@@ -292,7 +295,7 @@
                         "special_assistance": booking.getSpecialAssistance2(),
                     });
                 }
-                if (booking.hasFirstName3()) {
+                if (booking.hasFirstName3() && booking.getNumPassengers() > 2) {
                     newPassengerDetails.push({
                         "title": booking.getTitle3(),
                         "first_name": booking.getFirstName3(),
@@ -302,7 +305,7 @@
                         "special_assistance": booking.getSpecialAssistance3(),
                     });
                 }
-                if (booking.hasFirstName4()) {
+                if (booking.hasFirstName4() && booking.getNumPassengers() > 3) {
                     newPassengerDetails.push({
                         "title": booking.getTitle4(),
                         "first_name": booking.getFirstName4(),
@@ -312,7 +315,7 @@
                         "special_assistance": booking.getSpecialAssistance4(),
                     });
                 }
-                if (booking.hasFirstName5()) {
+                if (booking.hasFirstName5() && booking.getNumPassengers() > 4) {
                     newPassengerDetails.push({
                         "title": booking.getTitle5(),
                         "first_name": booking.getFirstName5(),
@@ -322,7 +325,7 @@
                         "special_assistance": booking.getSpecialAssistance5(),
                     });
                 }
-                if (booking.hasFirstName6()) {
+                if (booking.hasFirstName6() && booking.getNumPassengers() > 5) {
                     newPassengerDetails.push({
                         "title": booking.getTitle6(),
                         "first_name": booking.getFirstName6(),
@@ -334,37 +337,154 @@
                 }
             }
 
-            function addNextPassenger() {
-                const api = new BookingAPI();
-                if (newPassengerDetails.length > 0) {
-                    setTimeout(function() {
-                        const passenger = newPassengerDetails.shift();
-                        api.addPassenger(
-                            passenger.title, passenger.first_name, passenger.second_name,
-                            passenger.email_address, passenger.phone_number, passenger.special_assistance,
-                            function(json) {
-                                newPassengerIds.push(json.id);
-                                addNextPassenger();
-                            },
-                            function (code, json) {
-                                showHttpError(code, json);
-                                enableConfirmGui(true);
-                            });
-                        }, 500);
+            function buildNewPassengerSeatsArray() {
+                const booking = new Booking();
+                if (booking.hasFirstName1()) {
+                    newPassengerSeats.push({
+                        "passengerIndex": 0,
+                        "flightId1": booking.getOutboundFlightId(),
+                        "flightId2": 0, // TODO
+                        "seatId1": booking.getOutboundSeatId1(),
+                        "seatId2": '', // TODO
+                    });
+                    newPassengerSeats.push({
+                        "passengerIndex": 0,
+                        "flightId1": booking.getInboundFlightId(),
+                        "flightId2": 0, // TODO
+                        "seatId1": booking.getInboundSeatId1(),
+                        "seatId2": '', // TODO
+                    });
                 }
-                else {
-                    setTimeout(function() {
-                        api.getNextBookingNumber(
-                            nextBookingNumberReceived,
-                            function (code, json) {
-                                showHttpError(code, json);
-                                enableConfirmGui(true);
-                            });
-                        }, 500);
+                if (booking.hasFirstName2() && booking.getNumPassengers() > 1) {
+                    newPassengerSeats.push({
+                        "passengerIndex": 1,
+                        "flightId1": booking.getOutboundFlightId(),
+                        "flightId2": 0, // TODO
+                        "seatId1": booking.getOutboundSeatId2(),
+                        "seatId2": '', // TODO
+                    });
+                    newPassengerSeats.push({
+                        "passengerIndex": 1,
+                        "flightId1": booking.getInboundFlightId(),
+                        "flightId2": 0, // TODO
+                        "seatId1": booking.getInboundSeatId2(),
+                        "seatId2": '', // TODO
+                    });
+                }
+                if (booking.hasFirstName3() && booking.getNumPassengers() > 2) {
+                    newPassengerSeats.push({
+                        "passengerIndex": 2,
+                        "flightId1": booking.getOutboundFlightId(),
+                        "flightId2": 0, // TODO
+                        "seatId1": booking.getOutboundSeatId3(),
+                        "seatId2": '', // TODO
+                    });
+                    newPassengerSeats.push({
+                        "passengerIndex": 2,
+                        "flightId1": booking.getInboundFlightId(),
+                        "flightId2": 0, // TODO
+                        "seatId1": booking.getInboundSeatId3(),
+                        "seatId2": '', // TODO
+                    });
+                }
+                if (booking.hasFirstName4() && booking.getNumPassengers() > 3) {
+                    newPassengerSeats.push({
+                        "passengerIndex": 3,
+                        "flightId1": booking.getOutboundFlightId(),
+                        "flightId2": 0, // TODO
+                        "seatId1": booking.getOutboundSeatId4(),
+                        "seatId2": '', // TODO
+                    });
+                    newPassengerSeats.push({
+                        "passengerIndex": 3,
+                        "flightId1": booking.getInboundFlightId(),
+                        "flightId2": 0, // TODO
+                        "seatId1": booking.getInboundSeatId4(),
+                        "seatId2": '', // TODO
+                    });
+                }
+                if (booking.hasFirstName5() && booking.getNumPassengers() > 4) {
+                    newPassengerSeats.push({
+                        "passengerIndex": 4,
+                        "flightId1": booking.getOutboundFlightId(),
+                        "flightId2": 0, // TODO
+                        "seatId1": booking.getOutboundSeatId5(),
+                        "seatId2": '', // TODO
+                    });
+                    newPassengerSeats.push({
+                        "passengerIndex": 4,
+                        "flightId1": booking.getInboundFlightId(),
+                        "flightId2": 0, // TODO
+                        "seatId1": booking.getInboundSeatId5(),
+                        "seatId2": '', // TODO
+                    });
+                }
+                if (booking.hasFirstName6() && booking.getNumPassengers() > 5) {
+                    newPassengerSeats.push({
+                        "passengerIndex": 5,
+                        "flightId1": booking.getOutboundFlightId(),
+                        "flightId2": 0, // TODO
+                        "seatId1": booking.getOutboundSeatId6(),
+                        "seatId2": '', // TODO
+                    });
+                    newPassengerSeats.push({
+                        "passengerIndex": 5,
+                        "flightId1": booking.getInboundFlightId(),
+                        "flightId2": 0, // TODO
+                        "seatId1": booking.getInboundSeatId6(),
+                        "seatId2": '', // TODO
+                    });
                 }
             }
 
-            function nextBookingNumberReceived(bookingNumber) {
+            function addNextPassenger() {
+                const api = new BookingAPI();
+                if (newPassengerDetails.length > 0) {
+                    const passenger = newPassengerDetails.shift();
+                    api.addPassenger(
+                        passenger.title, passenger.first_name, passenger.second_name,
+                        passenger.email_address, passenger.phone_number, passenger.special_assistance,
+                        function(json) {
+                            newPassengerIds.push(json.id);
+                            addNextPassenger();
+                        },
+                        function (code, json) {
+                            showHttpError(code, json);
+                            enableConfirmGui(true);
+                        });
+                }
+                else {
+                    api.getNextBookingNumber(
+                        function (bookingNumber) {
+                            addNextBookedSeat(bookingNumber);
+                        },
+                        function (code, json) {
+                            showHttpError(code, json);
+                            enableConfirmGui(true);
+                        });
+                }
+            }
+
+            function addNextBookedSeat(bookingNumber) {
+                if (newPassengerSeats.length > 0) {
+                    const seat = newPassengerSeats.shift();
+                    const api = new BookingAPI();
+                    api.bookSeat(
+                        newPassengerIds[seat.passengerIndex], seat.flightId1, seat.seatId1,
+                        function(json) {
+                            addNextBookedSeat(bookingNumber);
+                        },
+                        function (code, json) {
+                            showHttpError(code, json);
+                            enableConfirmGui(true);
+                        });
+                }
+                else {
+                    bookingSeatsCompleted(bookingNumber);
+                }
+            }
+
+            function bookingSeatsCompleted(bookingNumber) {
                 const booking = new Booking();
 
                 let flightLegIdsArray = [];
@@ -376,22 +496,20 @@
                 }
 
                 const api = new BookingAPI();
-                setTimeout(function() {
-                    api.addBooking(
-                        bookingNumber,
-                        booking.hasTravelInsuranceId() ? booking.getTravelInsuranceId() : null,
-                        booking.hasRentalCarId() ? booking.getRentalCarId() : null,
-                        flightLegIdsArray,
-                        newPassengerIds,
-                        function (json) {
-                            booking.setBookingNumber(bookingNumber);
-                            window.location.href = '/booking/invoice.html';
-                        },
-                        function (code, json) {
-                            showHttpError(code, json);
-                            enableConfirmGui(true);
-                        });
-                    }, 500);
+                api.addBooking(
+                    bookingNumber,
+                    booking.hasTravelInsuranceId() ? booking.getTravelInsuranceId() : null,
+                    booking.hasRentalCarId() ? booking.getRentalCarId() : null,
+                    flightLegIdsArray,
+                    newPassengerIds,
+                    function (json) {
+                        booking.setBookingNumber(bookingNumber);
+                        window.location.href = '/booking/invoice.html';
+                    },
+                    function (code, json) {
+                        showHttpError(code, json);
+                        enableConfirmGui(true);
+                    });
             }
         </SCRIPT>
     </HEAD>

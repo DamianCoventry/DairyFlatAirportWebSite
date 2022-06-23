@@ -116,13 +116,12 @@ class Booking(models.Model):
 class BookedSeat(models.Model):
     class Meta:
         constraints = [
-            models.UniqueConstraint(fields=['booking', 'seat', 'passenger', 'flightLeg'], name='unique_booking')
+            models.UniqueConstraint(fields=['seat', 'passenger', 'flightLeg'], name='unique_booking')
         ]
 
     def __str__(self):
         return f'Seat {self.seat.name}, {self.flightLeg.name}, {self.passenger.name})'
 
-    booking = models.ForeignKey(Booking, null=False, on_delete=models.CASCADE, related_name='booking')
     seat = models.ForeignKey(Seat, null=False, on_delete=models.CASCADE, related_name='seat')
     passenger = models.ForeignKey(Passenger, null=False, on_delete=models.CASCADE, related_name='passenger')
     flightLeg = models.ForeignKey(FlightLeg, null=False, on_delete=models.CASCADE, related_name='flightLeg')

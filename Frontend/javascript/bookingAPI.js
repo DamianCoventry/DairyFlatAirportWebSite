@@ -1048,7 +1048,7 @@ class BookingAPI {
         xhr.send();
     }
 
-    bookSeat(bookingId, passengerId, flightId, seatId, okFn, errorFn) {
+    bookSeat(passengerId, flightId, seatId, okFn, errorFn) {
         const api = this;
 
         const xhr = new XMLHttpRequest();
@@ -1060,7 +1060,7 @@ class BookingAPI {
                 else if (xhr.status == 401) {
                     api.useRefreshToken(api.refreshToken,
                         function () {
-                            api.bookSeatUponFlight(bookingId, seatId, passengerId, flightId, okFn, errorFn);
+                            api.bookSeat(seatId, passengerId, flightId, okFn, errorFn);
                         },
                         function (code, json) {
                             api.signIn(window.location.href);
@@ -1076,7 +1076,6 @@ class BookingAPI {
         xhr.setRequestHeader("Authorization", this.tokenType + " " + this.accessToken);
         xhr.setRequestHeader('Content-type', 'application/json;charset=UTF-8');
         xhr.send(JSON.stringify({
-            "booking": bookingId,
             "passenger": passengerId,
             "flightLeg": flightId,
             "seat": seatId

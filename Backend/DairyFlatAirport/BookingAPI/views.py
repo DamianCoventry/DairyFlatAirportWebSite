@@ -100,6 +100,9 @@ class UnbookedSeatViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
         bookedSeats = BookedSeat.objects.filter(flightLeg_id=flightId).values('seat_id').order_by()
 
         aeroplaneId = FlightLeg.objects.get(id=flightId).aeroplane_id
+        maxSeatCapacity = Aeroplane.objects.get(id=aeroplaneId).num_seats
+        if len(bookedSeats) >= maxSeatCapacity:
+            return Seat.objects.none()
 
         return Seat.objects.filter(aeroplane=aeroplaneId).exclude(id__in=bookedSeats).order_by('number')
 

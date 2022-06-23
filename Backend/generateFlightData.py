@@ -90,10 +90,10 @@ def discoverExistingPks(cursor):
     global SYDNEY_AIRPORT, CLARIS_AIRPORT, TUUTA_AIRPORT
 
     SYBERJET_SJ30I = selectColumn(cursor, 'id', 'public."BookingAPI_aeroplane"', 'tail_number', 'ZK-Z556')
-    HONDAJET_ELITE_A = selectColumn(cursor, 'id', 'public."BookingAPI_aeroplane"', 'tail_number', 'ZK-Z556')
-    HONDAJET_ELITE_B = selectColumn(cursor, 'id', 'public."BookingAPI_aeroplane"', 'tail_number', 'ZK-Z556')
-    CIRRUS_SF50_A = selectColumn(cursor, 'id', 'public."BookingAPI_aeroplane"', 'tail_number', 'ZK-Z556')
-    CIRRUS_SF50_B = selectColumn(cursor, 'id', 'public."BookingAPI_aeroplane"', 'tail_number', 'ZK-Z556')
+    HONDAJET_ELITE_A = selectColumn(cursor, 'id', 'public."BookingAPI_aeroplane"', 'tail_number', 'ZK-Z763')
+    HONDAJET_ELITE_B = selectColumn(cursor, 'id', 'public."BookingAPI_aeroplane"', 'tail_number', 'ZK-Z764')
+    CIRRUS_SF50_A = selectColumn(cursor, 'id', 'public."BookingAPI_aeroplane"', 'tail_number', 'G-NZ23')
+    CIRRUS_SF50_B = selectColumn(cursor, 'id', 'public."BookingAPI_aeroplane"', 'tail_number', 'G-NZ24')
 
     NORTH_SHORE_AERODROME['pk'] = selectColumn(cursor, 'id', 'public."BookingAPI_airport"', 'name',
                                                'North Shore Aerodrome')

@@ -78,12 +78,17 @@ Bugs
 
 Functionality
 ~~~~~~~~~~~~~
-DONE    the user account dialog doesn't always navigate to the rest api
         How to implement multistop?
+        delete booking doesn't work
+        Deleting a booking needs to remove ALL data
+        don't show the seats in the choose seats that are unavailable
+        can the container be started/stopped repeatedly?
+
+DONE    the user account dialog doesn't always navigate to the rest api
         Search for, and implement, all the TODO comments
         Use that horrible looking mapping program for the web dev assignment
-WIP     I don't think booked sets are actually being written into the database
-WIP     Do not allow bookings if aeroplane is full
+DONE    I don't think booked sets are actually being written into the database
+DONE    Do not allow bookings if aeroplane is full
 DONE    Do not allow num passengers to be 6 if the aeroplane doesn't have 6 seats
         If it's a one-way trip, how does a rental car work? Considering it's priced 'per day'...
         if an existing booking is modified, should we generate a new invoice page?
@@ -93,8 +98,7 @@ DONE    Don't allow a seat to be booked twice
 DONE    Don't allow an account to be deleted unless the user's password is entered?
 DONE    Remove the 'add existing' passenger?
         auto assign seats the first time the user visits the selectSeats page
-        delete booking doesn't work
-        Deleting a booking needs to remove ALL data
+        remove all calls to setTimeout
 
 
 
