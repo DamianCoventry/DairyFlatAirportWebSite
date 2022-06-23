@@ -31,19 +31,18 @@ import pytz
 
 # these numbers are the PKs within my database
 
-SYBERJET_SJ30I: Final = 1
-HONDAJET_ELITE_A: Final = 2
-HONDAJET_ELITE_B: Final = 3
-CIRRUS_SF50_A: Final = 4
-CIRRUS_SF50_B: Final = 5
+SYBERJET_SJ30I = 0
+HONDAJET_ELITE_A = 0
+HONDAJET_ELITE_B = 0
+CIRRUS_SF50_A = 0
+CIRRUS_SF50_B = 0
 
-# these numbers are the PKs within my database
-NORTH_SHORE_AERODROME: Final = {'pk': 1, 'code': 'NZNE'}
-ROTORUA_AIRPORT: Final = {'pk': 2, 'code': 'ROT'}
-LAKE_TEKAPO_AIRPORT: Final = {'pk': 3, 'code': 'NZTL'}
-SYDNEY_AIRPORT: Final = {'pk': 4, 'code': 'SYD'}
-CLARIS_AIRPORT: Final = {'pk': 5, 'code': 'GBZ'}
-TUUTA_AIRPORT: Final = {'pk': 6, 'code': 'CHT'}
+NORTH_SHORE_AERODROME = {'pk': 0, 'code': 'NZNE'}
+ROTORUA_AIRPORT = {'pk': 0, 'code': 'ROT'}
+LAKE_TEKAPO_AIRPORT = {'pk': 0, 'code': 'NZTL'}
+SYDNEY_AIRPORT = {'pk': 0, 'code': 'SYD'}
+CLARIS_AIRPORT = {'pk': 0, 'code': 'GBZ'}
+TUUTA_AIRPORT = {'pk': 0, 'code': 'CHT'}
 
 # data from Google Maps, Google Flights, Air Chathams
 FLIGHT_TIMES: Final = {
@@ -77,6 +76,37 @@ NUM_OF_WEEKS: Final = 20
 
 # https://docs.python.org/3/library/datetime.html#aware-and-naive-objects
 sunday5June2022_naive: Final = datetime(2022, 6, 5)
+
+
+def selectColumn(cursor, returnColumnName, tableName, whereColumnName, whereStringValue):
+    cursor.execute(f'SELECT {returnColumnName} FROM {tableName} WHERE {whereColumnName} = \'{whereStringValue}\'')
+    recordSet = cursor.fetchone()
+    return recordSet[0]
+
+
+def discoverExistingPks(cursor):
+    global SYBERJET_SJ30I, HONDAJET_ELITE_A, HONDAJET_ELITE_B, CIRRUS_SF50_A, CIRRUS_SF50_B
+    global NORTH_SHORE_AERODROME, ROTORUA_AIRPORT, LAKE_TEKAPO_AIRPORT
+    global SYDNEY_AIRPORT, CLARIS_AIRPORT, TUUTA_AIRPORT
+
+    SYBERJET_SJ30I = selectColumn(cursor, 'id', 'public."BookingAPI_aeroplane"', 'tail_number', 'ZK-Z556')
+    HONDAJET_ELITE_A = selectColumn(cursor, 'id', 'public."BookingAPI_aeroplane"', 'tail_number', 'ZK-Z556')
+    HONDAJET_ELITE_B = selectColumn(cursor, 'id', 'public."BookingAPI_aeroplane"', 'tail_number', 'ZK-Z556')
+    CIRRUS_SF50_A = selectColumn(cursor, 'id', 'public."BookingAPI_aeroplane"', 'tail_number', 'ZK-Z556')
+    CIRRUS_SF50_B = selectColumn(cursor, 'id', 'public."BookingAPI_aeroplane"', 'tail_number', 'ZK-Z556')
+
+    NORTH_SHORE_AERODROME['pk'] = selectColumn(cursor, 'id', 'public."BookingAPI_airport"', 'name',
+                                               'North Shore Aerodrome')
+    ROTORUA_AIRPORT['pk'] = selectColumn(cursor, 'id', 'public."BookingAPI_airport"', 'name',
+                                         'Rotorua Airport')
+    LAKE_TEKAPO_AIRPORT['pk'] = selectColumn(cursor, 'id', 'public."BookingAPI_airport"', 'name',
+                                             'Lake Tekapo Airport')
+    SYDNEY_AIRPORT['pk'] = selectColumn(cursor, 'id', 'public."BookingAPI_airport"', 'name',
+                                        'Sydney Airport')
+    CLARIS_AIRPORT['pk'] = selectColumn(cursor, 'id', 'public."BookingAPI_airport"', 'name',
+                                        'Claris Airport')
+    TUUTA_AIRPORT['pk'] = selectColumn(cursor, 'id', 'public."BookingAPI_airport"', 'name',
+                                       'Tuuta Airport')
 
 
 def makeFlightNumber(prefix, number):
@@ -300,13 +330,15 @@ def insertLakeTekapoFlightLegs(cursor, aeroplanePK):
 
 try:
     conn = psycopg2.connect(database="postgres", user="postgres",
-                            password="hUUqDyhEKXSmwTU7i2xk", host="db", port="5432")
+                            password="hUUqDyhEKXSmwTU7i2xk", host="localhost", port="5432")
     print("Opened database successfully")
 
     cur = conn.cursor()
 
     deleteExistingBookingAndFlightData(cur)
     conn.commit()
+
+    discoverExistingPks(cur)
 
     insertSydneyFlightLegs(cur, SYBERJET_SJ30I)
     insertRotoruaFlightLegs(cur, CIRRUS_SF50_A)

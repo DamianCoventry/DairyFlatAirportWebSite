@@ -1048,6 +1048,70 @@ class BookingAPI {
         xhr.send();
     }
 
+    bookSeat(bookingId, passengerId, flightId, seatId, okFn, errorFn) {
+        const api = this;
+
+        const xhr = new XMLHttpRequest();
+        xhr.onreadystatechange = function() {
+            if (xhr.readyState == XMLHttpRequest.DONE) {
+                if (xhr.status >= 200 && xhr.status < 300) {
+                    okFn(JSON.parse(this.responseText));
+                }
+                else if (xhr.status == 401) {
+                    api.useRefreshToken(api.refreshToken,
+                        function () {
+                            api.bookSeatUponFlight(bookingId, seatId, passengerId, flightId, okFn, errorFn);
+                        },
+                        function (code, json) {
+                            api.signIn(window.location.href);
+                        }
+                    );
+                }
+                else {
+                    errorFn(xhr.status, JSON.parse(this.responseText));
+                }
+            }
+        }
+        xhr.open("POST", BACKEND_ADDRESS + "bookedSeat/");
+        xhr.setRequestHeader("Authorization", this.tokenType + " " + this.accessToken);
+        xhr.setRequestHeader('Content-type', 'application/json;charset=UTF-8');
+        xhr.send(JSON.stringify({
+            "booking": bookingId,
+            "passenger": passengerId,
+            "flightLeg": flightId,
+            "seat": seatId
+        }));
+    }
+
+    getUnbookedSeats(flightId, okFn, errorFn) {
+        const api = this;
+
+        const xhr = new XMLHttpRequest();
+        xhr.onreadystatechange = function() {
+            if (xhr.readyState == XMLHttpRequest.DONE) {
+                if (xhr.status >= 200 && xhr.status < 300) {
+                    okFn(JSON.parse(this.responseText));
+                }
+                else if (xhr.status == 401) {
+                    api.useRefreshToken(api.refreshToken,
+                        function () {
+                            api.getUnbookedSeats(flightId, okFn, errorFn);
+                        },
+                        function (code, json) {
+                            api.signIn(window.location.href);
+                        }
+                    );
+                }
+                else {
+                    errorFn(xhr.status, JSON.parse(this.responseText));
+                }
+            }
+        }
+        xhr.open("GET", BACKEND_ADDRESS + "unbookedSeat/?flightId="+flightId);
+        xhr.setRequestHeader("Authorization", this.tokenType + " " + this.accessToken);
+        xhr.send();
+    }
+
     useRefreshToken(refreshToken, okFn, errorFn) {
         const xhr = new XMLHttpRequest();
         xhr.onreadystatechange = function() {

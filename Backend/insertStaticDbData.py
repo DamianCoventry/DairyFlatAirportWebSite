@@ -24,8 +24,7 @@ def deleteExistingData(cursor):
     cursor.execute('DELETE FROM public.oauth2_provider_accesstoken')
     cursor.execute('DELETE FROM public.oauth2_provider_grant')
     cursor.execute('DELETE FROM public.oauth2_provider_application')
-    cursor.execute('DELETE FROM public.django_admin_log')
-    cursor.execute('DELETE FROM public.auth_user')
+    cursor.execute('DELETE FROM public.auth_user WHERE id > 1')
 
     print("Deleted existing data")
 
@@ -34,20 +33,92 @@ def insertAeroplanes(cursor):
     cursor.execute('INSERT INTO public."BookingAPI_aeroplane"(tail_number, make_model, num_seats, image_link, ' +
                     'floor_plan_link) VALUES (\'ZK-Z556\', \'SyberJet SJ30i\', 6, \'/images/SyberJetSJ30i.jpg\', ' +
                    '\'/images/FloorPlan6.png\')')
+    
     cursor.execute('INSERT INTO public."BookingAPI_aeroplane"(tail_number, make_model, num_seats, image_link, ' +
                     'floor_plan_link) VALUES (\'ZK-Z763\', \'HondaJet Elite\', 5, \'/images/HondaJetElite.png\', ' +
                    '\'/images/FloorPlan5.png\')')
+
     cursor.execute('INSERT INTO public."BookingAPI_aeroplane"(tail_number, make_model, num_seats, image_link, ' +
                     'floor_plan_link) VALUES (\'ZK-Z764\', \'HondaJet Elite\', 5, \'/images/HondaJetElite.png\', ' +
                    '\'/images/FloorPlan5.png\')')
+
     cursor.execute('INSERT INTO public."BookingAPI_aeroplane"(tail_number, make_model, num_seats, image_link, ' +
                     'floor_plan_link) VALUES (\'G-NZ23\', \'Cirrus SF50\', 4, \'/images/CirrusSF50.png\', ' +
                    '\'/images/FloorPlan4.png\')')
+
     cursor.execute('INSERT INTO public."BookingAPI_aeroplane"(tail_number, make_model, num_seats, image_link, ' +
                     'floor_plan_link) VALUES (\'G-NZ24\', \'Cirrus SF50\', 4, \'/images/CirrusSF50.png\', ' +
                    '\'/images/FloorPlan4.png\')')
 
     print("Inserted aeroplane static data")
+
+
+def selectColumn(cursor, returnColumnName, tableName, whereColumnName, whereStringValue):
+    cursor.execute(f'SELECT {returnColumnName} FROM {tableName} WHERE {whereColumnName} = \'{whereStringValue}\'')
+    recordSet = cursor.fetchone()
+    return recordSet[0]
+
+
+def insertSeat(cursor):
+    PK = selectColumn(cursor, 'id', 'public."BookingAPI_aeroplane"', 'tail_number', 'ZK-Z556')
+    cursor.execute(f'INSERT INTO public."BookingAPI_seat"("number", emergency_exit, aeroplane_id) ' +
+                   f'VALUES (\'A1\', false, {PK})')
+    cursor.execute(f'INSERT INTO public."BookingAPI_seat"("number", emergency_exit, aeroplane_id) ' +
+                   f'VALUES (\'A2\', false, {PK})')
+    cursor.execute(f'INSERT INTO public."BookingAPI_seat"("number", emergency_exit, aeroplane_id) ' +
+                   f'VALUES (\'B1\', false, {PK})')
+    cursor.execute(f'INSERT INTO public."BookingAPI_seat"("number", emergency_exit, aeroplane_id) ' +
+                   f'VALUES (\'B2\', true, {PK})')
+    cursor.execute(f'INSERT INTO public."BookingAPI_seat"("number", emergency_exit, aeroplane_id) ' +
+                   f'VALUES (\'C1\', false, {PK})')
+    cursor.execute(f'INSERT INTO public."BookingAPI_seat"("number", emergency_exit, aeroplane_id) ' +
+                   f'VALUES (\'C2\', false, {PK})')
+
+    PK = selectColumn(cursor, 'id', 'public."BookingAPI_aeroplane"', 'tail_number', 'ZK-Z763')
+    cursor.execute(f'INSERT INTO public."BookingAPI_seat"("number", emergency_exit, aeroplane_id) ' +
+                   f'VALUES (\'A1\', false, {PK})')
+    cursor.execute(f'INSERT INTO public."BookingAPI_seat"("number", emergency_exit, aeroplane_id) ' +
+                   f'VALUES (\'A2\', false, {PK})')
+    cursor.execute(f'INSERT INTO public."BookingAPI_seat"("number", emergency_exit, aeroplane_id) ' +
+                   f'VALUES (\'B1\', false, {PK})')
+    cursor.execute(f'INSERT INTO public."BookingAPI_seat"("number", emergency_exit, aeroplane_id) ' +
+                   f'VALUES (\'B2\', true, {PK})')
+    cursor.execute(f'INSERT INTO public."BookingAPI_seat"("number", emergency_exit, aeroplane_id) ' +
+                   f'VALUES (\'C1\', false, {PK})')
+
+    PK = selectColumn(cursor, 'id', 'public."BookingAPI_aeroplane"', 'tail_number', 'ZK-Z764')
+    cursor.execute(f'INSERT INTO public."BookingAPI_seat"("number", emergency_exit, aeroplane_id) ' +
+                   f'VALUES (\'A1\', false, {PK})')
+    cursor.execute(f'INSERT INTO public."BookingAPI_seat"("number", emergency_exit, aeroplane_id) ' +
+                   f'VALUES (\'A2\', false, {PK})')
+    cursor.execute(f'INSERT INTO public."BookingAPI_seat"("number", emergency_exit, aeroplane_id) ' +
+                   f'VALUES (\'B1\', false, {PK})')
+    cursor.execute(f'INSERT INTO public."BookingAPI_seat"("number", emergency_exit, aeroplane_id) ' +
+                   f'VALUES (\'B2\', true, {PK})')
+    cursor.execute(f'INSERT INTO public."BookingAPI_seat"("number", emergency_exit, aeroplane_id) ' +
+                   f'VALUES (\'C1\', false, {PK})')
+
+    PK = selectColumn(cursor, 'id', 'public."BookingAPI_aeroplane"', 'tail_number', 'G-NZ23')
+    cursor.execute(f'INSERT INTO public."BookingAPI_seat"("number", emergency_exit, aeroplane_id) ' +
+                   f'VALUES (\'A1\', false, {PK})')
+    cursor.execute(f'INSERT INTO public."BookingAPI_seat"("number", emergency_exit, aeroplane_id) ' +
+                   f'VALUES (\'A2\', false, {PK})')
+    cursor.execute(f'INSERT INTO public."BookingAPI_seat"("number", emergency_exit, aeroplane_id) ' +
+                   f'VALUES (\'B1\', false, {PK})')
+    cursor.execute(f'INSERT INTO public."BookingAPI_seat"("number", emergency_exit, aeroplane_id) ' +
+                   f'VALUES (\'B2\', true, {PK})')
+
+    PK = selectColumn(cursor, 'id', 'public."BookingAPI_aeroplane"', 'tail_number', 'G-NZ24')
+    cursor.execute(f'INSERT INTO public."BookingAPI_seat"("number", emergency_exit, aeroplane_id) ' +
+                   f'VALUES (\'A1\', false, {PK})')
+    cursor.execute(f'INSERT INTO public."BookingAPI_seat"("number", emergency_exit, aeroplane_id) ' +
+                   f'VALUES (\'A2\', false, {PK})')
+    cursor.execute(f'INSERT INTO public."BookingAPI_seat"("number", emergency_exit, aeroplane_id) ' +
+                   f'VALUES (\'B1\', false, {PK})')
+    cursor.execute(f'INSERT INTO public."BookingAPI_seat"("number", emergency_exit, aeroplane_id) ' +
+                   f'VALUES (\'B2\', true, {PK})')
+
+    print("Inserted seat static data")
 
 
 def insertAirports(cursor):
@@ -119,63 +190,6 @@ def insertRentalCars(cursor):
     print("Inserted rental cars static data")
 
 
-def insertSeat(cursor):
-    cursor.execute('INSERT INTO public."BookingAPI_seat"("number", emergency_exit, aeroplane_id) ' +
-                   'VALUES (\'A1\', false, 1)')
-    cursor.execute('INSERT INTO public."BookingAPI_seat"("number", emergency_exit, aeroplane_id) ' +
-                   'VALUES (\'A2\', false, 1)')
-    cursor.execute('INSERT INTO public."BookingAPI_seat"("number", emergency_exit, aeroplane_id) ' +
-                   'VALUES (\'B1\', false, 1)')
-    cursor.execute('INSERT INTO public."BookingAPI_seat"("number", emergency_exit, aeroplane_id) ' +
-                   'VALUES (\'B2\', true, 1)')
-    cursor.execute('INSERT INTO public."BookingAPI_seat"("number", emergency_exit, aeroplane_id) ' +
-                   'VALUES (\'C1\', false, 1)')
-    cursor.execute('INSERT INTO public."BookingAPI_seat"("number", emergency_exit, aeroplane_id) ' +
-                   'VALUES (\'C2\', false, 1)')
-
-    cursor.execute('INSERT INTO public."BookingAPI_seat"("number", emergency_exit, aeroplane_id) ' +
-                   'VALUES (\'A1\', false, 2)')
-    cursor.execute('INSERT INTO public."BookingAPI_seat"("number", emergency_exit, aeroplane_id) ' +
-                   'VALUES (\'A2\', false, 2)')
-    cursor.execute('INSERT INTO public."BookingAPI_seat"("number", emergency_exit, aeroplane_id) ' +
-                   'VALUES (\'B1\', false, 2)')
-    cursor.execute('INSERT INTO public."BookingAPI_seat"("number", emergency_exit, aeroplane_id) ' +
-                   'VALUES (\'B2\', true, 2)')
-    cursor.execute('INSERT INTO public."BookingAPI_seat"("number", emergency_exit, aeroplane_id) ' +
-                   'VALUES (\'C1\', false, 2)')
-
-    cursor.execute('INSERT INTO public."BookingAPI_seat"("number", emergency_exit, aeroplane_id) ' +
-                   'VALUES (\'A1\', false, 3)')
-    cursor.execute('INSERT INTO public."BookingAPI_seat"("number", emergency_exit, aeroplane_id) ' +
-                   'VALUES (\'A2\', false, 3)')
-    cursor.execute('INSERT INTO public."BookingAPI_seat"("number", emergency_exit, aeroplane_id) ' +
-                   'VALUES (\'B1\', false, 3)')
-    cursor.execute('INSERT INTO public."BookingAPI_seat"("number", emergency_exit, aeroplane_id) ' +
-                   'VALUES (\'B2\', true, 3)')
-    cursor.execute('INSERT INTO public."BookingAPI_seat"("number", emergency_exit, aeroplane_id) ' +
-                   'VALUES (\'C1\', false, 3)')
-
-    cursor.execute('INSERT INTO public."BookingAPI_seat"("number", emergency_exit, aeroplane_id) ' +
-                   'VALUES (\'A1\', false, 4)')
-    cursor.execute('INSERT INTO public."BookingAPI_seat"("number", emergency_exit, aeroplane_id) ' +
-                   'VALUES (\'A2\', false, 4)')
-    cursor.execute('INSERT INTO public."BookingAPI_seat"("number", emergency_exit, aeroplane_id) ' +
-                   'VALUES (\'B1\', false, 4)')
-    cursor.execute('INSERT INTO public."BookingAPI_seat"("number", emergency_exit, aeroplane_id) ' +
-                   'VALUES (\'B2\', true, 4)')
-
-    cursor.execute('INSERT INTO public."BookingAPI_seat"("number", emergency_exit, aeroplane_id) ' +
-                   'VALUES (\'A1\', false, 5)')
-    cursor.execute('INSERT INTO public."BookingAPI_seat"("number", emergency_exit, aeroplane_id) ' +
-                   'VALUES (\'A2\', false, 5)')
-    cursor.execute('INSERT INTO public."BookingAPI_seat"("number", emergency_exit, aeroplane_id) ' +
-                   'VALUES (\'B1\', false, 5)')
-    cursor.execute('INSERT INTO public."BookingAPI_seat"("number", emergency_exit, aeroplane_id) ' +
-                   'VALUES (\'B2\', true, 5)')
-
-    print("Inserted seat static data")
-
-
 def insertTravelInsurance(cursor):
     cursor.execute('INSERT INTO public."BookingAPI_travelinsurance"(title, description, image_link, ' +
                    'web_link, cost_per_person) VALUES (\'TINZ\', \'Get cover for the things you love. Whether ' +
@@ -198,18 +212,10 @@ def insertTravelInsurance(cursor):
 
 def insertUsers(cursor):
     # USERNAME          PASSWORD ...shh don't tell anyone
-    # admin             hUUqDyhEKXSmwTU7i2xk
     # collin            5xdkvlaQXeJqZ92DJf2D
     # marcelo           DusBV6WfsX1vaGtWjzzA
     # elle              4XhLh0K7XqnbnD6Wc9OL
     # terrance          zGCX3I2s67r7Uv6KCEPZ
-
-    cursor.execute('INSERT INTO public.auth_user(password, is_superuser, username, first_name, ' +
-                   'last_name, email, is_staff, is_active, date_joined) ' +
-                   'VALUES (' +
-                   '\'pbkdf2_sha256$320000$HDRjRmyM7dSdJGrGU7SOZr$huM2HxjGq9YEynxdr0daqvcKuk0Pfc2Gz0jmh3ITGec=\',' +
-                   'true, \'admin\', \'Captain\', \'Administrator\',' +
-                   '\'captain@administrator.com\', false, true, now())')
 
     cursor.execute('INSERT INTO public.auth_user(password, is_superuser, username, first_name, ' +
                    'last_name, email, is_staff, is_active, date_joined) ' +
@@ -240,6 +246,21 @@ def insertUsers(cursor):
                    '\'terrance.christian@email.net\', false, true, now())')
 
     print("Inserted user static data")
+
+
+# INSERT INTO public.oauth2_provider_application(
+#     client_id, redirect_uris, client_type, authorization_grant_type, client_secret,
+#     name, user_id, skip_authorization, created, updated, algorithm)
+# VALUES (
+#     'Z8VUqShJQnkfa5f8fzUAVzlBxYNxU2tuqaN8Gvh9',
+#     'http://127.0.0.1:8080/user/receiveAuthCode.html',
+#     'confidential',
+#     'authorization-code',
+#     'pbkdf2_sha256$320000$k9i3HjKFIGpnurpVQORJsk$tvsi5mGAs+mhMZ3zGD+Ukh+C0/2iPBP9TLSuSpoZWpw=',
+#     'BookingFrontEnd',
+#     1,
+#     false,
+#     now(), now(), '')
 
 
 def insertOauth2Data(cursor):
@@ -275,10 +296,12 @@ try:
     insertAeroplanes(cur)
     insertAirports(cur)
     insertRentalCars(cur)
-    insertSeat(cur)
     insertTravelInsurance(cur)
     insertUsers(cur)
     insertOauth2Data(cur)
+    conn.commit()
+
+    insertSeat(cur)
     conn.commit()
 
     print('Inserted data successfully.')

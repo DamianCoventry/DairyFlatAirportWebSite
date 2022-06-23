@@ -30,7 +30,7 @@ class FlightLeg(models.Model):
         return f'Flight {self.number}, \'{self.departure_airport.name}\' -> \'{self.arrival_airport.name}\''
 
     number = models.CharField(max_length=8, null=False)
-    aeroplane = models.ForeignKey(Aeroplane, null=False, related_name='flightLegs', on_delete=models.CASCADE)
+    aeroplane = models.ForeignKey(Aeroplane, null=False, related_name='aeroplaneFlight', on_delete=models.CASCADE)
     departure_airport = models.ForeignKey(Airport, null=False, on_delete=models.CASCADE, related_name='departure')
     arrival_airport = models.ForeignKey(Airport, null=False, on_delete=models.CASCADE, related_name='arrival')
     cost_dollars = models.IntegerField(default=100, null=False,
@@ -72,21 +72,7 @@ class Seat(models.Model):
 
     number = models.CharField(max_length=64, null=False)    # A1, A2, B1, B2, etc
     emergency_exit = models.BooleanField(default=False, null=False)
-    aeroplane = models.ForeignKey(Aeroplane, null=False, on_delete=models.CASCADE)
-
-
-class BookedSeat(models.Model):
-    class Meta:
-        constraints = [
-            models.UniqueConstraint(fields=['seat', 'passenger', 'flightLeg'], name='unique_booking')
-        ]
-
-    def __str__(self):
-        return f'Seat {self.seat.name}, {self.flightLeg.name}, {self.passenger.name})'
-
-    seat = models.ForeignKey(Seat, null=False, on_delete=models.CASCADE)
-    passenger = models.ForeignKey(Passenger, null=False, on_delete=models.CASCADE)
-    flightLeg = models.ForeignKey(FlightLeg, null=False, on_delete=models.CASCADE)
+    aeroplane = models.ForeignKey(Aeroplane, null=False, on_delete=models.CASCADE, related_name='aeroplaneSeat')
 
 
 class TravelInsurance(models.Model):
@@ -120,10 +106,26 @@ class Booking(models.Model):
 
     number = models.CharField(max_length=8, unique=True, null=False)
     created_by = models.ForeignKey(User, null=False, on_delete=models.CASCADE)
-    travelInsurance = models.ForeignKey(TravelInsurance, null=True, on_delete=models.CASCADE)
-    rentalCar = models.ForeignKey(RentalCar, null=True, on_delete=models.CASCADE)
+    travelInsurance = models.ForeignKey(TravelInsurance, null=True, on_delete=models.CASCADE,
+                                        related_name='travelInsurance')
+    rentalCar = models.ForeignKey(RentalCar, null=True, on_delete=models.CASCADE, related_name='rentalCar')
     flightLegs = models.ManyToManyField(FlightLeg)
     passengers = models.ManyToManyField(Passenger)
+
+
+class BookedSeat(models.Model):
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(fields=['booking', 'seat', 'passenger', 'flightLeg'], name='unique_booking')
+        ]
+
+    def __str__(self):
+        return f'Seat {self.seat.name}, {self.flightLeg.name}, {self.passenger.name})'
+
+    booking = models.ForeignKey(Booking, null=False, on_delete=models.CASCADE, related_name='booking')
+    seat = models.ForeignKey(Seat, null=False, on_delete=models.CASCADE, related_name='seat')
+    passenger = models.ForeignKey(Passenger, null=False, on_delete=models.CASCADE, related_name='passenger')
+    flightLeg = models.ForeignKey(FlightLeg, null=False, on_delete=models.CASCADE, related_name='flightLeg')
 
 
 class BookingNumber(models.Model):

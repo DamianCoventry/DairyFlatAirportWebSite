@@ -75,7 +75,7 @@ class SeatSerializer(serializers.ModelSerializer):
 class BookedSeatSerializer(serializers.ModelSerializer):
     class Meta:
         model = BookedSeat
-        fields = ['id', 'seat', 'passenger', 'flightLeg']
+        fields = ['id', 'booking', 'seat', 'passenger', 'flightLeg']
 
 
 class TravelInsuranceSerializer(serializers.ModelSerializer):

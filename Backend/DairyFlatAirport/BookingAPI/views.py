@@ -89,10 +89,29 @@ class SeatViewSet(viewsets.ModelViewSet):
         return qs.order_by('number')
 
 
+class UnbookedSeatViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
+    queryset = Seat.objects.all().order_by('id')
+    serializer_class = SeatSerializer
+    permission_classes = [permissions.IsAuthenticated, TokenHasReadWriteScope]
+
+    def get_queryset(self):
+        flightId = self.request.query_params.get('flightId', 0)
+
+        bookedSeats = BookedSeat.objects.filter(flightLeg_id=flightId).values('seat_id').order_by()
+
+        aeroplaneId = FlightLeg.objects.get(id=flightId).aeroplane_id
+
+        return Seat.objects.filter(aeroplane=aeroplaneId).exclude(id__in=bookedSeats).order_by('number')
+
+
 class BookedSeatViewSet(viewsets.ModelViewSet):
-    queryset = BookedSeat.objects.all().order_by('seat')
+    queryset = BookedSeat.objects.all().order_by('id')
     serializer_class = BookedSeatSerializer
     permission_classes = [permissions.IsAuthenticated, TokenHasReadWriteScope]
+
+    def get_queryset(self):
+        flightId = self.request.query_params.get('flightId', 0)
+        return BookedSeat.objects.filter(flightLeg_id=flightId).order_by('id')
 
 
 class TravelInsuranceViewSet(viewsets.ModelViewSet):
