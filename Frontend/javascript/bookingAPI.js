@@ -1083,7 +1083,7 @@ class BookingAPI {
         }));
     }
 
-    getUnbookedSeats(flightId, okFn, errorFn) {
+    listUnbookedSeats(flightId, okFn, errorFn) {
         const api = this;
 
         const xhr = new XMLHttpRequest();
@@ -1095,7 +1095,7 @@ class BookingAPI {
                 else if (xhr.status == 401) {
                     api.useRefreshToken(api.refreshToken,
                         function () {
-                            api.getUnbookedSeats(flightId, okFn, errorFn);
+                            api.listUnbookedSeats(flightId, okFn, errorFn);
                         },
                         function (code, json) {
                             api.signIn(window.location.href);

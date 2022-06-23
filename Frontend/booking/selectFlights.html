@@ -837,29 +837,106 @@
                     }
                 }
 
-                checkFlightCapacity(booking, function () {
-                    var outboundFlightId = getChosenFlightId('outboundFlightId');
-                    var outboundAeroplaneId = getChosenAeroplaneId('outboundAeroplaneId', outboundFlightId);
-                    var outboundFlightCost = getChosenFlightCost('outboundFlightId', 'outboundCost');
+                checkFlightCapacity(booking,
+                    function () {
+                        var outboundFlightId = getChosenFlightId('outboundFlightId');
+                        checkedBookedSeats(outboundFlightId,
+                            function () {
+                                showFlightIsFullModal(booking, true);
+                            },
+                            function (numUnbookedSeats) {
+                                if (numUnbookedSeats < booking.getNumPassengers()) {
+                                    showTooFewSeatsModal(booking, true, numUnbookedSeats);
+                                }
+                                else if (booking.isReturnTrip()) {
+                                    checkReturnFlightBookedSeats(booking)
+                                }
+                                else {
+                                    commitBookingThenChangePages(booking);
+                                }
+                            });
+                    });
+            }
 
-                    var inboundFlightId = getChosenFlightId('inboundFlightId');
-                    var inboundAeroplaneId = getChosenAeroplaneId('inboundAeroplaneId', inboundFlightId);
-                    var inboundFlightCost = getChosenFlightCost('inboundFlightId', 'inboundCost');
+            function checkReturnFlightBookedSeats(booking) {
+                var inboundFlightId = getChosenFlightId('inboundFlightId');
+                checkedBookedSeats(inboundFlightId,
+                    function () {
+                        showFlightIsFullModal(booking, false);
+                    },
+                    function (numUnbookedSeats) {
+                        if (numUnbookedSeats < booking.getNumPassengers()) {
+                            showTooFewSeatsModal(booking, false, numUnbookedSeats);
+                        }
+                        else {
+                            commitBookingThenChangePages(booking);
+                        }
+                    });
+            }
 
-                    booking.setOutboundFlightId(outboundFlightId);
-                    booking.setOutboundAeroplaneId(outboundAeroplaneId);
-                    booking.setOutboundFlightCost(outboundFlightCost);
+            function showFlightIsFullModal(booking, outbound) {
+                let flightElementName, aeroplaneElementName, destination;
+                if (outbound) {
+                    flightElementName = 'outboundFlightId';
+                    destination = booking.getToCityName();
+                }
+                else {
+                    flightElementName = 'inboundFlightId';
+                    destination = booking.getFromCityName();
+                }
 
-                    booking.setInboundFlightId(inboundFlightId == null ? '' : inboundFlightId);
-                    booking.setInboundAeroplaneId(inboundAeroplaneId == null ? '' : inboundAeroplaneId);
-                    booking.setInboundFlightCost(inboundFlightCost == null ? '' : inboundFlightCost);
+                var flightId = getChosenFlightId(flightElementName);
 
-                    booking.setTotalCost(totalCost.innerText);
-                    booking.setLeaveTime(fromCityTime.innerText);
-                    booking.setReturnTime(toCityTime.innerText);
+                flightIsFullFlightNumber.innerText = getChosenFlightNumber(flightElementName, flightId);
+                flightIsFullDestination.innerText = destination;
 
-                    window.location.href = "/booking/passengerDetails.html";
-                });
+                const modalDialog = new bootstrap.Modal('#flightIsFullModal');
+                modalDialog.show();
+            }
+
+            function showTooFewSeatsModal(booking, outbound, numSeatsAvailable) {
+                let flightElementName, aeroplaneElementName, destination;
+                if (outbound) {
+                    flightElementName = 'outboundFlightId';
+                    destination = booking.getToCityName();
+                }
+                else {
+                    flightElementName = 'inboundFlightId';
+                    destination = booking.getFromCityName();
+                }
+
+                var flightId = getChosenFlightId(flightElementName);
+
+                tooFewSeatsFlightNumber.innerText = getChosenFlightNumber(flightElementName, flightId);
+                tooFewSeatsDestination.innerText = destination;
+                tooFewSeatsNumAvailable.innerText = numSeatsAvailable;
+
+                const modalDialog = new bootstrap.Modal('#tooFewSeatsModal');
+                modalDialog.show();
+            }
+
+            function commitBookingThenChangePages(booking) {
+                var outboundFlightId = getChosenFlightId('outboundFlightId');
+                var outboundAeroplaneId = getChosenAeroplaneId('outboundAeroplaneId', outboundFlightId);
+                var outboundFlightCost = getChosenFlightCost('outboundFlightId', 'outboundCost');
+
+                var inboundFlightId = getChosenFlightId('inboundFlightId');
+                var inboundAeroplaneId = getChosenAeroplaneId('inboundAeroplaneId', inboundFlightId);
+                var inboundFlightCost = getChosenFlightCost('inboundFlightId', 'inboundCost');
+
+                booking.setOutboundFlightId(outboundFlightId);
+                booking.setOutboundAeroplaneId(outboundAeroplaneId);
+                booking.setOutboundFlightCost(outboundFlightCost);
+
+                booking.setInboundFlightId(inboundFlightId == null ? '' : inboundFlightId);
+                booking.setInboundAeroplaneId(inboundAeroplaneId == null ? '' : inboundAeroplaneId);
+                booking.setInboundFlightCost(inboundFlightCost == null ? '' : inboundFlightCost);
+
+                booking.setTotalCost(totalCost.innerText);
+                booking.setLeaveTime(fromCityTime.innerText);
+                booking.setReturnTime(toCityTime.innerText);
+
+                window.location.href = "/booking/passengerDetails.html";
             }
 
             function checkFlightCapacity(booking, sufficientCapacity) {
@@ -909,23 +986,34 @@
             }
 
             function showInsufficientCapacityModal(booking, outbound, aeroplaneMakeModel, aeroplaneNumSeats) {
-                let flightElementName, aeroplaneElementName;
+                let flightElementName, aeroplaneElementName, destination;
                 if (outbound) {
                     flightElementName = 'outboundFlightId';
+                    destination = booking.getToCityName();
                 }
                 else {
                     flightElementName = 'inboundFlightId';
+                    destination = booking.getFromCityName();
                 }
 
                 var flightId = getChosenFlightId(flightElementName);
 
                 insufficientCapacityFlightNumber.innerText = getChosenFlightNumber(flightElementName, flightId);
-                insufficientCapacityDestination.innerText = booking.getToCityName();
+                insufficientCapacityDestination.innerText = destination;
                 insufficientCapacityAeroplane.innerText = aeroplaneMakeModel;
                 insufficientCapacityNumSeats.innerText = aeroplaneNumSeats;
 
                 const modalDialog = new bootstrap.Modal('#insufficientCapacityModal');
                 modalDialog.show();
+            }
+
+            function checkedBookedSeats(flightId, flightIsFull, flightHasSpace) {
+                const api = new BookingAPI();
+                api.listUnbookedSeats(flightId,
+                    function (json) {
+                        json.count == 0 ? flightIsFull() : flightHasSpace(json.count);
+                    },
+                    showHttpError);
             }
         </SCRIPT>
     </HEAD>
@@ -1158,24 +1246,60 @@
             </FOOTER>
         </MAIN>
 
-<div class="modal fade" id="insufficientCapacityModal" tabindex="-1" aria-labelledby="insufficientCapacityTitle" aria-hidden="true" style="display: none;">
-    <div class="modal-dialog modal-dialog-centered">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="insufficientCapacityTitle">Insufficient Capacity</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"/>
-            </div>
-            <div class="modal-body">
-                <p>There aren't enough seats for your passengers upon flight <span id="insufficientCapacityFlightNumber"></span> to <span id="insufficientCapacityDestination"></span>.</p>
-                <p>The aeroplane is a <span id="insufficientCapacityAeroplane"></span> that has <span id="insufficientCapacityNumSeats"></span> seats.</p>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-primary" data-bs-dismiss="modal">Close</button>
+        <div class="modal fade" id="flightIsFullModal" tabindex="-1" aria-labelledby="flightIsFullTitle" aria-hidden="true" style="display: none;">
+            <div class="modal-dialog modal-dialog-centered">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="flightIsFullTitle">Flight is Full</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"/>
+                    </div>
+                    <div class="modal-body">
+                        <p>There are no available seats upon flight <span id="flightIsFullFlightNumber"></span> to <span id="flightIsFullDestination"></span>.</p>
+                        <p>We apologize for the inconvenience, please try another flight.</p>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-primary" data-bs-dismiss="modal">Close</button>
+                    </div>
+                </div>
             </div>
         </div>
-    </div>
-</div>
-        
+
+        <div class="modal fade" id="tooFewSeatsModal" tabindex="-1" aria-labelledby="tooFewSeatsTitle" aria-hidden="true" style="display: none;">
+            <div class="modal-dialog modal-dialog-centered">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="tooFewSeatsTitle">Too Few Seats</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"/>
+                    </div>
+                    <div class="modal-body">
+                        <p>There aren't enough seats for your passengers upon flight <span id="tooFewSeatsFlightNumber"></span> to <span id="tooFewSeatsDestination"></span>.</p>
+                        <p>The aeroplane currently has <span id="tooFewSeatsNumAvailable"></span> available seats.</p>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-primary" data-bs-dismiss="modal">Close</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="modal fade" id="insufficientCapacityModal" tabindex="-1" aria-labelledby="insufficientCapacityTitle" aria-hidden="true" style="display: none;">
+            <div class="modal-dialog modal-dialog-centered">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="insufficientCapacityTitle">Insufficient Capacity</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"/>
+                    </div>
+                    <div class="modal-body">
+                        <p>There aren't enough seats for your passengers upon flight <span id="insufficientCapacityFlightNumber"></span> to <span id="insufficientCapacityDestination"></span>.</p>
+                        <p>The aeroplane is a <span id="insufficientCapacityAeroplane"></span> that has <span id="insufficientCapacityNumSeats"></span> seats.</p>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-primary" data-bs-dismiss="modal">Close</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+                        
 <div class="modal fade" id="editUserAccountModal" tabindex="-1" aria-labelledby="editUserAccountTitle" aria-hidden="true" style="display: none;">
     <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
         <div class="modal-content">

@@ -330,7 +330,7 @@ def insertLakeTekapoFlightLegs(cursor, aeroplanePK):
 
 try:
     conn = psycopg2.connect(database="postgres", user="postgres",
-                            password="hUUqDyhEKXSmwTU7i2xk", host="localhost", port="5432")
+                            password="hUUqDyhEKXSmwTU7i2xk", host="db", port="5432")
     print("Opened database successfully")
 
     cur = conn.cursor()
