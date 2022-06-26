@@ -8,4 +8,3 @@ RUN npm install http-server
 
 EXPOSE 8080
 
-CMD [ "node_modules/http-server/bin/http-server" ]

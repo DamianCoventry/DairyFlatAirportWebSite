@@ -61,6 +61,12 @@ class FlightLegViewSet(viewsets.ModelViewSet):
     permission_classes = [permissions.IsAuthenticated, TokenHasReadWriteScope]
 
 
+class FlightLegStopoverViewSet(viewsets.ModelViewSet):
+    queryset = FlightLegStopover.objects.all().order_by('id')
+    serializer_class = FlightLegStopoverSerializer
+    permission_classes = [permissions.IsAuthenticated, TokenHasReadWriteScope]
+
+
 class PassengerViewSet(viewsets.ModelViewSet):
     serializer_class = PassengerSerializer
     permission_classes = [permissions.IsAuthenticated, TokenHasReadWriteScope]

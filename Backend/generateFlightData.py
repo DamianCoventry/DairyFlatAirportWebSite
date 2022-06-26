@@ -197,6 +197,15 @@ def insertSydneyFlightLegs(cursor, aeroplanePK):
         makeFlight(cursor, 'syd->nsh', 42, aeroplanePK,
                    SYDNEY_AIRPORT, sunMidAfternoonAEST, NORTH_SHORE_AERODROME, nzst)  # different tz
 
+        nshRot = selectColumn(cursor, 'id', 'public."BookingAPI_flightleg"', 'departure_date_time_utc',
+                              friEarlyMorningNZST)
+        rotSyd = selectColumn(cursor, 'id', 'public."BookingAPI_flightleg"', 'departure_date_time_utc',
+                              friMidMorningNZST)
+
+        cursor.execute(f'INSERT INTO public."BookingAPI_flightlegstopover"(' +
+                       f'"flightLegA_id", "flightLegB_id", "stopoverAirport_id") VALUES (' +
+                       f'{nshRot}, {rotSyd}, {ROTORUA_AIRPORT["pk"]})')
+
         friEarlyMorningNZST += timedelta(weeks=1)
         friMidMorningNZST += timedelta(weeks=1)
         sunMidAfternoonAEST += timedelta(weeks=1)

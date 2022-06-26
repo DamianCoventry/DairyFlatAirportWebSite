@@ -7,7 +7,7 @@ Authorize flow:
 
     client_id=Z8VUqShJQnkfa5f8fzUAVzlBxYNxU2tuqaN8Gvh9
     response_type=code
-    redirect_uri=http://localhost:8080/booking/listBookings.html
+    redirect_uri=http://127.0.0.1:8080/user/receiveAuthCode.html
     scope=read+write+groups
     state=helloworld
     code_challenge=z_dr3oCAum1HgOM5UpPAHavdER0GVJRCOEaHsAPCEu8

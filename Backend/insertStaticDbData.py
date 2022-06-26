@@ -210,42 +210,42 @@ def insertTravelInsurance(cursor):
     print("Inserted travel insurance static data")
 
 
-def insertUsers(cursor):
-    # USERNAME          PASSWORD ...shh don't tell anyone
-    # collin            5xdkvlaQXeJqZ92DJf2D
-    # marcelo           DusBV6WfsX1vaGtWjzzA
-    # elle              4XhLh0K7XqnbnD6Wc9OL
-    # terrance          zGCX3I2s67r7Uv6KCEPZ
-
-    cursor.execute('INSERT INTO public.auth_user(password, is_superuser, username, first_name, ' +
-                   'last_name, email, is_staff, is_active, date_joined) ' +
-                   'VALUES (' +
-                   '\'pbkdf2_sha256$320000$UNwgaXcJB3qDtdtNYs3z6A$pSvDdcYWqmZqyJgVejbmzqwJGwdjsKxikLz6mhXlgBM=\',' +
-                   'false, \'collin\', \'Collin\', \'Ochoa\',' +
-                   '\'ochoa.collin@email.net\', false, true, now())')
-
-    cursor.execute('INSERT INTO public.auth_user(password, is_superuser, username, first_name, ' +
-                   'last_name, email, is_staff, is_active, date_joined) ' +
-                   'VALUES (' +
-                   '\'pbkdf2_sha256$320000$yOZg120iFktY2ZEVTdVyiS$wofJSR2kxiMaymPceytx576Y0NXON2nX1ekHNKMrnnk=\',' +
-                   'false, \'marcelo\', \'Marcelo\', \'Taylor\',' +
-                   '\'m.taylor@email.net\', false, true, now())')
-
-    cursor.execute('INSERT INTO public.auth_user(password, is_superuser, username, first_name, ' +
-                   'last_name, email, is_staff, is_active, date_joined) ' +
-                   'VALUES (' +
-                   '\'pbkdf2_sha256$320000$0tUrKjIh00BzDnuqBdPFy0$QEoUyMivJyuiX24oXitvPFw48ZslXNONf94g3hULoXY=\',' +
-                   'false, \'elle\', \'Elle\', \'Archer\',' +
-                   '\'elle.archer@gmail.com\', false, true, now())')
-
-    cursor.execute('INSERT INTO public.auth_user(password, is_superuser, username, first_name, ' +
-                   'last_name, email, is_staff, is_active, date_joined) ' +
-                   'VALUES (' +
-                   '\'pbkdf2_sha256$320000$5psQbXSiDr4lVpnjyKUqwQ$5hHTWPcwtHKRSkWPOPIHItqvBxtKri5UWpwtNE4uOjM=\',' +
-                   'false, \'terrance\', \'Terrance\', \'Christian\',' +
-                   '\'terrance.christian@email.net\', false, true, now())')
-
-    print("Inserted user static data")
+# def insertUsers(cursor):
+#     # USERNAME          PASSWORD ...shh don't tell anyone
+#     # collin            5xdkvlaQXeJqZ92DJf2D
+#     # marcelo           DusBV6WfsX1vaGtWjzzA
+#     # elle              4XhLh0K7XqnbnD6Wc9OL
+#     # terrance          zGCX3I2s67r7Uv6KCEPZ
+#
+#     cursor.execute('INSERT INTO public.auth_user(password, is_superuser, username, first_name, ' +
+#                    'last_name, email, is_staff, is_active, date_joined) ' +
+#                    'VALUES (' +
+#                    '\'pbkdf2_sha256$320000$UNwgaXcJB3qDtdtNYs3z6A$pSvDdcYWqmZqyJgVejbmzqwJGwdjsKxikLz6mhXlgBM=\',' +
+#                    'false, \'collin\', \'Collin\', \'Ochoa\',' +
+#                    '\'ochoa.collin@email.net\', false, true, now())')
+#
+#     cursor.execute('INSERT INTO public.auth_user(password, is_superuser, username, first_name, ' +
+#                    'last_name, email, is_staff, is_active, date_joined) ' +
+#                    'VALUES (' +
+#                    '\'pbkdf2_sha256$320000$yOZg120iFktY2ZEVTdVyiS$wofJSR2kxiMaymPceytx576Y0NXON2nX1ekHNKMrnnk=\',' +
+#                    'false, \'marcelo\', \'Marcelo\', \'Taylor\',' +
+#                    '\'m.taylor@email.net\', false, true, now())')
+#
+#     cursor.execute('INSERT INTO public.auth_user(password, is_superuser, username, first_name, ' +
+#                    'last_name, email, is_staff, is_active, date_joined) ' +
+#                    'VALUES (' +
+#                    '\'pbkdf2_sha256$320000$0tUrKjIh00BzDnuqBdPFy0$QEoUyMivJyuiX24oXitvPFw48ZslXNONf94g3hULoXY=\',' +
+#                    'false, \'elle\', \'Elle\', \'Archer\',' +
+#                    '\'elle.archer@gmail.com\', false, true, now())')
+#
+#     cursor.execute('INSERT INTO public.auth_user(password, is_superuser, username, first_name, ' +
+#                    'last_name, email, is_staff, is_active, date_joined) ' +
+#                    'VALUES (' +
+#                    '\'pbkdf2_sha256$320000$5psQbXSiDr4lVpnjyKUqwQ$5hHTWPcwtHKRSkWPOPIHItqvBxtKri5UWpwtNE4uOjM=\',' +
+#                    'false, \'terrance\', \'Terrance\', \'Christian\',' +
+#                    '\'terrance.christian@email.net\', false, true, now())')
+#
+#     print("Inserted user static data")
 
 
 # INSERT INTO public.oauth2_provider_application(
@@ -263,23 +263,23 @@ def insertUsers(cursor):
 #     now(), now(), '')
 
 
-def insertOauth2Data(cursor):
-    cursor.execute('INSERT INTO public.oauth2_provider_application(' +
-                   'client_id, redirect_uris, client_type, authorization_grant_type, client_secret, ' +
-                   'name, user_id, skip_authorization, created, updated, algorithm)' +
-                   'VALUES (' +
-                   '\'Z8VUqShJQnkfa5f8fzUAVzlBxYNxU2tuqaN8Gvh9\', ' +               # client_id
-                   '\'http://127.0.0.1:8080/user/receiveAuthCode.html\', ' +        # redirect_uris
-                   '\'confidential\', ' +
-                   '\'authorization-code\', ' +
-                                                                                    # client_secret
-                   '\'pbkdf2_sha256$320000$k9i3HjKFIGpnurpVQORJsk$tvsi5mGAs+mhMZ3zGD+Ukh+C0/2iPBP9TLSuSpoZWpw=\', ' +
-                   '\'BookingFrontEnd\', ' +
-                   '1, ' +                                                          # user_id
-                   'false, ' +
-                   'now(), now(), \'\')')
-
-    print("Inserted Oauth2 static data")
+# def insertOauth2Data(cursor):
+#     cursor.execute('INSERT INTO public.oauth2_provider_application(' +
+#                    'client_id, redirect_uris, client_type, authorization_grant_type, client_secret, ' +
+#                    'name, user_id, skip_authorization, created, updated, algorithm)' +
+#                    'VALUES (' +
+#                    '\'Z8VUqShJQnkfa5f8fzUAVzlBxYNxU2tuqaN8Gvh9\', ' +               # client_id
+#                    '\'http://127.0.0.1:8080/user/receiveAuthCode.html\', ' +        # redirect_uris
+#                    '\'confidential\', ' +
+#                    '\'authorization-code\', ' +
+#                                                                                     # client_secret
+#                    '\'pbkdf2_sha256$320000$k9i3HjKFIGpnurpVQORJsk$tvsi5mGAs+mhMZ3zGD+Ukh+C0/2iPBP9TLSuSpoZWpw=\', ' +
+#                    '\'BookingFrontEnd\', ' +
+#                    '1, ' +                                                          # user_id
+#                    'false, ' +
+#                    'now(), now(), \'\')')
+#
+#     print("Inserted Oauth2 static data")
 
 
 try:
@@ -297,8 +297,8 @@ try:
     insertAirports(cur)
     insertRentalCars(cur)
     insertTravelInsurance(cur)
-    insertUsers(cur)
-    insertOauth2Data(cur)
+#    insertUsers(cur)
+#    insertOauth2Data(cur)
     conn.commit()
 
     insertSeat(cur)

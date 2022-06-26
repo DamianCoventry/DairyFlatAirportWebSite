@@ -41,6 +41,15 @@ class FlightLeg(models.Model):
                                            validators=[MinValueValidator(1), MaxValueValidator(1000)])
 
 
+class FlightLegStopover(models.Model):
+    def __str__(self):
+        return f'Flight (stopover)'
+
+    flightLegA = models.ForeignKey(FlightLeg, null=False, on_delete=models.CASCADE, related_name='flightLegA')
+    flightLegB = models.ForeignKey(FlightLeg, null=False, on_delete=models.CASCADE, related_name='flightLegB')
+    stopoverAirport = models.ForeignKey(Airport, null=False, on_delete=models.CASCADE, related_name='stopover')
+
+
 class Passenger(models.Model):
     def __str__(self):
         if self.title is not None:

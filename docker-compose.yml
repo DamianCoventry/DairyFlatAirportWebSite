@@ -3,14 +3,15 @@ version: "3.9"
 services:
   db:
     image: postgres
-    container_name: db
+    volumes:
+      - ./data/db:/var/lib/postgresql/data    
     environment:
       - POSTGRES_DB=postgres
       - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=hUUqDyhEKXSmwTU7i2xk
+      - POSTGRES_HOST_AUTH_METHOD=trust
   restapi:
     build: ./Backend
-    container_name: restapi
     volumes:
       - ./Backend:/usr/app
     ports:
@@ -19,14 +20,15 @@ services:
       - POSTGRES_NAME=postgres
       - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=hUUqDyhEKXSmwTU7i2xk
+    command: python manage.py runserver 0.0.0.0:8000
     depends_on:
       - db
   web:
     build: ./Frontend
-    container_name: frontend
     volumes:
       - ./Frontend:/usr/app
     ports:
       - "8080:8080"
+    command: node_modules/http-server/bin/http-server
     depends_on:
       - restapi

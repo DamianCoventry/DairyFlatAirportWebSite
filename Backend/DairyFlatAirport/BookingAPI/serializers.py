@@ -37,6 +37,13 @@ class FlightLegSerializer(serializers.ModelSerializer):
         depth = 1
 
 
+class FlightLegStopoverSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = FlightLegStopover
+        fields = ['id', 'flightLegA', 'flightLegB', 'stopoverAirport']
+        depth = 1
+
+
 class FlightCountsSerializer(serializers.ModelSerializer):
     class Meta:
         model = FlightLeg
@@ -46,7 +53,6 @@ class FlightCountsSerializer(serializers.ModelSerializer):
     numFlights = serializers.SerializerMethodField('get_numFlights')
 
     def get_departureDate(self, obj):
-        # print(f'get_departureDate: {str(obj)}')
         return obj['departureDate']
 
     def get_numFlights(self, obj):

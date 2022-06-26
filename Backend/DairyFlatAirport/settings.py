@@ -31,7 +31,7 @@ AUTH_USER_MODEL = 'auth.User'
 
 LOGIN_URL = '/api-auth/login/'
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['*']
 
 
 # Application definition
